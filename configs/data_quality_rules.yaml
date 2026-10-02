@@ -1,0 +1,296 @@
+version: 1
+
+severity:
+  hard_fail: BLOCKER
+  warning: WARNING
+  expected: EXPECTED
+  pass: PASS
+  not_applicable: NOT_APPLICABLE
+
+official_counts:
+  outlets: 120
+  vehicles: 60
+
+official_enums:
+  brand: [Fresh, Style, Tech]
+  dispatch_status: [attempted, deferred, not_run]
+  temp_requirement: [chilled, ambient]
+  depot: [Peliyagoda, Kandy]
+  dock_type: [rear_dock, street, mall_bay]
+  parking_constraint: [normal, van_only, mall_dock]
+  vehicle_type: [truck, van]
+  vehicle_temp: [reefer, ambient]
+  road_class: [urban, suburban, highway, hill]
+  task2b_scenario: [S1]
+  task2b_vehicle_status: [available, in_workshop]
+
+binary_columns:
+  - monsoon
+  - is_weekend
+  - is_payday
+  - is_holiday
+  - is_operating
+  - deferred_yesterday
+
+bounded_numeric:
+  festival_ramp:
+    min: 0
+    max: 1
+  dow:
+    min: 0
+    max: 6
+
+nonnegative_numeric_columns:
+  - order_units
+  - order_weight_kg
+  - order_volume_m3
+  - distance_km
+  - planned_travel_duration_min
+  - actual_travel_duration_min
+  - service_allowance_min
+  - depot_to_district_km
+  - depot_to_district_freeflow_min
+  - inter_stop_km
+  - inter_stop_freeflow_min
+  - days_since_last_served
+
+strictly_positive_when_present:
+  - weight_cap_kg
+  - volume_cap_m3
+  - km_per_l
+  - weekly_fuel_quota_l
+  - free_flow_kmh
+
+required_columns:
+  deliveries_train.csv:
+    - delivery_id
+    - order_date
+    - dispatch_status
+    - outlet_id
+    - brand
+    - district
+    - depot
+    - temp_requirement
+    - order_units
+    - order_weight_kg
+    - order_volume_m3
+    - route_id
+    - seq_in_route
+    - vehicle_id
+    - vehicle_type
+    - vehicle_temp
+    - planned_arrival_time
+    - window_open_time
+    - window_close_time
+  route_legs_train.csv:
+    - leg_id
+    - date
+    - route_id
+    - seq
+    - depot
+    - vehicle_id
+    - vehicle_type
+    - vehicle_temp
+    - brand
+    - district
+    - to_outlet
+    - distance_km
+    - planned_depart_time
+    - planned_travel_duration_min
+    - planned_arrival_time
+    - actual_depart_time
+    - actual_travel_duration_min
+    - arrival_time
+    - leave_outlet_time
+    - monsoon
+    - dow
+  task1_test_inputs.csv:
+    - delivery_id
+    - order_date
+    - dispatch_date
+    - dispatch_status
+    - outlet_id
+    - brand
+    - district
+    - depot
+    - temp_requirement
+    - order_units
+    - order_weight_kg
+    - order_volume_m3
+    - route_id
+    - seq_in_route
+    - vehicle_id
+    - vehicle_type
+    - vehicle_temp
+    - planned_arrival_time
+    - window_open_time
+    - window_close_time
+  route_legs_test.csv:
+    - leg_id
+    - date
+    - route_id
+    - seq
+    - depot
+    - vehicle_id
+    - vehicle_type
+    - vehicle_temp
+    - brand
+    - district
+    - to_outlet
+    - distance_km
+    - planned_depart_time
+    - planned_travel_duration_min
+    - planned_arrival_time
+    - monsoon
+    - dow
+  task2a_test_inputs.csv:
+    - row_id
+    - depot
+    - brand
+    - iso_year
+    - iso_week
+  task2b_peak_day_scenarios.csv:
+    - scenario
+    - order_ref
+    - outlet_id
+    - brand
+    - district
+    - depot
+    - dock_type
+    - parking_constraint
+    - window_open_time
+    - window_close_time
+    - temp_requirement
+    - order_units
+    - order_weight_kg
+    - order_volume_m3
+    - deferred_yesterday
+    - days_since_last_served
+  task2b_peak_day_fleet.csv:
+    - scenario
+    - vehicle_id
+    - status
+  outlets.csv:
+    - outlet_id
+    - brand
+    - district
+    - depot
+    - dock_type
+    - parking_constraint
+    - mall_window
+    - window_open_time
+    - window_close_time
+  vehicles.csv:
+    - vehicle_id
+    - type
+    - temp
+    - weight_cap_kg
+    - volume_cap_m3
+    - fuel_type
+    - km_per_l
+    - weekly_fuel_quota_l
+    - depot
+  calendar.csv:
+    - date
+    - dow
+    - is_weekend
+    - iso_year
+    - iso_week
+    - is_payday
+    - festival
+    - festival_ramp
+    - is_holiday
+    - monsoon
+    - is_operating
+  district_travel.csv:
+    - district
+    - depot
+    - road_class
+    - free_flow_kmh
+    - depot_to_district_km
+    - depot_to_district_freeflow_min
+    - inter_stop_km
+    - inter_stop_freeflow_min
+  service_allowance.csv:
+    - brand
+    - dock_type
+    - service_allowance_min
+  traffic_speed.csv:
+    - monsoon
+    - speed_index
+  road_conditions.csv:
+    - disruption_index
+
+official_keys:
+  deliveries_train.csv:
+    - [delivery_id]
+  task1_test_inputs.csv:
+    - [delivery_id]
+  route_legs_train.csv:
+    - [leg_id]
+    - [route_id, seq]
+  route_legs_test.csv:
+    - [leg_id]
+    - [route_id, seq]
+  task2a_test_inputs.csv:
+    - [row_id]
+  task2b_peak_day_scenarios.csv:
+    - [scenario, order_ref]
+  task2b_peak_day_fleet.csv:
+    - [scenario, vehicle_id]
+  outlets.csv:
+    - [outlet_id]
+  vehicles.csv:
+    - [vehicle_id]
+  calendar.csv:
+    - [date]
+  service_allowance.csv:
+    - [brand, dock_type]
+
+task1_direct_feature_deny_list:
+  - actual_depart_time
+  - actual_travel_duration_min
+  - arrival_time
+  - leave_outlet_time
+  - service_start
+  - service_min
+  - late_flag
+
+reference_mappings:
+  outlet_references:
+    deliveries_train.csv: outlet_id
+    task1_test_inputs.csv: outlet_id
+    route_legs_train.csv: to_outlet
+    route_legs_test.csv: to_outlet
+    task2b_peak_day_scenarios.csv: outlet_id
+  vehicle_references:
+    deliveries_train.csv: vehicle_id
+    task1_test_inputs.csv: vehicle_id
+    route_legs_train.csv: vehicle_id
+    route_legs_test.csv: vehicle_id
+    task2b_peak_day_fleet.csv: vehicle_id
+
+reference_attribute_checks:
+  outlets:
+    - brand
+    - district
+    - depot
+    - window_open_time
+    - window_close_time
+    - dock_type
+    - parking_constraint
+    - mall_window
+  vehicles:
+    - type
+    - temp
+    - depot
+
+coverage:
+  road_conditions:
+    preferred_join_columns: [date, district]
+    optional: true
+  traffic_speed:
+    candidate_join_columns: [district, monsoon, dow]
+    optional: true
+
+private_report_dir: reports/private/phase03_data_quality
