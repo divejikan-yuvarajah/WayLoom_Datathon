@@ -11,6 +11,7 @@ DataSet_New.zip
 models/**
 outputs/**
 reports/checker/**
+reports/private/**
 logs/**
 
 # Secrets and local environments
@@ -18,3 +19,4 @@ logs/**
 .env.*
 .venv/**
 __pycache__/**
+
