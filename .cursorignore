@@ -1,0 +1,20 @@
+# Restricted competition data and private derivatives
+data/raw/**
+data/interim/**
+data/processed/**
+DataSet/**
+DataSet_New.zip
+*.csv
+*.zip
+
+# Local model/output artifacts and logs
+models/**
+outputs/**
+reports/checker/**
+logs/**
+
+# Secrets and local environments
+.env
+.env.*
+.venv/**
+__pycache__/**

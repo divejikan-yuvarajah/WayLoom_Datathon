@@ -1,0 +1,11 @@
+project:
+  random_seed: 42
+
+task1:
+  enabled: true
+
+task2a:
+  enabled: true
+
+task2b:
+  enabled: true
