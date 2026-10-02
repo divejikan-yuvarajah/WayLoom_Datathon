@@ -3,114 +3,368 @@
 > **Central source of truth for the WayLoom Datathon workstream — Rootcode Tech-Triathlon 2026**
 >
 > **Status:** Active working plan  
-> **Competition deadline:** 9 October 2026, 11:59 PM Sri Lanka time  
-> **Scope:** Datathon only, with optional non-blocking integration contracts for Designathon/Hackathon  
-> **Task registry:** DT-000 through DT-539 — complete and sequential
+> **Official Datathon deadline:** Friday, 9 October 2026, 11:59 PM Sri Lanka time (Day 15)  
+> **Scope:** Datathon only. Designathon/Hackathon integration is optional and must not block submission.  
+> **Task registry:** DT-000 through DT-539 — 540 tasks, sequential, unique  
+> **Phase registry:** Phase 00 through Phase 42 — 43 phases, continuous
+
+This file is the **single master control document** for the entire WayLoom Datathon development lifecycle. Future phase Markdown files, notebooks, prompts, and code may add detail. They must not silently override this plan or any official organizer rule.
 
 ---
 
-## 1. Purpose of this file
+## Document map
 
-This file is the **single master control document** for the WayLoom Datathon. It defines the complete development sequence from competition-rule analysis through final submission. It is intentionally broader than any individual phase guide.
+1. Purpose of the master plan
+2. Source hierarchy
+3. Official / Engineering / Competitive legend
+4. Priority definitions
+5. Status conventions
+6. Non-negotiable competition contract
+7. Task 1 official rules
+8. Task 2A official rules
+9. Task 2B official rules
+10. Competition restrictions
+11. Required final deliverables
+12. Recommended repository structure
+13. Data-safety rules
+14. Execution rules
+15. Git branching and commit guidance
+16. Phase dependency rules
+17. Phase gates
+18. Global STOP CONDITIONS
+19. Rules for updating task statuses
+20. Decision-log template
+21. Master execution order
+22. Instructions for future Phase MD files
+23. Required structure of future Phase MD files
+24. Phase-completion report rules
+25. Master task registry (Phase 00–42 / DT-000–DT-539)
+26. Final release/submission checklist
+27. Registry-integrity section
 
-Use this file to:
+---
 
-- see every required and proposed development task in one place;
-- track status using checkboxes;
-- distinguish organizer requirements from our engineering choices and optional competitive enhancements;
-- enforce phase dependencies and stop conditions;
-- prevent accidental scope drift;
+## 1. Purpose of the master plan
+
+This file is the **central source of truth** for WayLoom Datathon planning, execution, review, and submission.
+
+Use it to:
+
+- see every required, recommended, and optional development task in one place;
+- track status with checkboxes;
+- distinguish organizer requirements from WayLoom engineering choices and optional competitive enhancements;
+- enforce phase dependencies, phase gates, and stop conditions;
+- prevent accidental scope drift into Hackathon/Designathon work;
 - coordinate future phase-specific `.md` implementation guides;
-- keep the Datathon independent from the Hackathon while exposing optional integration contracts;
-- ensure the final submission is reproducible, auditable and competition-compliant.
+- keep official datasets and private derivatives out of Git and out of this document;
+- ensure the final package is reproducible, auditable, and competition-compliant.
 
-**Rule:** if a future phase document, coding-agent suggestion, notebook experiment or implementation conflicts with an explicit official competition rule, the official rule wins. If two internal documents conflict, this master plan controls until it is deliberately updated.
+**Conflict rule:** if a future phase document, coding-agent suggestion, notebook experiment, or implementation conflicts with an explicit official competition rule, the official rule wins. If two internal documents conflict, this master plan controls until it is deliberately updated. If an organizer clarification contradicts this plan, record the clarification in the decision log and update this file.
+
+**This task is documentation/planning only.** Completing or updating this file does **not** authorize Phase 00 execution, modelling, data processing, or submission generation.
 
 ---
 
 ## 2. Source hierarchy
 
-1. **Official Rootcode Tech-Triathlon 2026 Challenge Booklet** — highest authority.
-2. **Official supplied datasets, submission templates and `check_allocation.py`** — executable/data-level authority.
-3. **WayLoom Product & Competition Master Plan** — internal cross-phase interpretation and team agreement.
-4. **This Datathon Master Plan** — Datathon execution source of truth.
-5. **Future phase/task `.md` files** — implementation-level instructions; they may add detail but must not silently change this master plan.
-6. **Notebooks, code comments, prompts and experiments** — lowest authority unless promoted into documentation.
+Authority is strictly ordered. Lower sources may add method and sequencing. They may not invent or override organizer requirements.
+
+1. **Official Rootcode Tech-Triathlon 2026 Challenge Booklet** — highest authority for Datathon problem statements, restrictions, deliverables, judging, deadline, and data-reference conventions.
+2. **Official supplied datasets, submission templates, and `check_allocation.py`** — executable/data-level authority for filenames, identifiers, schemas, and Task 2B feasibility checks.
+3. **WayLoom Product & Competition Master Plan** — internal cross-phase interpretation and team agreement. Binding for WayLoom execution only where it does not contradict sources 1–2.
+4. **Finalized WayLoom Datathon task inventory DT-000 through DT-539** — complete development work breakdown used to populate this registry.
+5. **This Datathon Master Plan** — Datathon execution source of truth for sequencing, status, and engineering method.
+6. **Future phase/task `.md` files** — implementation-level instructions. They may add detail but must not silently change this master plan or official rules.
+7. **Notebooks, code comments, prompts, and experiments** — lowest authority unless promoted into documentation.
+
+Do **not** invent organizer requirements. If a rule is not in sources 1–2, mark it **[E]** or **[C]** and say so.
 
 ---
 
-## 3. Marking legend
+## 3. Official / Engineering / Competitive legend
 
 | Mark | Meaning | How to treat it |
 |---|---|---|
-| **[O] Official** | Explicit organizer requirement, rule, output, restriction or required deliverable. | Non-negotiable unless the organizer clarifies otherwise. |
-| **[E] Engineering** | WayLoom implementation/reliability recommendation needed to execute the official task safely. | Strong default; change only with documented reason. |
-| **[C] Competitive** | Optional enhancement intended to improve differentiation, explainability or presentation. | Never allow it to delay a P0 official deliverable. |
+| **[O] Official** | Explicit organizer requirement, rule, output, restriction, schema, or required deliverable from the Challenge Booklet, official templates, official datasets, or `check_allocation.py`. | Non-negotiable unless the organizer clarifies otherwise. |
+| **[E] Engineering** | WayLoom implementation/reliability recommendation needed to execute the official task safely. | Strong default; change only with a documented reason. Must not contradict [O]. |
+| **[C] Competitive** | Optional enhancement intended to improve differentiation, explainability, or presentation. | Never allow it to delay a P0 official deliverable. First items to cut under time pressure after P3 experiments. |
 
-### Priority legend
+A task marked **[O]** may still have an **[E]** implementation method. The official *requirement* is frozen; the *method* remains a recommendation unless the booklet or checker specifies it.
+
+---
+
+## 4. Priority definitions
 
 | Priority | Meaning |
 |---|---|
-| **P0** | Essential for correctness, compliance or a valid submission. Must be completed. |
-| **P1** | High-impact engineering/model quality work. Complete after P0 is stable. |
-| **P2** | Competitive enhancement. Implement only when P0/P1 are healthy. |
+| **P0** | Essential for correctness, compliance, or a valid submission. Must be completed. |
+| **P1** | High-impact engineering/model quality work. Complete after P0 in that stream is stable. |
+| **P2** | Competitive enhancement or useful-but-not-blocking quality work. Implement only when P0/P1 are healthy. |
 | **P3** | Experimental/optional. First items to cut under time pressure. |
 
-### Status convention
+**Priority rule:** P0 before P1; P1 before P2/P3. Optional work never blocks official outputs.
 
-- `[ ]` Not started
-- `[~]` In progress — use manually if your Markdown viewer supports it; otherwise keep `[ ]` and add `(IN PROGRESS)`
-- `[x]` Completed and verified
-- `[!]` Blocked — write the blocking issue beside the task
+Some environment tasks in the original inventory were P1 (configuration, logging, reproducibility notes). This master plan elevates DT-020–DT-022 to **P0** as an **[E]** sequencing choice so the repository is reproducible before data work. That elevation is internal, not an organizer requirement.
+
+---
+
+## 5. Status conventions
+
+| Checkbox | Meaning |
+|---|---|
+| `[ ]` | Not started |
+| `[~]` | In progress — use if the Markdown viewer supports it; otherwise keep `[ ]` and add `(IN PROGRESS)` |
+| `[x]` | Completed **and verified** against the phase Definition of Done / tests |
+| `[!]` | Blocked — write the blocking issue beside the task |
 
 A task is **not** complete merely because code exists. Mark `[x]` only after its Definition of Done and required tests/checks are satisfied in the corresponding phase guide.
 
----
+Phase-level status:
 
-## 4. Non-negotiable competition contract
-
-### Task 1 — service time and lateness
-
-- Predict `pred_service_min` and `pred_late_prob` for every official Task 1 `delivery_id`.
-- Construct labels from historical actual route records; labels are not provided directly.
-- `service_start = max(actual arrival, window open)`.
-- `service_min = leave_outlet_time - service_start`.
-- `late_flag = 1` only when actual arrival is strictly after `window_close_time`.
-- At test/prediction time, do not use actual future journey/handling fields.
-- Preserve the supplied Task 1 `delivery_id` values and original row order.
-
-### Task 2A — ten-week demand forecast
-
-- Build demand history from **both** `deliveries_train.csv` and `task1_test_inputs.csv`.
-- Count every unique order once, including `deferred` and `not_run` orders.
-- Assign demand to the store-requested `order_date`, not later `dispatch_date`.
-- Use `calendar.csv` ISO year/week.
-- Predict `pred_total_volume_m3` and `pred_chilled_volume_m3` for the exact template rows.
-- Only Fresh has chilled demand; Style and Tech chilled predictions must be exactly `0`.
-
-### Task 2B — peak-day allocation
-
-- Scenario is `S1`, Peliyagoda.
-- Use only scenario vehicles marked `available`; workshop vehicles are forbidden.
-- Use `order_ref` as the allocation key.
-- Every order must be `served` or `deferred`; served orders receive one vehicle and trip 1 or 2; deferred rows leave vehicle/trip blank.
-- Enforce all seven official feasibility rules: same brand+district per trip; chilled→reefer; van_only→van; home depot; whole order; weight+volume capacity; max two trips and official time budgets.
-- Trip minutes = outbound district free-flow + inter-stop free-flow × (`number_of_orders - 1`) + sum of brand+dock service allowances.
-- Do **not** add a separate return-to-depot leg.
-- Fresh minutes per vehicle ≤ 270; combined Style+Tech minutes per vehicle ≤ 480; max two trips total.
-- `check_allocation.py` verifies feasibility, not prioritization quality or optimality.
-
-### Datathon submission restrictions and deliverables
-
-- No prohibited pretrained models; no proprietary API-based modelling/preprocessing; no low-code/no-code end-to-end modelling tools.
-- Keep official competition datasets and restricted derivatives private; do not publish or distribute them.
-- Submit saved final model files, architecture diagrams, preprocessing document, final notebook, three official submission CSVs, Task 2B prioritization policy, AI-tool disclosure and an unlisted 3–5 minute demo video.
-- Final notebook must retain label/preprocessing/training/evaluation work and include a final section/cell that **loads saved models** and demonstrates Task 1 and Task 2A inference with clearly printed inputs and predictions.
-- Final package naming: `TeamName_Datathon.zip`.
+- **Phase complete:** `[ ]` until the phase gate is satisfied.
+- **READY FOR NEXT PHASE:** `NO` until the gate is verified. Change to `YES` only in this file after the phase-completion report is filled.
 
 ---
 
-## 5. Repository structure
+## 6. Non-negotiable competition contract
+
+The Datathon is judged separately from the Hackathon. Teams are **not required** to integrate Datathon solutions into the Hackathon build. Optional integration must not expose restricted data and must not delay Datathon submission.
+
+Complete **two prediction tasks** and **one peak-day allocation task**:
+
+| Task | Official objective | Official output file |
+|---|---|---|
+| Task 1 | Predict outlet handling minutes and lateness probability for each test `delivery_id` | `submission_task1.csv` |
+| Task 2A | Forecast depot+brand weekly total and chilled volume for the supplied 10 future weeks | `submission_task2a.csv` |
+| Task 2B | Produce a feasible S1 Peliyagoda allocation plus a written prioritization policy | `submission_task2b.csv` + written policy |
+
+Clock times in official data use **HH:MM in Asia/Colombo**. Durations are in minutes.
+
+The detailed official rules follow in sections 7–11. The frozen Task 1 label equations in section 7 are the WayLoom execution contract derived from the booklet; see the conflict note in section 27 if an organizer clarification appears.
+
+---
+
+## 7. Task 1 official rules
+
+**Official source:** Challenge Booklet Datathon Task 1, data-reference pages, and submission template `submission_task1.csv`.
+
+### 7.1 Booklet requirements [O]
+
+- Predict, for every planned test `delivery_id`:
+  - `pred_service_min` — predicted handling time at the outlet, in minutes;
+  - `pred_late_prob` — probability the delivery arrives after the outlet’s delivery window has closed, in `[0, 1]`.
+- Neither target is supplied as a label. Construct training labels from the dataset using column descriptions. Correct label construction is part of the assessment.
+- Outlets receive goods only within their delivery window. A vehicle that arrives early waits until the window opens.
+- A late arrival is still delivered in the supplied scenario. Lateness refers to **arrival after the window closes**.
+- At prediction time, planned departure, travel duration, and arrival are available. **Actual journey and handling times are available only in the training route records.**
+- Test inputs: `task1_test_inputs.csv` (one row per order) and `route_legs_test.csv` (matching planned route legs). Every test `delivery_id` matches exactly one route leg.
+- Use relevant Training Data and General Data. The challenge does **not** prescribe a feature set.
+- Complete `submission_task1.csv`. **Keep `delivery_id` values and original row order exactly as supplied.** Do not add or remove rows. Fill only the two prediction columns.
+
+### 7.2 Official join convention [O]
+
+- Training: each **dispatched** order is delivered as its own stop where `route_id` + `seq_in_route` in `deliveries_train.csv` match exactly one route leg (`route_id` + `seq`) in `route_legs_train.csv`.
+- `seq_in_route` / `seq` start at 0.
+- Actual times (`actual_depart_time`, `actual_travel_duration_min`, `arrival_time`, `leave_outlet_time`) appear **only** in training route records.
+
+### 7.3 Frozen official-label contract for WayLoom execution [O]
+
+The booklet requires labels to be constructed from historical actuals and states the wait-until-window-open and lateness-after-window-close rules. It does **not** print algebraic equations. The WayLoom Product & Competition Master Plan freezes the following as the binding Task 1 label contract unless the organizer contradicts it:
+
+- Build labels **only** from historical actual route data for dispatched orders with usable actuals.
+- `service_start = max(actual arrival, window opening)`
+- `service_min = leave_outlet_time - service_start`
+- `late_flag = 1` **only** when actual arrival is **strictly after** `window_close_time`; otherwise `0`
+- No actual future journey/handling information may be used as prediction features
+- Preserve Task 1 `delivery_id` values and original row order
+
+### 7.4 Official Task 1 submission schema [O]
+
+| Column | Type | Required value |
+|---|---|---|
+| `delivery_id` | string | Supplied identifier. Keep unchanged. |
+| `pred_service_min` | number | Predicted outlet handling time, minutes. |
+| `pred_late_prob` | number from 0 to 1 | Probability of arrival after window close. |
+
+---
+
+## 8. Task 2A official rules
+
+**Official source:** Challenge Booklet Datathon Task 2A, calendar reference, and submission template `submission_task2a.csv`.
+
+### 8.1 Booklet requirements [O]
+
+- Forecast volume ordered for each depot and brand over the **10 future weeks** in `task2a_test_inputs.csv`.
+- Predict two values per depot + brand + week:
+  - `pred_total_volume_m3` — total order volume, cubic meters;
+  - `pred_chilled_volume_m3` — chilled portion of that total, cubic meters.
+- Do **not** convert volumes into vehicle or driver requirements.
+- **Build training data from both `deliveries_train.csv` and `task1_test_inputs.csv`.** Each row is one order identified by `delivery_id`.
+- **Count every order once, including orders that were deferred or never dispatched.** They still represent demand.
+- **Assign each order to the week the store requested the order.**
+- **Use `iso_year` and `iso_week` from `calendar.csv`** so forecast periods match the supplied calendar.
+- **Only Fresh has chilled demand. Set `pred_chilled_volume_m3` to exactly `0` for Style and Tech.**
+- Complete `submission_task2a.csv`. Preserve supplied `row_id` values and fill the two prediction columns.
+
+### 8.2 Frozen WayLoom reading of “requested week” [O]
+
+The booklet says “the week the store requested the order.” The order-record column `order_date` is defined as “the date the store's order was for.” `dispatch_date` is the date the order was dispatched and is blank if it never ran.
+
+WayLoom therefore freezes:
+
+- use requested **`order_date`**, not later **`dispatch_date`**;
+- join that date to `calendar.csv` ISO year/week.
+
+If an organizer clarification names a different date column, the clarification wins.
+
+### 8.3 Official Task 2A submission schema [O]
+
+| Column | Type | Required value |
+|---|---|---|
+| `row_id` | string | Supplied identifier. Keep unchanged. |
+| `pred_total_volume_m3` | number | Total demand volume for depot, brand, and week, m³. |
+| `pred_chilled_volume_m3` | number | Chilled volume within that total. Use `0` for Style and Tech. |
+
+Engineering checks that support the official schema, but are not printed as booklet formulas: predictions should be finite and non-negative; chilled should not exceed total. Treat those as **[E]** guards around an **[O]** template.
+
+---
+
+## 9. Task 2B official rules
+
+**Official source:** Challenge Booklet Datathon Task 2B, peak-day data reference, submission template `submission_task2b.csv`, and `check_allocation.py`.
+
+This task does **not** require a trained model. There is **no single correct allocation**. Judges assess **feasibility** and the **reasoning** behind decisions. `check_allocation.py` verifies feasibility, **not** allocation optimality.
+
+### 9.1 Scenario and fleet [O]
+
+- Scenario is **S1**.
+- Depot is **Peliyagoda**.
+- Use only vehicles marked **`available`**.
+- Vehicles with status **`in_workshop` cannot be used**.
+- Use **`order_ref` as the allocation key** because `outlet_id` may appear more than once.
+- Keep `scenario`, `order_ref`, and `outlet_id` unchanged.
+- Every order must be **`served` or `deferred`**.
+- Served orders receive `vehicle_id` and `trip_id` (`1` or `2`).
+- Deferred orders have **blank** `vehicle_id` / `trip_id`.
+- Replace every placeholder in the template.
+
+**Executable spelling:** `check_allocation.py` requires decision values exactly `served` or `deferred` (lowercase). Follow the checker and the booklet’s completed example, not title-case wording that appears in one booklet table cell.
+
+### 9.2 Seven official feasibility rules [O]
+
+1. **Brand and district.** All orders sharing a `vehicle_id` and `trip_id` must belong to the same brand and district.
+2. **Refrigeration.** Orders with `temp_requirement = chilled` require a vehicle with `temp = reefer`. Refrigerated vehicles may also carry ambient orders.
+3. **Vehicle access.** Outlets with `parking_constraint = van_only` require a vehicle with `type = van`.
+4. **Home depot.** A vehicle may serve only outlets assigned to its own depot.
+5. **Whole orders.** Assign each served order to one vehicle and one trip. Do not split an order across trips or vehicles.
+6. **Capacity.** For each trip, total `order_volume_m3` must not exceed `volume_cap_m3`, **and** total `order_weight_kg` must not exceed `weight_cap_kg`.
+7. **Trips and time.** Each vehicle may run **at most two trips in total**. Fresh total trip minutes per vehicle **≤ 270**. Style + Tech combined minutes per vehicle **≤ 480**. These are separate windows. A vehicle may run one Fresh trip and one Style/Tech trip, each against its own budget, but still only two trips total.
+
+### 9.3 Official trip-duration formula [O]
+
+Do **not** add a return-to-depot leg. The stated budgets already allow for it.
+
+```text
+trip_minutes =
+    depot_to_district_freeflow_min                  # once per trip
+  + inter_stop_freeflow_min × (number of orders - 1)
+  + sum of service_allowance_min for each order     # lookup by brand + dock_type
+```
+
+Booklet worked example (planning standard, not live data): a Fresh trip to Gampaha with three orders (two rear docks, one street) is `37 + 9×(3−1) + 15 + 15 + 16 = 101` minutes.
+
+`check_allocation.py` implements the same published planning standard:
+
+```text
+trip_time = depot_to_district_freeflow_min
+          + (n_orders - 1) * inter_stop_freeflow_min
+          + sum(service_allowance_min for each dock on the trip)
+```
+
+Time budgets in the checker: `TRIP_BUDGET_PREDAWN = 270` (Fresh), `TRIP_BUDGET_DAYTIME = 480` (Style+Tech combined), `MAX_TRIPS_PER_VEHICLE = 2`.
+
+### 9.4 Official Task 2B submission schema [O]
+
+| Column | Type | Required value |
+|---|---|---|
+| `scenario` | string | Supplied identifier; always S1. |
+| `order_ref` | string | Supplied order identifier and allocation key. |
+| `outlet_id` | string | Supplied outlet identifier, included for readability. |
+| `decision` | string | `served` or `deferred` for every order. |
+| `vehicle_id` | string | Assigned vehicle for a served order. Leave blank if deferred. |
+| `trip_id` | 1 or 2 | Assigned trip for a served order. Leave blank if deferred. |
+
+Checker required columns: `scenario`, `order_ref`, `decision`, `vehicle_id`, `trip_id`. Keep `outlet_id` anyway because the official template and booklet require it.
+
+### 9.5 Written prioritization policy [O]
+
+Submit a write-up of approximately one page or less. Show the calculations behind the allocation. Identify what limited service on this day. Explain which deferrals were unavoidable, which were policy choices, and what they cost.
+
+### 9.6 Checker versus optimality [O]
+
+Passing `check_allocation.py` confirms feasibility, not that the allocation is optimal. Judges assess prioritization and deferral explanations.
+
+**Checker note [E]:** if a deferred row names a vehicle or trip, the official script currently **warns** and ignores those fields rather than failing. Follow the booklet anyway: leave them blank.
+
+---
+
+## 10. Competition restrictions
+
+**Official source:** Challenge Booklet “Rules and Regulations” and “Terms and Conditions” for the Datathon.
+
+| Restriction | Official rule |
+|---|---|
+| Deadline | The submission form closes after the deadline. Submit by Friday, 9 October 2026, 11:59 PM Sri Lanka time. |
+| Pretrained models | Restricted from using any pre-trained models, **except** for synthetic data generation or pre-processing. |
+| APIs | Proprietary API-based modelling/preprocessing is prohibited. |
+| Low-code / no-code | Usage of low-code/no-code AI tools or fully automated end-to-end modelling tools is strictly prohibited. |
+| Integrity | Cheating, plagiarism, or rule violations will result in disqualification. |
+| Use of data | Provided datasets may be used solely for this competition. Commercial, academic, or personal reuse is prohibited. |
+| Data sharing | Datasets must not be shared, distributed, or transmitted in any form — publicly or privately — to any third party, including upload to external websites, forums, or social media. |
+| Publication | Do not publish, disclose, or make the datasets or any derivatives publicly available unless explicitly authorized by the organizers. |
+| Confidentiality | Maintain confidentiality of the datasets and sensitive information contained in them. |
+| AI disclosure | Explain which work was AI-assisted, which was not, and how tools were used. |
+
+**Engineering reading of the pretrained exception:** locally training CatBoost/LightGBM/sklearn models on official competition data is allowed. Shipping a model pretrained on external corpora as the Datathon predictor is not, except where the booklet’s preprocessing/synthetic-data exception applies. Do not use prohibited automated modelling platforms.
+
+---
+
+## 11. Required final deliverables
+
+**Official source:** Challenge Booklet Datathon deliverables and submission instructions.
+
+Place all deliverables in one folder, compress as `TeamName_Datathon.zip`, and upload through the Datathon submission form.
+
+| Deliverable | Official requirement |
+|---|---|
+| Architecture diagrams | Show models, preprocessing pipeline, and proposed deployment approach. High-level diagrams are sufficient. |
+| Data preprocessing document | Brief write-up of data preparation, label construction, data cleaning, feature engineering, and rationale. |
+| Saved final model files | Save final model files alongside the notebook. |
+| `TeamName_FinalNotebook.ipynb` | Retain cells used for label construction, preprocessing, training, and evaluation. Add a **final cell that loads the saved models**, demonstrates inference for Task 1 and Task 2A, and clearly prints inputs and predictions. |
+| `submission_task1.csv` | Exact template columns and identifiers; original Task 1 row order. |
+| `submission_task2a.csv` | Exact template columns and identifiers. |
+| `submission_task2b.csv` | Exact template columns and identifiers; no placeholders. |
+| Task 2B written prioritization policy | Approximately one page or less; calculations, limiting resources, unavoidable vs chosen deferrals, and cost/impact. |
+| AI-tool disclosure | Which work was AI-assisted, which was not, and how tools were used. |
+| 3–5 minute unlisted demo video | Unlisted YouTube video explaining model architecture, preprocessing, label construction, and challenges encountered. |
+| Final `TeamName_Datathon.zip` | One compressed folder containing the Datathon deliverables. |
+
+### Official judging criteria [O]
+
+| Criterion | Weight |
+|---|---|
+| Data wrangling and label construction | 20% |
+| Model and architecture implementation | 25% |
+| Performance score (Task 1, Task 2A) | 20% |
+| Task 2B allocation feasibility and prioritization policy | 15% |
+| Creativity of the solution | 10% |
+| Demo video | 10% |
+
+---
+
+## 12. Recommended repository structure
+
+This layout is **[E] Engineering**. Folder names may be adjusted, but data-safety boundaries and the separation of Task 1, Task 2A, and Task 2B must remain clear.
 
 ```text
 WayLoom_Datathon/
@@ -126,10 +380,10 @@ WayLoom_Datathon/
 │   └── model_config.yaml
 │
 ├── data/
-│   ├── README.md
-│   ├── raw/                  # PRIVATE / NEVER COMMIT
-│   ├── interim/              # PRIVATE DERIVATIVES / NEVER PUBLIC
-│   └── processed/            # PRIVATE DERIVATIVES / NEVER PUBLIC
+│   ├── README.md                 # explains local-only placement; no data
+│   ├── raw/                      # PRIVATE / NEVER COMMIT
+│   ├── interim/                  # PRIVATE DERIVATIVES / NEVER PUBLIC
+│   └── processed/                # PRIVATE DERIVATIVES / NEVER PUBLIC
 │
 ├── docs/
 │   ├── 00_MASTER_INDEX.md
@@ -137,7 +391,7 @@ WayLoom_Datathon/
 │   ├── preprocessing.md
 │   ├── task2b_policy.md
 │   ├── ai_tool_disclosure.md
-│   ├── integration_contract.md       # optional
+│   ├── integration_contract.md   # optional
 │   ├── architecture/
 │   └── phases/
 │       ├── PHASE_00_COMPETITION_CONTRACT.md
@@ -153,32 +407,11 @@ WayLoom_Datathon/
 │
 ├── src/
 │   ├── common/
-│   │   ├── io.py
-│   │   ├── validation.py
-│   │   └── time_utils.py
 │   ├── task1/
-│   │   ├── labels.py
-│   │   ├── features.py
-│   │   ├── train_service.py
-│   │   ├── train_late.py
-│   │   └── inference.py
 │   ├── task2a/
-│   │   ├── aggregate.py
-│   │   ├── features.py
-│   │   ├── forecast.py
-│   │   └── inference.py
 │   └── task2b/
-│       ├── compatibility.py
-│       ├── trip_time.py
-│       ├── optimizer.py
-│       ├── validator.py
-│       └── explain_deferral.py       # competitive enhancement
 │
 ├── models/
-│   ├── task1_service.*
-│   ├── task1_late.*
-│   └── task2a/
-│
 ├── outputs/
 │   ├── submission_task1.csv
 │   ├── submission_task2a.csv
@@ -198,31 +431,53 @@ WayLoom_Datathon/
     └── test_submission_files.py
 ```
 
-Folder names may be adjusted to the actual repository, but data-safety boundaries and the logical separation of Task 1, Task 2A and Task 2B must remain clear.
+Until Phase 01 creates the runtime repository layout, this planning file may live under `MD Files/`. After DT-019, keep one canonical copy of this master plan at the repository root (or a clearly linked path) so it remains the source of truth.
 
 ---
 
-## 6. Execution rules
+## 13. Data-safety rules
+
+These rules combine **[O] official dataset terms** with **[E] WayLoom handling practice**.
+
+1. Official competition datasets may be used **only** for this competition.
+2. Do **not** share, distribute, or transmit official datasets or derivatives to any third party.
+3. Do **not** upload official datasets, private extracts, or row-level derivatives to GitHub, Gists, Google Drive public links, chatbots, public notebooks, Discord, or other external services unless the organizers explicitly authorize it.
+4. Do **not** commit `data/raw/`, `data/interim/`, `data/processed/`, or any CSV that contains official competition rows.
+5. `.gitignore` must ignore raw data, interim data, processed data, `.env`, virtualenvs, and notebook checkpoints.
+6. **This master plan must not contain official competition datasets or private derivatives.** No raw rows, no sampled records, no reconstructed tables of live competition values.
+7. Local data dictionaries may list **column names, types, and file purposes**. They must not paste live values.
+8. Prompts sent to Cursor/Codex/other tools must not include raw competition rows.
+9. Optional WayLoom product integration may use **schemas and synthetic/demo records only**, unless organizer authorization says otherwise.
+10. The final ZIP should not contain raw official datasets unless the organizers explicitly require them. Default: **do not include raw data** in `TeamName_Datathon.zip`.
+11. If restricted data is accidentally staged or uploaded, stop, remove it, rotate any exposed secrets, and record the incident in the decision log.
+
+---
+
+## 14. Execution rules
 
 1. **P0 before P1; P1 before P2/P3.** Optional work never blocks official outputs.
 2. **Do not start modelling before label/data correctness is verified.** Task 1 modelling is blocked by DT-055–DT-071.
-3. **Use time-aware validation.** Never use a random split that lets later operational information leak into earlier validation.
-4. **Treat Task 1, Task 2A and Task 2B as different technical problems.** Shared utilities are fine; do not force one modelling pattern across them.
+3. **Use time-aware validation. [E]** Never use a random split that lets later operational information leak into earlier validation. The booklet does not prescribe a split; chronological validation is our method.
+4. **Treat Task 1, Task 2A, and Task 2B as different technical problems.** Shared utilities are fine; do not force one modelling pattern across them.
 5. **Do not silently delete outliers.** Investigate them and document any cleaning decision.
-6. **No test-label inference from future actuals.** Any feature unavailable before the delivery starts is forbidden for Task 1 prediction.
+6. **No test-label inference from future actuals.** Any Task 1 feature unavailable before the delivery starts is forbidden for prediction.
 7. **Keep official templates immutable except answer columns.** Preserve identifiers and required order.
 8. **Use the official Task 2B rules exactly.** Do not substitute wider Hackathon fuel/window logic into the Task 2B validator.
 9. **Run an independent validator before the organizer checker.** Passing the checker does not prove a good policy.
-10. **Notebook is evidence, not the only implementation.** Important reusable logic belongs in `src/` and is called from the final notebook where practical.
-11. **Every final model must survive save/load.** Loaded-model predictions must reproduce the expected inference behavior.
-12. **All AI usage must remain competition-compliant and disclosed.** Coding assistance must not become prohibited automated modelling or external data disclosure.
-13. **Never expose official private data in a public WayLoom deployment.** Optional integration uses schemas and synthetic/demo records unless organizer authorization says otherwise.
+10. **Notebook is evidence, not the only implementation.** Important reusable logic belongs in `src/` and is called from the final notebook where practical. **[E]**
+11. **Every final model must survive save/load.** The official notebook requirement is to load saved models for Task 1 and Task 2A inference.
+12. **All AI usage must remain competition-compliant and disclosed.**
+13. **Never expose official private data in a public WayLoom deployment.**
 14. **Freeze final artifacts before packaging.** After final validation, changes require re-running all affected checks.
-15. **Keep an experiment/decision log.** Record why a model, feature or allocation policy was selected or rejected.
+15. **Keep an experiment/decision log.**
+16. **Do not continue to later phases while a STOP CONDITION is open.**
+17. **Do not implement Datathon code from this planning file alone.** Each phase needs its phase MD, tests, and gate.
 
 ---
 
-## 7. Git rules
+## 15. Git branching and commit guidance
+
+This entire section is **[E]** except the official data-sharing prohibition, which forbids public commits of restricted data.
 
 Recommended branch pattern:
 
@@ -257,9 +512,172 @@ Before merging a phase branch:
 - record any decision that changes downstream assumptions;
 - ensure no raw/restricted competition data was accidentally staged.
 
+Keep the repository **private**. Official datasets must never be committed publicly.
+
 ---
 
-## 8. Future phase `.md` usage contract
+## 16. Phase dependency rules
+
+1. Phases are numbered **00 through 42** and must remain continuous. Do not skip, merge, or renumber phases without updating this master plan.
+2. A phase may start only when every listed **phase dependency** is complete **or** the dependency is explicitly marked optional/non-blocking (Phases 25–28).
+3. Task-level dependencies inside a phase are **minimum gates**. A phase MD may add tighter prerequisites; it may not remove a master-plan dependency.
+4. Streams may proceed in parallel only where this plan says so:
+   - Task 1 core path: Phases 04–10 after Phases 00–03;
+   - Task 2A core path: Phases 11–17 after Phases 00–03;
+   - Task 2B core path: Phases 18–24 after Phases 00–03;
+   - these three streams are independent of each other after the shared data audit;
+   - documentation, notebook, packaging: Phases 29–42 after the relevant stream outputs exist.
+5. Competitive Phases 25–28 must not block P0 submission work.
+6. Later discovery that invalidates an earlier phase gate re-opens that phase and all dependent work.
+7. “Phase N” in task-dependency cells means “Phase 0N” for N < 10 (Phase 0 = Phase 00).
+
+---
+
+## 17. Phase gates
+
+A phase is complete only when its gate is true. Summary gates (detail remains in the registry):
+
+| Phase | Name | Depends on | Gate |
+|---|---|---|---|
+| 00 | Competition understanding and scope freeze | None | Official tasks, formulas, restrictions, outputs, judging, and deadline are documented without ambiguity. |
+| 01 | Project environment and repository setup | 00 | Private reproducible repo exists; restricted data paths ignored; dependencies installable. |
+| 02 | Raw dataset inventory | 01 | Every supplied file is inventoried, loadable, keyed, and typed at a basic level. |
+| 03 | Data-quality audit | 02 | Core integrity assertions pass or every exception is documented. |
+| 04 | Task 1 training-data construction | 02–03 | Official service and lateness labels are reproducible and unit-tested. |
+| 05 | Task 1 exploratory analysis | 04 | EDA identifies relationships without changing official labels. |
+| 06 | Task 1 feature engineering | 04 (05 informs) | Shared train/test schema; no future actual journey fields. |
+| 07 | Task 1 validation design | 04–06 | Chronological validation and metrics frozen. |
+| 08 | Task 1 baselines | 07 | Simple baselines stored and reproducible. |
+| 09 | Task 1 advanced modelling | 08 | Champion models selected with calibration/error analysis. |
+| 10 | Task 1 final training and inference | 09 | Saved models and exact `submission_task1.csv` exist. |
+| 11 | Task 2A demand-history construction | 02–03 | Weekly panel counts requested orders correctly; Fresh chilled logic preserved. |
+| 12 | Task 2A exploratory analysis | 11 | Seasonality/trend understood enough to justify features. |
+| 13 | Task 2A forecasting features | 11 (12 informs) | Features are past-known or target-week-known. |
+| 14 | Task 2A forecast validation | 11–13 | Rolling-origin ten-week backtesting frozen. **[E] method** around official 10-week forecast. |
+| 15 | Task 2A baseline models | 14 | Seasonal/simple baselines exist. |
+| 16 | Task 2A advanced forecasting | 15 | Champion approach justified against baselines. |
+| 17 | Task 2A final inference | 16 | Exact `submission_task2a.csv` with Style/Tech chilled = 0. |
+| 18 | Task 2B scenario understanding | 02–03 | S1 demand and available Peliyagoda fleet understood; workshop excluded. |
+| 19 | Task 2B compatibility engine | 18 | Compatible-vehicle sets validated; impossible orders identified. |
+| 20 | Task 2B trip calculation engine | 18 | Official trip-minute formula unit-tested against booklet example. |
+| 21 | Task 2B priority-policy design | 18–20 | Transparent policy documented separately from hard rules. |
+| 22 | Task 2B optimization solver | 19–21 | Feasible allocation exists under all seven hard rules. |
+| 23 | Task 2B independent validator | 22 | Independent validator and `check_allocation.py` both pass. |
+| 24 | Task 2B output and written policy | 23 | Exact CSV and written policy complete. |
+| 25 | Explainability | 09–10 | Explanations accurate; no unsupported causal claims. Optional. |
+| 26 | Explainable Deferral Reasoner | 22–24 | If implemented, solver-grounded and non-blocking. Optional. |
+| 27 | Optional forecast uncertainty | Task 1/2A models | Unofficial fields stay out of official CSVs. Optional. |
+| 28 | Optional WayLoom integration contract | Final outputs | Schemas/synthetic only; no restricted data. Optional. |
+| 29 | Architecture documentation | 04–24 | Diagrams match final pipelines and proposed deployment. |
+| 30 | Preprocessing document | 04–24 | Required write-up is accurate. |
+| 31 | Final competition notebook | 10, 17, 24 | Notebook runs top-to-bottom; final inference loads saved models. |
+| 32 | Model artifact management | Final models | Artifacts load and reproduce intended predictions. |
+| 33 | Final submission-file testing | 10, 17, 24 | All three official files pass schema/ID/value checks. |
+| 34 | General automated testing | Pipelines | Critical rules, labels, inference, constraints covered. |
+| 35 | AI-use disclosure | Ongoing | Complete, accurate, restriction-compliant. |
+| 36 | README / project documentation | Stable repo | Reviewer can understand and reproduce the workflow. |
+| 37 | Results summary and evidence | Final metrics | Strongest evidence selected. |
+| 38 | Demo video preparation | 29–37 | 3–5 minute unlisted video; link works logged out. |
+| 39 | Clean-environment reproduction | 31–38 | Fresh environment reproduces notebook, models, outputs. |
+| 40 | Final competition folder | 39 | Required deliverables only; no raw data/secrets/clutter. |
+| 41 | Final competition validation | 40 | Line-by-line validation after freeze. |
+| 42 | Packaging and submission | 41 | `TeamName_Datathon.zip` valid, backed up, submitted; evidence retained. |
+
+---
+
+## 18. Global STOP CONDITIONS
+
+Stop downstream work and resolve the issue if any of the following occurs:
+
+- official task interpretation is unresolved;
+- required file/schema/key is missing or inconsistent;
+- Task 1 route join cardinality is not proven;
+- Task 1 label unit tests fail;
+- leakage is detected or prediction-time availability is uncertain;
+- Task 2A order counting / requested-week aggregation is inconsistent;
+- Task 2A validation uses future actual demand information;
+- Task 2B trip-time implementation disagrees with the official formula/example or `check_allocation.py`;
+- any Task 2B hard rule fails;
+- organizer `check_allocation.py` fails;
+- official template identifiers/order/schema change unexpectedly;
+- saved models cannot be loaded or inference differs unexpectedly;
+- raw/private competition data is staged for public sharing or pasted into this document;
+- final notebook depends on hidden state;
+- final ZIP fails extraction/validation;
+- a coding agent is asked to implement an exploit, leak data, or skip official rules.
+
+When blocked, document: `issue → affected task(s) → evidence → decision/fix → retest result`.
+
+---
+
+## 19. Rules for updating task statuses
+
+- Update this file at the end of every development session.
+- Mark a task `[x]` only after its phase-MD Definition of Done and tests pass.
+- Mark a phase complete only when its phase gate is satisfied.
+- Keep `READY FOR NEXT PHASE: NO` until the gate is verified in this file.
+- A future phase MD cannot mark a task complete on its own; completion must be reflected here.
+- If a P2/P3 enhancement threatens deadline or P0/P1 stability, stop it immediately.
+- If a later discovery invalidates an earlier `[x]` task, revert it to `[ ]` or `[!]` and re-open dependent work.
+- Do not renumber, skip, or reuse task IDs. If new work appears, attach it as a child of an existing ID or deliberately revise this master plan.
+- Status changes that alter official-rule interpretation require a decision-log entry.
+
+---
+
+## 20. Decision-log template
+
+```markdown
+### YYYY-MM-DD — Decision
+- Related tasks: DT-xxx, DT-yyy
+- Official / Engineering / Competitive: [O] / [E] / [C]
+- Question:
+- Evidence (booklet page, checker behavior, experiment):
+- Decision:
+- Why:
+- Alternative rejected:
+- Downstream impact:
+- Retest required: YES / NO
+```
+
+Keep decision logs in `docs/` or `reports/`. Do not paste restricted data into the log.
+
+---
+
+## 21. Master execution order
+
+```text
+Phase 00  Competition contract
+    ↓
+Phase 01  Environment + secure repo
+    ↓
+Phase 02  Dataset inventory
+    ↓
+Phase 03  Data-quality audit
+    ↓
+    ├── Task 1: 04 labels → 05 EDA → 06 features → 07 validation
+    │            → 08 baselines → 09 models → 10 inference
+    ├── Task 2A: 11 history → 12 EDA → 13 features → 14 validation
+    │            → 15 baselines → 16 models → 17 inference
+    └── Task 2B: 18 scenario → 19 compatibility → 20 trip engine
+                 → 21 policy → 22 solver → 23 checker → 24 output
+    ↓
+Phases 25–28  Optional explainability / uncertainty / integration
+    (never block P0)
+    ↓
+Phases 29–30  Architecture + preprocessing documentation
+    ↓
+Phases 31–34  Final notebook, model files, submission tests, automated tests
+    ↓
+Phases 35–38  AI disclosure, README, evidence, demo
+    ↓
+Phases 39–42  Clean reproduction → final folder → validation → ZIP + submit
+```
+
+Do **not** give an agent the entire remaining project. Execute one phase (or a tightly coupled task group) at a time.
+
+---
+
+## 22. Instructions for future Phase MD files
 
 A future phase document must be named clearly, for example:
 
@@ -267,22 +685,19 @@ A future phase document must be named clearly, for example:
 docs/phases/PHASE_04_TASK1_LABEL_CONSTRUCTION.md
 ```
 
-Every phase file must include:
+Rules:
 
-1. Phase goal and scope.
-2. Official rules that apply.
-3. Prerequisites and blocked downstream phases.
-4. Every task ID from this master plan in that phase — **none may be omitted**.
-5. For each task: objective, why it matters, inputs, outputs, files to create/modify, step-by-step implementation, edge cases, validation, tests, Definition of Done, common mistakes, Git guidance.
-6. Explicit **STOP CONDITIONS**.
-7. Ready-to-copy Cursor/Codex implementation prompt(s).
-8. Separate review/audit prompt(s).
-9. Phase completion report.
-10. Final phase gate: `READY FOR NEXT PHASE = YES/NO`.
+1. Create **one MD per phase** (Phase 00 through Phase 42).
+2. Cover **every task ID** from this master plan that belongs to that phase. None may be omitted or renumbered.
+3. Quote official rules from this file / the booklet. Label WayLoom method as **[E]** or **[C]**.
+4. Include ready-to-copy Cursor and Codex implementation prompts with explicit scope and stop-after-completion instructions.
+5. Include a **separate** review/audit prompt. Implementation and review must not be the same prompt.
+6. End with a completion checklist, completion report, and `READY FOR NEXT PHASE = YES/NO`.
+7. Do not embed official competition rows in prompts or phase files.
+8. A phase file may split a task into subtasks, but the master task ID remains the unit of status in this file.
+9. If new work is discovered, record it as a child under an existing task or revise this master plan. Do not create hidden side work.
 
-A phase file may split a task into subtasks, but it must not renumber or remove the master task ID. If new work is discovered, record it as a child item under an existing task or deliberately revise this master plan; do not create hidden side work.
-
-### Phase execution rule
+### Phase execution loop
 
 ```text
 Open phase MD
@@ -291,63 +706,93 @@ Implement one task or tightly coupled task group
     ↓
 Run its tests/validation
     ↓
-Review result
+Review result with the review prompt
     ↓
-Update checkbox + decision log
+Update checkbox + decision log in this master plan
     ↓
 Proceed only if stop conditions are clear
 ```
 
-Do **not** give Cursor/Codex an entire multi-week project and ask it to finish autonomously. Use phase/task prompts with explicit scope and stop-after-completion instructions.
+---
+
+## 23. Required structure of future Phase MD files
+
+Every future phase MD **must** contain, in this order or with equivalent headings:
+
+1. **Phase goal**
+2. **Official rules** that apply (quoted/paraphrased from booklet + this plan; no invented rules)
+3. **Prerequisites** and blocked downstream phases
+4. **All task IDs belonging to that phase**
+5. For **each task**:
+   - Task ID and short name
+   - Official / Engineering / Competitive marking
+   - Priority
+   - **Objective**
+   - **Why it matters**
+   - **Inputs**
+   - **Outputs**
+   - **Files to create/modify**
+   - **Files not to modify**
+   - **Implementation instructions**
+   - **Formulas** (or “none”)
+   - **Edge cases**
+   - **Validations**
+   - **Tests**
+   - **Definition of Done**
+   - **Common mistakes**
+6. **STOP CONDITIONS**
+7. **Git branch**
+8. **Suggested commit**
+9. **Cursor implementation prompt**
+10. **Codex implementation prompt**
+11. **Separate review prompt**
+12. **Completion checklist**
+13. **Completion report**
+14. **READY FOR NEXT PHASE = YES/NO**
 
 ---
 
-## 9. Master phase order
+## 24. Phase-completion report rules
 
-```text
-Competition Contract
-→ Environment + Secure Repo
-→ Dataset Inventory
-→ Data Quality Audit
-→ Task 1 Labels
-→ Task 1 EDA
-→ Task 1 Features
-→ Task 1 Validation
-→ Task 1 Baselines
-→ Task 1 Advanced Models
-→ Task 1 Final Inference
-→ Task 2A Demand History
-→ Task 2A EDA
-→ Task 2A Features
-→ Task 2A Validation
-→ Task 2A Baselines
-→ Task 2A Advanced Forecasting
-→ Task 2A Final Inference
-→ Task 2B Scenario Audit
-→ Task 2B Compatibility
-→ Task 2B Trip Engine
-→ Task 2B Priority Policy
-→ Task 2B Solver
-→ Task 2B Independent + Official Validation
-→ Task 2B Output + Written Policy
-→ Explainability / Optional Differentiators
-→ Architecture + Preprocessing Documentation
-→ Final Notebook + Model Artifacts
-→ Submission Tests + Automated Tests
-→ AI Disclosure + README + Results Evidence
-→ Demo
-→ Clean Reproduction
-→ Final Folder
-→ Final Validation
-→ ZIP + Submission
+No phase may set `READY FOR NEXT PHASE = YES` without a completion report in the phase MD **and** a matching update here.
+
+Required report fields:
+
+```markdown
+# Phase <NN> completion report
+
+- Phase name:
+- Date:
+- Operator:
+- Tasks in phase: DT-xxx to DT-yyy
+- Tasks completed [x]:
+- Tasks skipped (must be P2/P3 only, with reason):
+- Tasks blocked [!]:
+- Official rules verified:
+- Tests run and results:
+- Checker/script evidence (if applicable):
+- Artifacts produced (paths only, no data):
+- Decision-log entries created:
+- Data-safety check (no restricted data committed/uploaded): PASS / FAIL
+- Issues found:
+- Follow-ups:
+- READY FOR NEXT PHASE: YES / NO
 ```
 
+Rules:
+
+- P0 tasks cannot be skipped.
+- If any P0 task is `[!]` or `[ ]`, READY must remain `NO`.
+- Competitive phases may report `YES` with skipped P2/P3 work if the skip is explicit and non-blocking.
+- Copy the READY flag into this master plan only after the report is filled.
+
 ---
 
-## 10. Master task registry
+## 25. Master task registry
 
 **Checkboxes below are the authoritative project-progress tracker.** Dependencies shown are minimum gates; the corresponding phase `.md` should refine them where necessary.
 
+Each row includes: status checkbox, Task ID, Official/Engineering/Competitive mark, priority, minimum dependency, and short task name.
 
 ### Phase 00 — Competition understanding and scope freeze
 
@@ -357,20 +802,20 @@ Competition Contract
 
 | Status | Task | Mark | Pri | Dependency | Work item |
 |---|---|---:|---:|---|---|
-| [ ] | **DT-000** | [O] | P0 | None | Read the official Datathon rules |
-| [ ] | **DT-001** | [O] | P0 | None | Create competition requirements checklist |
-| [ ] | **DT-002** | [O] | P0 | None | Separate the three Datathon problems |
-| [ ] | **DT-003** | [O] | P0 | None | Freeze Task 1 target definitions |
-| [ ] | **DT-004** | [O] | P0 | None | Freeze Task 2A demand rules |
-| [ ] | **DT-005** | [O] | P0 | None | Freeze Task 2B seven feasibility rules |
-| [ ] | **DT-006** | [O] | P0 | None | Freeze Task 2B trip-time formula |
-| [ ] | **DT-007** | [O] | P0 | None | Freeze official submission file structures |
-| [ ] | **DT-008** | [O] | P0 | None | Record competition restrictions |
-| [ ] | **DT-009** | [O] | P0 | None | Record judging criteria |
-| [ ] | **DT-010** | [O] | P0 | None | Freeze deadline and internal milestones |
+| [x] | **DT-000** | [O] | P0 | None | Read the official Datathon rules |
+| [x] | **DT-001** | [O] | P0 | None | Create competition requirements checklist |
+| [x] | **DT-002** | [O] | P0 | None | Separate the three Datathon problems |
+| [x] | **DT-003** | [O] | P0 | None | Freeze Task 1 target definitions |
+| [x] | **DT-004** | [O] | P0 | None | Freeze Task 2A demand rules |
+| [x] | **DT-005** | [O] | P0 | None | Freeze Task 2B seven feasibility rules |
+| [x] | **DT-006** | [O] | P0 | None | Freeze Task 2B trip-time formula |
+| [x] | **DT-007** | [O] | P0 | None | Freeze official submission file structures |
+| [x] | **DT-008** | [O] | P0 | None | Record competition restrictions |
+| [x] | **DT-009** | [O] | P0 | None | Record judging criteria |
+| [x] | **DT-010** | [O] | P0 | None | Freeze deadline and internal milestones |
 
-**Phase complete:** [ ]  
-**READY FOR NEXT PHASE:** NO
+**Phase complete:** [x]  
+**READY FOR NEXT PHASE:** YES
 
 
 ### Phase 01 — Project environment and repository setup
@@ -381,21 +826,21 @@ Competition Contract
 
 | Status | Task | Mark | Pri | Dependency | Work item |
 |---|---|---:|---:|---|---|
-| [ ] | **DT-011** | [E] | P0 | Phase 0 | Create project root directory |
-| [ ] | **DT-012** | [E] | P0 | Phase 0 | Initialize Git repository |
-| [ ] | **DT-013** | [E] | P0 | Phase 0 | Decide private repository policy |
-| [ ] | **DT-014** | [E] | P0 | Phase 0 | Create .gitignore |
-| [ ] | **DT-015** | [E] | P0 | Phase 0 | Create Python virtual environment |
-| [ ] | **DT-016** | [E] | P0 | Phase 0 | Install required libraries |
-| [ ] | **DT-017** | [E] | P0 | Phase 0 | Create requirements.txt |
-| [ ] | **DT-018** | [E] | P0 | Phase 0 | Set random seed policy |
-| [ ] | **DT-019** | [E] | P0 | Phase 0 | Create repository folder structure |
-| [ ] | **DT-020** | [E] | P0 | Phase 0 | Create project configuration |
-| [ ] | **DT-021** | [E] | P0 | Phase 0 | Create logging utility |
-| [ ] | **DT-022** | [E] | P0 | Phase 0 | Create reproducibility notes |
+| [x] | **DT-011** | [E] | P0 | Phase 0 | Create project root directory |
+| [x] | **DT-012** | [E] | P0 | Phase 0 | Initialize Git repository |
+| [x] | **DT-013** | [E] | P0 | Phase 0 | Decide private repository policy |
+| [x] | **DT-014** | [E] | P0 | Phase 0 | Create .gitignore |
+| [x] | **DT-015** | [E] | P0 | Phase 0 | Create Python virtual environment |
+| [x] | **DT-016** | [E] | P0 | Phase 0 | Install required libraries |
+| [x] | **DT-017** | [E] | P0 | Phase 0 | Create requirements.txt |
+| [x] | **DT-018** | [E] | P0 | Phase 0 | Set random seed policy |
+| [x] | **DT-019** | [E] | P0 | Phase 0 | Create repository folder structure |
+| [x] | **DT-020** | [E] | P0 | Phase 0 | Create project configuration |
+| [x] | **DT-021** | [E] | P0 | Phase 0 | Create logging utility |
+| [x] | **DT-022** | [E] | P0 | Phase 0 | Create reproducibility notes |
 
-**Phase complete:** [ ]  
-**READY FOR NEXT PHASE:** NO
+**Phase complete:** [x]  
+**READY FOR NEXT PHASE:** YES
 
 
 ### Phase 02 — Raw dataset inventory
@@ -761,9 +1206,9 @@ Competition Contract
 
 | Status | Task | Mark | Pri | Dependency | Work item |
 |---|---|---:|---:|---|---|
-| [ ] | **DT-222** | [O] | P0 | DT-204–DT-221 | Define rolling-origin validation |
-| [ ] | **DT-223** | [O] | P0 | Phases 11–13 | Use 10-week validation windows |
-| [ ] | **DT-224** | [O] | P0 | Phases 11–13 | Prevent future-demand leakage |
+| [ ] | **DT-222** | [E] | P0 | DT-204–DT-221 | Define rolling-origin validation |
+| [ ] | **DT-223** | [E] | P0 | Phases 11–13 | Use 10-week validation windows |
+| [ ] | **DT-224** | [E] | P0 | Phases 11–13 | Prevent future-demand leakage |
 | [ ] | **DT-225** | [E] | P0 | Phases 11–13 | Define forecast metrics |
 | [ ] | **DT-226** | [E] | P0 | Phases 11–13 | Evaluate per series |
 | [ ] | **DT-227** | [E] | P0 | Phases 11–13 | Evaluate overall |
@@ -1337,7 +1782,7 @@ Competition Contract
 | [ ] | **DT-483** | [O] | P0 | Phases 29–37 | Explain Task 2B bottleneck |
 | [ ] | **DT-484** | [O] | P0 | Phases 29–37 | Show final allocation |
 | [ ] | **DT-485** | [O] | P0 | Phases 29–37 | Show checker pass |
-| [ ] | **DT-486** | [O] | P2 | Phases 29–37 | Show hero feature if completed |
+| [ ] | **DT-486** | [C] | P2 | Phases 29–37 | Show hero feature if completed |
 | [ ] | **DT-487** | [O] | P0 | Phases 29–37 | Explain challenges encountered |
 | [ ] | **DT-488** | [O] | P0 | Phases 29–37 | Record demo |
 | [ ] | **DT-489** | [O] | P0 | Phases 29–37 | Edit to 3–5 minutes |
@@ -1447,142 +1892,96 @@ Competition Contract
 **Phase complete:** [ ]  
 **READY FOR NEXT PHASE:** NO
 
-
 ---
 
-## 11. Global stop conditions
-
-Stop downstream work and resolve the issue if any of the following occurs:
-
-- official task interpretation is unresolved;
-- required file/schema/key is missing or inconsistent;
-- Task 1 route join cardinality is not proven;
-- Task 1 label unit tests fail;
-- leakage is detected or prediction-time availability is uncertain;
-- Task 2A order counting/requested-week aggregation is inconsistent;
-- Task 2A validation uses future demand information;
-- Task 2B trip-time implementation disagrees with the official formula/example;
-- any Task 2B hard rule fails;
-- organizer `check_allocation.py` fails;
-- official template identifiers/order/schema change unexpectedly;
-- saved models cannot be loaded or inference differs unexpectedly;
-- raw/private competition data is staged for public sharing;
-- final notebook depends on hidden state;
-- final ZIP fails extraction/validation.
-
-When blocked, document: `issue → affected task(s) → evidence → decision/fix → retest result`.
-
----
-
-## 12. Progress-control rules
-
-- Update this file at the end of every development session.
-- Mark a phase complete only when its phase gate is satisfied.
-- Keep `READY FOR NEXT PHASE: NO` until the gate is verified.
-- A future phase MD can contain more detail but cannot mark a task complete on its own; completion must be reflected here.
-- If a P2/P3 enhancement threatens deadline or P0/P1 stability, stop it immediately.
-- If a later discovery invalidates an earlier `[x]` task, revert it to `[ ]` or `[!]` and re-open dependent work.
-
----
-
-## 13. Recommended daily decision log format
-
-```markdown
-### YYYY-MM-DD — Decision
-- Related tasks: DT-xxx, DT-yyy
-- Question:
-- Evidence:
-- Decision:
-- Why:
-- Alternative rejected:
-- Downstream impact:
-- Retest required: YES / NO
-```
-
----
-
-## 14. Future phase-file request template
-
-Use this when generating the next phase guide:
-
-```text
-Create the full implementation MD for Phase <N> — <NAME> from the finalized WayLoom Datathon Master Plan.
-Cover every task ID in that phase and do not omit or renumber tasks.
-
-For every task include:
-- Task ID and name
-- Official / Engineering / Competitive marking
-- Priority
-- Objective
-- Why it matters
-- Official rule or assumption
-- Prerequisites/dependencies
-- Input files and required columns
-- Output files/artifacts
-- Files/folders to create or modify
-- Files not to modify
-- Detailed implementation steps
-- Exact formulas/logic where applicable
-- Edge cases
-- Data validation checks
-- Unit/integration tests
-- Expected output
-- Definition of Done
-- Common mistakes
-- STOP CONDITIONS
-- Git branch name
-- Suggested commit message
-- Ready-to-copy Cursor implementation prompt
-- Ready-to-copy Codex implementation prompt
-- Separate review/audit prompt
-
-End with:
-- Phase completion checklist
-- Phase Completion Report template
-- READY FOR NEXT PHASE = YES/NO gate
-
-Base official rules on the Challenge Booklet and keep our proposed methods clearly labelled as recommendations.
-Do not use or expose private competition data in prompts.
-```
-
----
-
-## 15. Final release checklist summary
+## 26. Final release/submission checklist
 
 Before submission, at minimum verify:
 
-- [ ] Task 1 labels match official definitions.
+- [ ] Task 1 labels match the frozen official-label contract (`service_start`, `service_min`, `late_flag`).
 - [ ] No Task 1 actual-future leakage exists.
-- [ ] `submission_task1.csv` has exact IDs, row order and valid numeric outputs.
-- [ ] Task 2A uses both required source files and requested order week.
-- [ ] Deferred/not-run orders are included in Task 2A demand.
+- [ ] `submission_task1.csv` has exact IDs, original row order, and valid numeric outputs.
+- [ ] Task 2A uses both `deliveries_train.csv` and `task1_test_inputs.csv`.
+- [ ] Task 2A counts attempted, deferred, and not_run orders.
+- [ ] Task 2A uses requested `order_date` / calendar ISO year-week, not `dispatch_date`.
 - [ ] Style and Tech chilled forecasts are exactly zero.
-- [ ] `submission_task2a.csv` has exact row IDs and `0 ≤ chilled ≤ total`.
-- [ ] Task 2B uses only available S1 vehicles and `order_ref` as allocation key.
-- [ ] All seven Task 2B rules pass independently.
-- [ ] `check_allocation.py` passes.
+- [ ] `submission_task2a.csv` has exact `row_id` values; chilled ≤ total; non-negative finite numbers.
+- [ ] Task 2B is scenario S1, Peliyagoda, available vehicles only; workshop vehicles unused.
+- [ ] Task 2B uses `order_ref` as the allocation key.
+- [ ] Served orders have `vehicle_id` and `trip_id`; deferred rows leave them blank.
+- [ ] All seven Task 2B rules pass independently (brand+district, reefer, van_only, home depot, whole orders, weight AND volume, max two trips + time budgets).
+- [ ] Trip duration uses free-flow outbound + inter-stop × (n−1) + service allowances, with **no return-to-depot leg**.
+- [ ] Fresh ≤ 270 minutes/vehicle; Style+Tech combined ≤ 480 minutes/vehicle.
+- [ ] `check_allocation.py` passes. Feasibility is confirmed; optimality is not claimed from the checker.
 - [ ] `submission_task2b.csv` has no placeholders.
-- [ ] Task 2B written prioritization policy explains calculations, limiting resources, unavoidable deferrals, chosen deferrals and impact.
+- [ ] Task 2B written prioritization policy explains calculations, limiting resources, unavoidable deferrals, chosen deferrals, and impact.
+- [ ] Architecture diagrams are present and match the final implementation.
+- [ ] Preprocessing document is complete.
 - [ ] Required saved models are present and load successfully.
 - [ ] `TeamName_FinalNotebook.ipynb` runs from a clean kernel.
-- [ ] Final notebook loads saved models and demonstrates Task 1/2A inference.
-- [ ] Architecture diagrams match final implementation.
-- [ ] Preprocessing document is complete.
+- [ ] Final notebook loads saved models and demonstrates Task 1/2A inference with printed inputs and predictions.
 - [ ] AI-tool disclosure is complete and accurate.
-- [ ] 3–5 minute unlisted demo video link works.
-- [ ] No private raw competition data/secrets are inside public repos or final package unless explicitly required/authorized.
+- [ ] 3–5 minute unlisted demo video link works while logged out.
+- [ ] No private raw competition data/secrets are inside public repos or the final package unless explicitly required/authorized.
 - [ ] Clean-environment reproduction passes.
 - [ ] `TeamName_Datathon.zip` opens and contains every required deliverable.
-- [ ] Upload is complete before the official deadline and confirmation evidence is retained.
+- [ ] Upload is complete before Friday, 9 October 2026, 11:59 PM Sri Lanka time, and confirmation evidence is retained.
 
 ---
 
-## 16. Registry integrity
+## 27. Registry-integrity section
 
-This master plan is intended to contain every finalized development task from **DT-000 through DT-539** exactly once. When editing the registry, run a simple ID audit or manually verify that no ID has been skipped, duplicated or renumbered.
+This master plan must contain every finalized development task from **DT-000 through DT-539** exactly once, organized under **Phase 00 through Phase 42**.
 
-**Current expected task count: 540.**
+| Check | Required value |
+|---|---|
+| First task ID | DT-000 |
+| Last task ID | DT-539 |
+| Task ID count | **540** |
+| Missing IDs | **none** |
+| Duplicated IDs | **none** |
+| First phase | Phase 00 |
+| Last phase | Phase 42 |
+| Phase count | **43** |
+| Phase numbering | continuous 00, 01, 02, …, 42 |
+
+When editing the registry:
+
+1. Do not skip, reuse, or renumber IDs.
+2. Do not add a 44th phase or a 541st task without a deliberate plan revision.
+3. Re-run an ID audit (see command below) after any registry edit.
+4. If an ID is missing or duplicated, **fix this document before continuing any other work**.
+
+```text
+Audit method:
+- extract every table row matching **DT-xxx**
+- compare against the closed range DT-000 .. DT-539
+- extract every heading matching ### Phase NN
+- compare against the closed range 00 .. 42
+```
+
+### Integrity audit result (this revision)
+
+- File: `MD Files/WAYLOOM_DATATHON_MASTER_PLAN.md`
+- Total phases: **43** (00–42, continuous)
+- Total task IDs: **540** (DT-000–DT-539, unique)
+- Missing IDs: **none**
+- Duplicated IDs: **none**
+
+### Known source tensions (not registry defects)
+
+These are **not** missing/duplicate IDs. They are conflicts or interpretation gaps between official sources and internal planning. Official sources win.
+
+1. **Task 1 equations are not printed in the booklet.** The booklet requires constructing labels from historical actuals, waiting until window open, and treating lateness as arrival after window close. The algebraic contract `service_start = max(actual arrival, window opening)`, `service_min = leave_outlet_time - service_start`, and `late_flag = 1` only when actual arrival is strictly after `window_close_time` is frozen from the WayLoom Product & Competition Master Plan. It is the binding execution contract unless the organizer contradicts it.
+2. **Task 2A “requested week” column.** The booklet says assign demand to the week the store requested the order and to use `calendar.csv` ISO year/week. It does not say “not `dispatch_date`” in those words. WayLoom freezes `order_date` rather than `dispatch_date` because `order_date` is defined as the date the store’s order was for.
+3. **Decision capitalization.** One booklet table cell says “Served or deferred.” The completed example and `check_allocation.py` require lowercase `served` / `deferred`. Follow the checker and example.
+4. **Deferred vehicle/trip fields.** The booklet requires blanks. `check_allocation.py` currently warns if they are filled rather than failing. Follow the booklet: leave them blank.
+5. **Rolling-origin / ten-week backtesting (Phase 14).** The official forecast horizon is 10 weeks. Rolling-origin validation is **[E]**, not a booklet-mandated protocol. DT-222–DT-224 are engineering controls around the official 10-week task.
+6. **Pretrained-model exception.** The booklet bans pretrained models *except* for synthetic data generation or pre-processing. Internal phrasing “no prohibited pretrained models” must preserve that exception.
+7. **Hackathon fuel/window logic** must not be imported into Task 2B. Datathon Task 2B uses the published free-flow + allowance formula and the 270/480 minute budgets only.
+8. **Optional integration (Phase 28)** is internal/competitive. Official rule: Datathon is judged separately and live integration is not required.
+9. **Inventory priority vs this plan.** The task inventory listed DT-020–DT-022 as P1. This plan elevates them to P0 as an engineering sequencing choice.
 
 ---
 
-_End of central master plan._
+_End of central master plan. Do not start Phase 00 execution from this documentation task._

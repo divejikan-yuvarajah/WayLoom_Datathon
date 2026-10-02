@@ -1,0 +1,49 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Competition data and private derivatives
+data/raw/**
+data/interim/**
+data/processed/**
+DataSet/**
+DataSet_New.zip
+*.csv
+*.zip
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+
+# Local model, output, checker, and log artifacts
+models/**
+outputs/**
+reports/checker/**
+logs/
+*.log
+!models/.gitkeep
+!outputs/.gitkeep
+!reports/checker/.gitkeep
+
+# Temporary files
+tmp/
+temp/
+_tmp_*/
