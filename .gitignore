@@ -37,6 +37,7 @@ DataSet_New.zip
 models/**
 outputs/**
 reports/checker/**
+reports/private/**
 logs/
 *.log
 !models/.gitkeep
