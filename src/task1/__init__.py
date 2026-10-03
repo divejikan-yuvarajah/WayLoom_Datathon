@@ -8,4 +8,8 @@ __all__ = [
     "feature_registry",
     "baseline_preprocessing",
     "baselines",
+    "advanced_models",
+    "tuning",
+    "calibration",
+    "model_selection",
 ]
