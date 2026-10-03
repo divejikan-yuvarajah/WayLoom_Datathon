@@ -6,4 +6,6 @@ __all__ = [
     "features",
     "historical_features",
     "feature_registry",
+    "baseline_preprocessing",
+    "baselines",
 ]
