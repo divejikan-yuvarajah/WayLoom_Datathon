@@ -190,11 +190,11 @@ class Task1HistoricalFeatureTransformer:
             raise Task1HistoricalFeatureError("Historical chronological targets are invalid.")
 
         work[self.date_col] = pd.to_datetime(work[self.date_col], errors="raise")
-        global_service_prior = float(work["_service"].median())
-        global_late_prior = float(work["_late"].mean())
-
         prior_service_values: dict[tuple[tuple[str, ...], tuple[Any, ...]], list[float]] = {}
         prior_late_sum_count: dict[tuple[tuple[str, ...], tuple[Any, ...]], tuple[float, int]] = {}
+        prior_global_service: list[float] = []
+        prior_global_late_sum = 0.0
+        prior_global_count = 0
 
         out = pd.DataFrame(index=X.index)
         for spec in HISTORICAL_FEATURE_SPECS:
@@ -203,14 +203,25 @@ class Task1HistoricalFeatureTransformer:
         for date_val, date_grp in work.groupby(self.date_col, sort=True):
             # Compute today's features from strictly earlier history (no same-date leakage).
             for idx, row in date_grp.iterrows():
-                service_fb = global_service_prior
+                # A cold-start date has no historical target information. Preserve
+                # missing values rather than borrowing a full-period/global future
+                # target statistic. Later model-phase imputation is fit-scoped.
+                service_fb = (
+                    float(np.median(prior_global_service))
+                    if prior_global_service
+                    else np.nan
+                )
                 for keys in (("outlet_id",), ("brand", "dock_type"), ("brand",)):
                     vals = prior_service_values.get((keys, _key_tuple(row, keys)))
                     if vals:
                         service_fb = float(np.median(vals))
                         break
 
-                late_fb = global_late_prior
+                late_fb = (
+                    float(prior_global_late_sum / prior_global_count)
+                    if prior_global_count
+                    else np.nan
+                )
                 for keys in (("outlet_id",), ("brand", "dock_type"), ("brand",)):
                     lc = prior_late_sum_count.get((keys, _key_tuple(row, keys)))
                     if lc is not None and lc[1] > 0:
@@ -261,6 +272,9 @@ class Task1HistoricalFeatureTransformer:
 
             # Update history after computing all rows on this date.
             for _, row in date_grp.iterrows():
+                prior_global_service.append(float(row["_service"]))
+                prior_global_late_sum += float(row["_late"])
+                prior_global_count += 1
                 for keys in (("outlet_id",), ("brand", "dock_type"), ("brand",)):
                     k = (keys, _key_tuple(row, keys))
                     prior_service_values.setdefault(k, []).append(float(row["_service"]))

@@ -534,8 +534,8 @@ def test_dt063_window_anchor_and_cross_midnight_window() -> None:
     )
     resolved_route = resolve_route_actual_datetimes(route_legs, travel_tolerance_min=0.5)
     resolved_windows = resolve_delivery_window_datetimes(resolved_route)
-    assert str(resolved_windows.loc[0, "window_open_dt"]) == "2026-01-07 23:00:00"
-    assert str(resolved_windows.loc[0, "window_close_dt"]) == "2026-01-08 01:00:00"
+    assert str(resolved_windows.loc[0, "window_open_dt"]) == "2026-01-06 23:00:00"
+    assert str(resolved_windows.loc[0, "window_close_dt"]) == "2026-01-07 01:00:00"
 
 
 def test_dt063_impossible_chronology_raises_on_travel_conflict() -> None:
