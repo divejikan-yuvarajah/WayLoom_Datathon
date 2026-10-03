@@ -1,0 +1,16 @@
+version: 1
+service_quantiles: [0.25, 0.50, 0.75, 0.90, 0.95, 0.99]
+grouping:
+  minimum_group_n_for_primary_chart: 20
+  minimum_group_n_for_rate_interpretation: 30
+continuous_analysis:
+  quantile_bins: 10
+planned_slack:
+  bins_min: [-999999, -60, -30, -15, 0, 15, 30, 60, 999999]
+shift_bins:
+  - {name: overnight, start_hour: 0, end_hour: 6}
+  - {name: morning, start_hour: 6, end_hour: 12}
+  - {name: afternoon, start_hour: 12, end_hour: 18}
+  - {name: evening, start_hour: 18, end_hour: 24}
+privacy:
+  private_output_dir: reports/private/phase05_task1_eda
