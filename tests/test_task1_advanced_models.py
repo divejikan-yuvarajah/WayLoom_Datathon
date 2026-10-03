@@ -9,8 +9,10 @@ from src.task1.advanced_models import (
     Task1AdvancedModelError,
     fit_predict_advanced_fold,
     high_confidence_classification_errors,
+    hydrate_provisional_section,
     overfitting_summary,
     resolve_advanced_feature_columns,
+    resolve_candidate_family,
     worst_regression_errors,
     xgboost_available,
 )
@@ -95,3 +97,39 @@ def test_overfitting_and_error_analytics() -> None:
     )
     assert set(conf["error_type"]) == {"HIGH_CONFIDENCE_FALSE_POSITIVE", "HIGH_CONFIDENCE_FALSE_NEGATIVE"}
     assert xgboost_available() is False
+
+
+def test_family_resolved_from_candidate_id_when_missing() -> None:
+    assert resolve_candidate_family({"candidate_id": "catboost_regression_default"}) == "catboost"
+    assert resolve_candidate_family({"candidate_id": "lightgbm_classifier_default"}) == "lightgbm"
+    assert resolve_candidate_family({"family": "CatBoost", "candidate_id": "x"}) == "catboost"
+    with pytest.raises(Task1AdvancedModelError):
+        resolve_candidate_family({"candidate_id": "mystery_model"})
+
+
+def test_hydrate_old_provisional_selection_without_family() -> None:
+    model_cfg = {
+        "seed": 42,
+        "features": {"profile": "safe_core_plus_history"},
+        "catboost": {
+            "regression": {
+                "enabled": True,
+                "depth": 7,
+                "learning_rate": 0.05,
+                "l2_leaf_reg": 5,
+                "loss_function": "MAE",
+                "eval_metric": "MAE",
+                "allow_writing_files": False,
+                "verbose": False,
+            },
+            "classification": {"enabled": False},
+        },
+    }
+    hydrated = hydrate_provisional_section(
+        {"candidate_id": "catboost_regression_default"},
+        model_cfg,
+        target="service",
+    )
+    assert hydrated["family"] == "catboost"
+    assert hydrated["parameters"]["depth"] == 7
+    assert hydrated["feature_profile"] == "safe_core_plus_history"

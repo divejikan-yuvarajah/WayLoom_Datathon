@@ -2,33 +2,52 @@ version: 1
 seed: 42
 validation_contract:
   config: configs/task1_validation.yaml
-  development_selection_complete: false
-  final_holdout_confirmation_complete: false
-  final_holdout_access_count_per_target: 0
+  development_selection_complete: true
+  final_holdout_confirmation_complete: true
+  final_holdout_access_count_per_target: 1
 features:
   registry: configs/task1_features.yaml
   profile: safe_core_plus_history
 service_model:
-  family: null
-  config_id: null
-  parameters: {}
+  family: catboost
+  config_id: catboost_regression_default
+  parameters:
+    depth: 7
+    learning_rate: 0.05
+    l2_leaf_reg: 5.0
+    loss_function: MAE
+    eval_metric: MAE
+    random_seed: 42
+    allow_writing_files: false
+    verbose: false
   final_iteration_policy:
-    method: null
-    value: null
+    method: median_best_iteration
+    value: 200
+  prediction_postprocessing:
+    phase09_clipping: false
 lateness_model:
-  family: null
-  config_id: null
-  parameters: {}
+  family: catboost
+  config_id: catboost_classifier_default
+  parameters:
+    depth: 7
+    learning_rate: 0.05
+    l2_leaf_reg: 5.0
+    loss_function: Logloss
+    eval_metric: Logloss
+    random_seed: 42
+    auto_class_weights: null
+    allow_writing_files: false
+    verbose: false
   final_iteration_policy:
-    method: null
-    value: null
+    method: median_best_iteration
+    value: 200
   calibration:
-    method: null
-    fit_protocol: null
+    method: raw
+    fit_protocol: chronological_oof
 selection:
   regression_primary_metric: mae
   lateness_primary_metric: log_loss
-  baseline_comparison_completed: false
-  brand_diagnostic_completed: false
-  depot_diagnostic_completed: false
-  calibration_comparison_completed: false
+  baseline_comparison_completed: true
+  brand_diagnostic_completed: true
+  depot_diagnostic_completed: true
+  calibration_comparison_completed: true

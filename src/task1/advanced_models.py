@@ -59,8 +59,106 @@ class FoldPredictionResult:
     warning_codes: list[str]
 
 
+KNOWN_MODEL_FAMILIES = ("catboost", "lightgbm", "xgboost")
+
+
 def xgboost_available() -> bool:
     return XGBRegressor is not None and XGBClassifier is not None
+
+
+def resolve_candidate_family(section: dict[str, Any]) -> str:
+    raw = section.get("family") or section.get("model_family")
+    if raw is not None and str(raw).strip() and str(raw).strip().lower() not in {"null", "none"}:
+        return str(raw).strip().lower()
+    cid = str(section.get("candidate_id") or "").strip()
+    prefix = cid.split("_")[0].lower()
+    if prefix in KNOWN_MODEL_FAMILIES:
+        return prefix
+    raise Task1AdvancedModelError(
+        f"Cannot resolve model family from selection section candidate_id={cid!r}."
+    )
+
+
+def build_phase09_candidates(model_cfg: dict[str, Any]) -> list[AdvancedCandidate]:
+    """Rebuild the frozen Phase 09 candidate catalog from the approved advanced config."""
+    feature_profile = str((model_cfg.get("features") or {}).get("profile") or "safe_core_plus_history")
+    seed = int(model_cfg.get("seed", 42))
+    candidates: list[AdvancedCandidate] = []
+    cat = model_cfg.get("catboost") or {}
+    reg = cat.get("regression") or {}
+    clf = cat.get("classification") or {}
+    if reg.get("enabled", bool(reg)):
+        candidates.append(
+            AdvancedCandidate(
+                "catboost_regression_default",
+                "catboost",
+                "service",
+                {
+                    "depth": int(reg.get("depth", 7)),
+                    "learning_rate": float(reg.get("learning_rate", 0.05)),
+                    "l2_leaf_reg": float(reg.get("l2_leaf_reg", 5)),
+                    "loss_function": reg.get("loss_function", "MAE"),
+                    "eval_metric": reg.get("eval_metric", "MAE"),
+                    "random_seed": seed,
+                    "allow_writing_files": bool(reg.get("allow_writing_files", False)),
+                    "verbose": bool(reg.get("verbose", False)),
+                },
+                feature_profile,
+            )
+        )
+    if clf.get("enabled", bool(clf)):
+        candidates.append(
+            AdvancedCandidate(
+                "catboost_classifier_default",
+                "catboost",
+                "late",
+                {
+                    "depth": int(clf.get("depth", 7)),
+                    "learning_rate": float(clf.get("learning_rate", 0.05)),
+                    "l2_leaf_reg": float(clf.get("l2_leaf_reg", 5)),
+                    "loss_function": clf.get("loss_function", "Logloss"),
+                    "eval_metric": clf.get("eval_metric", "Logloss"),
+                    "random_seed": seed,
+                    "auto_class_weights": clf.get("auto_class_weights"),
+                    "allow_writing_files": bool(clf.get("allow_writing_files", False)),
+                    "verbose": bool(clf.get("verbose", False)),
+                },
+                feature_profile,
+            )
+        )
+    lgb = model_cfg.get("lightgbm") or {}
+    if bool(lgb.get("enabled")):
+        lgbp = dict(lgb.get("params") or {})
+        candidates.extend(
+            [
+                AdvancedCandidate("lightgbm_regression_default", "lightgbm", "service", lgbp, feature_profile),
+                AdvancedCandidate("lightgbm_classifier_default", "lightgbm", "late", lgbp, feature_profile),
+            ]
+        )
+    return candidates
+
+
+def hydrate_provisional_section(
+    section: dict[str, Any],
+    model_cfg: dict[str, Any],
+    *,
+    target: str,
+) -> dict[str, Any]:
+    """Fill family/parameters/profile omitted by older provisional_selection.json files."""
+    out = dict(section)
+    lookup = {c.candidate_id: c for c in build_phase09_candidates(model_cfg) if c.target == target}
+    cid = str(out.get("candidate_id") or "")
+    cand = lookup.get(cid)
+    out["family"] = resolve_candidate_family(out)
+    if cand is not None:
+        if not out.get("parameters"):
+            out["parameters"] = dict(cand.params)
+        if not out.get("feature_profile"):
+            out["feature_profile"] = cand.feature_profile
+    else:
+        out.setdefault("parameters", {})
+        out.setdefault("feature_profile", (model_cfg.get("features") or {}).get("profile", "safe_core_plus_history"))
+    return out
 
 
 def resolve_advanced_feature_columns(

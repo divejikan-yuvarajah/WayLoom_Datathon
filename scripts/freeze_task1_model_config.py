@@ -5,8 +5,15 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
 
 import yaml
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.task1.advanced_models import hydrate_provisional_section  # noqa: E402
 
 
 def parser() -> argparse.ArgumentParser:
@@ -29,6 +36,8 @@ def main() -> int:
         raise ValueError("Holdout confirmation must include exactly one service config.")
     if int(confirmation.get("lateness_configs_evaluated_on_holdout", 0)) != 1:
         raise ValueError("Holdout confirmation must include exactly one lateness config.")
+    svc = hydrate_provisional_section(selection["service"], advanced, target="service")
+    late = hydrate_provisional_section(selection["lateness"], advanced, target="late")
     output = {
         "version": 1,
         "seed": int(advanced.get("seed", 42)),
@@ -43,24 +52,26 @@ def main() -> int:
             "profile": advanced.get("features", {}).get("profile", "safe_core_plus_history"),
         },
         "service_model": {
-            "family": selection["service"].get("family", str(selection["service"]["candidate_id"]).split("_")[0]),
-            "config_id": selection["service"]["candidate_id"],
-            "parameters": selection["service"].get("parameters", {}),
-            "final_iteration_policy": selection["service"].get(
+            "family": svc["family"],
+            "config_id": svc["candidate_id"],
+            "parameters": svc.get("parameters", {}),
+            "final_iteration_policy": svc.get(
                 "final_iteration_policy", {"method": "median_best_iteration", "value": 200}
             ),
             "prediction_postprocessing": {"phase09_clipping": False},
         },
         "lateness_model": {
-            "family": selection["lateness"].get("family", str(selection["lateness"]["candidate_id"]).split("_")[0]),
-            "config_id": selection["lateness"]["candidate_id"],
-            "parameters": selection["lateness"].get("parameters", {}),
-            "final_iteration_policy": selection["lateness"].get(
+            "family": late["family"],
+            "config_id": late["candidate_id"],
+            "parameters": late.get("parameters", {}),
+            "final_iteration_policy": late.get(
                 "final_iteration_policy", {"method": "median_best_iteration", "value": 200}
             ),
             "calibration": {
-                "method": selection["lateness"].get("calibration_method", "raw"),
-                "fit_protocol": selection["lateness"].get("calibration_protocol", "chronological_oof"),
+                "method": late.get("calibration_method") or (late.get("calibration") or {}).get("method") or "raw",
+                "fit_protocol": late.get("calibration_protocol")
+                or (late.get("calibration") or {}).get("fit_protocol")
+                or "chronological_oof",
             },
         },
         "selection": {

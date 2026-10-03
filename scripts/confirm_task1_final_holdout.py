@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.task1.advanced_models import AdvancedCandidate, fit_predict_advanced_fold  # noqa: E402
+from src.task1.advanced_models import AdvancedCandidate, fit_predict_advanced_fold, hydrate_provisional_section  # noqa: E402
 from src.task1.metrics import lateness_probability_metrics, regression_metrics  # noqa: E402
 from src.task1.validation import build_task1_validation_plan, load_task1_validation_config  # noqa: E402
 
@@ -62,14 +62,20 @@ def main() -> int:
     y_service = labels["service_minutes"]
     y_late = labels["late_flag"]
 
-    svc_cfg = selection["service"]
-    late_cfg = selection["lateness"]
+    svc_cfg = hydrate_provisional_section(selection["service"], model_cfg, target="service")
+    late_cfg = hydrate_provisional_section(selection["lateness"], model_cfg, target="late")
     svc_candidate = AdvancedCandidate(
-        svc_cfg["candidate_id"], svc_cfg["family"], "service", svc_cfg.get("parameters", {}),
+        svc_cfg["candidate_id"],
+        svc_cfg["family"],
+        "service",
+        svc_cfg.get("parameters", {}),
         svc_cfg.get("feature_profile", model_cfg.get("features", {}).get("profile", "safe_core_plus_history")),
     )
     late_candidate = AdvancedCandidate(
-        late_cfg["candidate_id"], late_cfg["family"], "late", late_cfg.get("parameters", {}),
+        late_cfg["candidate_id"],
+        late_cfg["family"],
+        "late",
+        late_cfg.get("parameters", {}),
         late_cfg.get("feature_profile", model_cfg.get("features", {}).get("profile", "safe_core_plus_history")),
     )
     svc_iter = int(svc_cfg.get("final_iteration_policy", {}).get("value", default_max))

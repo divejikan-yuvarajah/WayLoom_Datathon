@@ -207,3 +207,58 @@ def test_final_config_writer_schema(tmp_path: Path) -> None:
     assert "regression_primary_metric: mae" in text
     assert "value: 123" in text
     assert "value: 111" in text
+
+
+def test_final_config_writer_accepts_selection_without_family(tmp_path: Path) -> None:
+    selection = tmp_path / "selection.json"
+    holdout = tmp_path / "holdout.json"
+    advanced = tmp_path / "advanced.yaml"
+    output = tmp_path / "final.yaml"
+    selection.write_text(
+        json.dumps(
+            {
+                "service": {
+                    "candidate_id": "catboost_regression_default",
+                    "final_iteration_policy": {"method": "median_best_iteration", "value": 80},
+                },
+                "lateness": {
+                    "candidate_id": "catboost_classifier_default",
+                    "calibration_method": "raw",
+                    "final_iteration_policy": {"method": "median_best_iteration", "value": 90},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    holdout.write_text(
+        json.dumps(
+            {
+                "success": True,
+                "service_configs_evaluated_on_holdout": 1,
+                "lateness_configs_evaluated_on_holdout": 1,
+            }
+        ),
+        encoding="utf-8",
+    )
+    advanced.write_text(
+        Path("configs/task1_advanced_models.yaml").read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    subprocess.run(
+        [
+            sys.executable,
+            "scripts/freeze_task1_model_config.py",
+            "--selection",
+            str(selection),
+            "--holdout-confirmation",
+            str(holdout),
+            "--advanced-config",
+            str(advanced),
+            "--output",
+            str(output),
+        ],
+        check=True,
+    )
+    text = output.read_text(encoding="utf-8")
+    assert "family: catboost" in text
+    assert "config_id: catboost_regression_default" in text
