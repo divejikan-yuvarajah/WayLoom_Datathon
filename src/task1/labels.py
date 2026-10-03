@@ -584,6 +584,7 @@ def resolve_delivery_window_datetimes(
     window_open_column: str = "window_open_time",
     window_close_column: str = "window_close_time",
     arrival_day_offset_column: str = "arrival_day_offset",
+    arrival_datetime_column: str = "arrival_time_dt",
 ) -> pd.DataFrame:
     """DT-063: Anchor outlet windows to resolved service day and handle cross-midnight windows."""
 
@@ -592,6 +593,7 @@ def resolve_delivery_window_datetimes(
         window_open_column,
         window_close_column,
         arrival_day_offset_column,
+        arrival_datetime_column,
     }
     missing = sorted(required - set(joined_or_resolved.columns))
     if missing:
@@ -627,6 +629,13 @@ def resolve_delivery_window_datetimes(
         close_hour, close_min = parse_clock(str(row[window_close_column]))
         if (close_hour, close_min) < (open_hour, open_min):
             window_close_dt = window_close_dt + timedelta(days=1)
+            # An arrival after midnight can belong to the window that opened
+            # on the preceding route date (for example 23:00–01:00). Anchor
+            # the valid cross-midnight interval around the resolved arrival,
+            # rather than blindly shifting its opening to the arrival date.
+            if row[arrival_datetime_column] < window_open_dt:
+                window_open_dt = window_open_dt - timedelta(days=1)
+                window_close_dt = window_close_dt - timedelta(days=1)
 
         open_values.append(window_open_dt)
         close_values.append(window_close_dt)

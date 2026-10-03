@@ -25,11 +25,12 @@ def test_dt119_current_same_day_future_excluded() -> None:
     tr = Task1HistoricalFeatureTransformer(date_col="date")
     out = tr.fit_transform_training_chronological(X[["date", "outlet_id", "brand", "dock_type"]], y_service, y_late)
 
-    # Same-day exclusion: both 2026-01-01 rows should use global priors.
+    # Same-day exclusion: the first date has no prior target history, so
+    # cold-start historical features remain missing rather than seeing future data.
     i1 = X.index[X["delivery_id"] == "D1"][0]
     i2 = X.index[X["delivery_id"] == "D2"][0]
-    assert out.loc[i1, "outlet_prior_service_median"] == pytest.approx(25.0)
-    assert out.loc[i2, "brand_prior_late_rate"] == pytest.approx(0.5)
+    assert pd.isna(out.loc[i1, "outlet_prior_service_median"])
+    assert pd.isna(out.loc[i2, "brand_prior_late_rate"])
 
     # Row on 2026-01-02 can use prior day only, not future day 2026-01-03.
     i3 = X.index[X["delivery_id"] == "D3"][0]
