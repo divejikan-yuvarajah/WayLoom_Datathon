@@ -17,7 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.task1.advanced_models import (  # noqa: E402
-    AdvancedCandidate,
+    build_phase09_candidates,
     fit_predict_advanced_fold,
     high_confidence_classification_errors,
     overfitting_summary,
@@ -91,36 +91,13 @@ def main() -> int:
     late_pred_rows: list[dict] = []
     failed_folds: list[dict] = []
 
-    feature_profile = str(model_cfg["features"]["profile"])
     early = model_cfg["early_stopping"]
     max_iter = int(early["max_iterations"])
     patience = int(early["patience_rounds"])
     min_iter = int(early["min_iterations"])
     seed = int(model_cfg.get("seed", 42))
 
-    reg = model_cfg["catboost"]["regression"]
-    clf = model_cfg["catboost"]["classification"]
-    candidates = [
-        AdvancedCandidate("catboost_regression_default", "catboost", "service", {
-            "depth": int(reg["depth"]), "learning_rate": float(reg["learning_rate"]), "l2_leaf_reg": float(reg["l2_leaf_reg"]),
-            "loss_function": reg["loss_function"], "eval_metric": reg["eval_metric"], "random_seed": seed,
-            "allow_writing_files": bool(reg["allow_writing_files"]), "verbose": bool(reg["verbose"]),
-        }, feature_profile),
-        AdvancedCandidate("catboost_classifier_default", "catboost", "late", {
-            "depth": int(clf["depth"]), "learning_rate": float(clf["learning_rate"]), "l2_leaf_reg": float(clf["l2_leaf_reg"]),
-            "loss_function": clf["loss_function"], "eval_metric": clf["eval_metric"], "random_seed": seed,
-            "auto_class_weights": clf["auto_class_weights"], "allow_writing_files": bool(clf["allow_writing_files"]),
-            "verbose": bool(clf["verbose"]),
-        }, feature_profile),
-    ]
-    if bool(model_cfg["lightgbm"]["enabled"]):
-        lgbp = dict(model_cfg["lightgbm"]["params"])
-        candidates.extend(
-            [
-                AdvancedCandidate("lightgbm_regression_default", "lightgbm", "service", lgbp, feature_profile),
-                AdvancedCandidate("lightgbm_classifier_default", "lightgbm", "late", lgbp, feature_profile),
-            ]
-        )
+    candidates = build_phase09_candidates(model_cfg)
     xgb_status = "NOT_RUN_OPTIONAL"
     if bool(model_cfg["xgboost"]["enabled"]):
         if not xgboost_available():

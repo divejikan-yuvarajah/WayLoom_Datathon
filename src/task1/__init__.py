@@ -12,4 +12,7 @@ __all__ = [
     "tuning",
     "calibration",
     "model_selection",
+    "final_train",
+    "inference",
+    "submission",
 ]
