@@ -1,0 +1,60 @@
+version: 1
+
+input:
+  weekly_panel: data/interim/task2a_weekly_panel.csv
+  calendar: calendar.csv
+
+series_keys: [depot, brand]
+time_keys: [iso_year, iso_week]
+
+targets:
+  total: total_volume_m3
+  chilled: chilled_volume_m3
+
+trend:
+  windows_weeks: [4, 8, 13]
+  minimum_history_weeks: 8
+  compare_recent_vs_prior: true
+
+seasonality:
+  week_of_year_min_support_years: 2
+  normalize_within_series: false
+
+festival:
+  weekly_any_flag: true
+  weekly_day_count: true
+  preserve_names: true
+
+festival_ramp:
+  summaries: [max, mean]
+  bins: [0.0, 0.25, 0.50, 0.75, 1.000001]
+
+payday:
+  weekly_day_count: true
+  any_flag: true
+
+holiday:
+  weekly_day_count: true
+  any_flag: true
+
+monsoon:
+  weekly_day_count: true
+  weekly_fraction: true
+
+operating_days:
+  use_calendar_is_operating: true
+
+spikes:
+  primary_method: rolling_mad
+  trailing_window_weeks: 13
+  minimum_history_weeks: 8
+  robust_z_threshold: 3.5
+  secondary_method: iqr
+  iqr_multiplier: 1.5
+  do_not_drop_detected_weeks: true
+
+small_sample:
+  minimum_group_n: 4
+
+privacy:
+  output_dir: reports/private/phase12_task2a_eda
