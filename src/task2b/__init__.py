@@ -1,1 +1,1 @@
-"""Task 2B package placeholder."""
+"""Task 2B scenario contracts (Phase 18)."""
