@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -63,7 +64,8 @@ def validate_candidate_predictions(rows: pd.DataFrame, plan: dict[str, Any], tar
     return frame.sort_values(list(KEYS), kind="stable").reset_index(drop=True)
 
 
-def load_phase15_references(directory: str | Path, plan: dict[str, Any]) -> tuple[pd.DataFrame, dict[str, str]]:
+def load_phase15_references(directory: str | Path, plan: dict[str, Any],
+                            baseline_config: dict[str, Any]) -> tuple[pd.DataFrame, dict[str, str]]:
     """Read only the human-local frozen baseline artifacts during the local run."""
     root = Path(directory)
     manifest = json.loads((root / "run_manifest.json").read_text(encoding="utf-8"))
@@ -71,6 +73,12 @@ def load_phase15_references(directory: str | Path, plan: dict[str, Any]) -> tupl
     signature = phase14_backtest_signature(plan)
     if manifest.get("phase14_backtest_signature") != signature or reference.get("phase") != 15:
         raise ModelSelectionError("Phase 15 reference does not use the frozen Phase 14 signature.")
+    if reference.get("baseline_config_hash") != manifest.get("baseline_config_hash"):
+        raise ModelSelectionError("Phase 15 reference and run manifest disagree on baseline configuration.")
+    config_hash = hashlib.sha256(json.dumps(baseline_config, sort_keys=True,
+        default=str, separators=(",", ":")).encode()).hexdigest()
+    if manifest["baseline_config_hash"] != config_hash:
+        raise ModelSelectionError("Phase 15 reference baseline configuration changed.")
     ids = {"total": reference.get("best_total_baseline"), "chilled": reference.get("best_chilled_baseline")}
     if any(not isinstance(ids[target], str) or not ids[target].startswith(f"{target}_") for target in TARGETS):
         raise ModelSelectionError("Phase 15 reference baseline identity is missing or invalid.")
@@ -79,6 +87,9 @@ def load_phase15_references(directory: str | Path, plan: dict[str, Any]) -> tupl
     for target, candidate_id in ids.items():
         subset = source.loc[source.target_name.eq(target) & source.baseline_name.eq(candidate_id)].copy()
         if target == "chilled":
+            structural = subset.loc[subset.brand.isin(["Style", "Tech"])]
+            if structural.empty or not structural.y_pred.eq(0).all():
+                raise ModelSelectionError("Phase 15 Style/Tech chilled predictions are not exact zero.")
             subset = subset.loc[subset.brand.eq("Fresh")].copy()
         subset["candidate_id"] = candidate_id
         validated = validate_candidate_predictions(subset, plan, target, candidate_id)
@@ -87,38 +98,37 @@ def load_phase15_references(directory: str | Path, plan: dict[str, Any]) -> tupl
 
 
 def evaluate_candidate(rows: pd.DataFrame, plan: dict[str, Any], target: str,
-                       candidate_id: str) -> dict[str, Any]:
-    """Call frozen Phase 14 metrics on a complete candidate prediction set."""
+                       candidate_id: str, counterpart_candidate_id: str) -> dict[str, Any]:
+    """Score a candidate with its real, key-aligned opposite-target predictions."""
     frame = validate_candidate_predictions(rows, plan, target, candidate_id)
+    total_id = candidate_id if target == "total" else counterpart_candidate_id
+    chilled_id = candidate_id if target == "chilled" else counterpart_candidate_id
+    total = validate_candidate_predictions(rows, plan, "total", total_id)
+    chilled = validate_candidate_predictions(rows, plan, "chilled", chilled_id)
     expected_ids = [split.backtest_id for split in plan["splits"]]
     expected_series = plan["required_series"]
-    if target == "total":
-        scoring = frame[["backtest_id", "depot", "brand", "horizon_weeks"]].copy()
-        scoring["target_total_volume_m3"] = frame.y_true.to_numpy(dtype=float)
-        scoring["pred_total_volume_m3"] = frame.y_pred.to_numpy(dtype=float)
-        scoring["target_chilled_volume_m3"] = 0.0
-        scoring["pred_chilled_volume_m3"] = 0.0
-    else:
-        all_rows = expected_validation_rows(plan, "total")
-        scoring = all_rows[["backtest_id", "depot", "brand", "horizon_weeks"]].copy()
-        scoring["target_total_volume_m3"] = all_rows.y_true.to_numpy(dtype=float)
-        scoring["pred_total_volume_m3"] = all_rows.y_true.to_numpy(dtype=float)
-        scoring["target_chilled_volume_m3"] = 0.0
-        scoring["pred_chilled_volume_m3"] = 0.0
-        fresh = scoring.brand.eq("Fresh")
-        lookup = frame[["backtest_id", "depot", "brand", "horizon_weeks", "y_true", "y_pred"]]
-        aligned = scoring.loc[fresh, ["backtest_id", "depot", "brand", "horizon_weeks"]].merge(
-            lookup, on=["backtest_id", "depot", "brand", "horizon_weeks"], how="left", validate="one_to_one")
-        if len(aligned) != int(fresh.sum()) or aligned.y_pred.isna().any():
-            raise ModelSelectionError("Fresh chilled scoring coverage is incomplete.")
-        scoring.loc[fresh, "target_chilled_volume_m3"] = aligned.y_true.to_numpy(dtype=float)
-        scoring.loc[fresh, "pred_chilled_volume_m3"] = aligned.y_pred.to_numpy(dtype=float)
+    scoring = total[[*KEYS]].copy()
+    scoring["target_total_volume_m3"] = total.y_true.to_numpy(dtype=float)
+    scoring["pred_total_volume_m3"] = total.y_pred.to_numpy(dtype=float)
+    scoring["target_chilled_volume_m3"] = 0.0
+    scoring["pred_chilled_volume_m3"] = 0.0
+    fresh = scoring.brand.eq("Fresh")
+    aligned = scoring.loc[fresh, list(KEYS)].merge(
+        chilled[[*KEYS, "y_true", "y_pred"]], on=list(KEYS), how="left", validate="one_to_one")
+    if len(aligned) != len(chilled) or aligned.y_pred.isna().any():
+        raise ModelSelectionError("Raw total and Fresh chilled candidate keys do not align.")
+    scoring.loc[fresh, "target_chilled_volume_m3"] = aligned.y_true.to_numpy(dtype=float)
+    scoring.loc[fresh, "pred_chilled_volume_m3"] = aligned.y_pred.to_numpy(dtype=float)
     overall = evaluate_forecast_overall(scoring, expected_backtest_ids=expected_ids,
                                         expected_series=expected_series)
     series = evaluate_forecast_per_series(scoring, expected_backtest_ids=expected_ids,
                                           expected_series=expected_series)
     horizon = evaluate_forecast_by_horizon(scoring, expected_backtest_ids=expected_ids,
                                             expected_series=expected_series)
+    series = series.loc[series.target.eq(target)].reset_index(drop=True)
+    if target == "chilled":
+        series = series.loc[series.brand.eq("Fresh")].reset_index(drop=True)
+    horizon = horizon.loc[horizon.target.eq(target)].reset_index(drop=True)
     primary = overall["total_micro"] if target == "total" else overall["fresh_chilled_micro"]
     backtests = pd.DataFrame(overall["by_backtest"])
     backtests = backtests.loc[backtests.target.eq(target)].copy()
@@ -128,9 +138,11 @@ def evaluate_candidate(rows: pd.DataFrame, plan: dict[str, Any], target: str,
             "prediction_row_count": len(frame), "overall_mae": primary["mae"],
             "overall_rmse": primary["rmse"], "overall_wape": primary["wape"],
             "overall_bias_m3": primary["mean_bias_m3"], "p90_absolute_error": primary["p90_absolute_error"],
+            "mean_backtest_mae": float(backtests.mae.mean()),
             "std_backtest_mae": float(backtests.mae.std(ddof=0)),
             "worst_backtest_mae": float(backtests.mae.max()),
             "negative_prediction_count": primary["negative_prediction_count"],
+            "chilled_gt_total_count": primary["chilled_gt_total_count"] if target == "chilled" else 0,
             "per_series": series, "per_horizon": horizon, "backtests": backtests}
 
 
@@ -149,7 +161,10 @@ def select_champion(summaries: list[dict[str, Any]], reference_id: str,
     if len({row["candidate_id"] for row in summaries}) != len(summaries):
         raise ModelSelectionError("Duplicate candidate IDs prevent one champion selection.")
     baseline = next((row for row in summaries if row["candidate_id"] == reference_id), None)
-    if baseline is None or len(summaries) != 5:
+    target = "total" if reference_id.startswith("total_") else "chilled" if reference_id.startswith("chilled_") else None
+    expected_ids = {reference_id, f"catboost_{target}_v1", f"lightgbm_{target}_v1",
+        f"ensemble_cb_lgb_{target}_equal_v1", f"ensemble_advanced_baseline_{target}_equal_v1"}
+    if baseline is None or target is None or len(summaries) != 5 or {row["candidate_id"] for row in summaries} != expected_ids:
         raise ModelSelectionError("All five reference, model, and ensemble candidates are required.")
     eligible = []
     for row in summaries:
@@ -164,8 +179,11 @@ def select_champion(summaries: list[dict[str, Any]], reference_id: str,
         raise ModelSelectionError("No eligible champion remains.")
     complexity = {"baseline": 0, "advanced_reference_ensemble": 1, "catboost": 2,
                   "lightgbm": 2, "catboost_lightgbm_ensemble": 3}
-    champion = sorted(eligible, key=lambda row: (row["overall_mae"], row["overall_rmse"],
-        row["p90_absolute_error"], row["std_backtest_mae"], complexity[row["family"]],
+    best_mae = min(row["overall_mae"] for row in eligible)
+    near_best = [row for row in eligible if (best_mae == 0 and row["overall_mae"] == 0) or
+                 (best_mae > 0 and 100 * (row["overall_mae"] - best_mae) / best_mae <= tolerance_pct)]
+    champion = sorted(near_best, key=lambda row: (row["overall_rmse"], row["p90_absolute_error"],
+        row["std_backtest_mae"], complexity[row["family"]], row["overall_mae"],
         row["candidate_id"]))[0]
     for row in eligible:
         if row["candidate_id"] == champion["candidate_id"]:
@@ -226,8 +244,10 @@ def validate_final_model_config(config: dict[str, Any]) -> None:
                 not part.get("candidate_id") for part in parts) or weights != [0.5, 0.5]:
                 raise ModelSelectionError("Ensemble requires two configured components with frozen 50/50 weights.")
             for part in parts:
+                policy = part.get("final_iteration_policy")
                 if part.get("approach_type") == "model" and (not part.get("parameters") or
-                    part.get("final_iteration_policy", {}).get("method") != "median_best_iteration"):
+                    not isinstance(policy, dict) or policy.get("method") != "median_best_iteration" or
+                    type(policy.get("value")) is not int or policy["value"] < 1):
                     raise ModelSelectionError("Ensemble model component lacks fit parameters or iteration policy.")
         candidates.append(item["candidate_id"])
     if len(set(candidates)) != 2:

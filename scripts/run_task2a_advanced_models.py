@@ -19,7 +19,7 @@ from src.task2a.advanced_models import KEYS, load_advanced_config, run_advanced_
 from src.task2a.ensembles import blend_equal_weight
 from src.task2a.features import load_feature_config
 from src.task2a.model_selection import (evaluate_candidate, load_phase15_references,
-    select_champion, validate_candidate_predictions)
+    median_final_iteration, select_champion, validate_candidate_predictions)
 from src.task2a.validation import build_rolling_origin_plan, load_validation_config
 
 
@@ -60,10 +60,7 @@ def _component_spec(candidate_id: str, target: str, model_config: dict, folds: p
         params = model_config[family][target]
         if candidate_id == params["candidate_id"]:
             maximum = params["iterations" if family == "catboost" else "n_estimators"]
-            values = folds.loc[folds.candidate_id.eq(candidate_id), "best_iteration"].to_numpy(dtype=float)
-            if len(values) != folds.backtest_id.nunique() or not np.isfinite(values).all():
-                raise ValueError("Final iteration requires every valid backtest best iteration.")
-            iteration = int(np.clip(np.floor(np.median(values) + 0.5), 1, maximum))
+            iteration = median_final_iteration(folds, candidate_id, maximum)
             return {"approach_type": "model", "candidate_id": candidate_id, "family": family,
                     "parameters": params, "feature_profile_id": "task2a_advanced_safe_v1",
                     "preprocessing": "native_categorical" if family == "catboost" else "fold_train_median_onehot",
@@ -90,13 +87,14 @@ def run_experiment(panel: pd.DataFrame, table: pd.DataFrame, feature_config: dic
                    phase14_plan: Path, baseline_config: dict) -> dict:
     plan = build_rolling_origin_plan(panel, table, feature_config, validation_config)
     signature = verify_frozen_phase14_plan(phase14_plan, plan)
-    reference_predictions, references = load_phase15_references(baseline_results, plan)
+    reference_predictions, references = load_phase15_references(baseline_results, plan, baseline_config)
     model_predictions, folds, profile = run_advanced_backtests(plan, feature_config, model_config)
     all_predictions = [reference_predictions, model_predictions]
     components: dict[str, tuple[str, str]] = {}
     selection = {}
     summaries = []
     diagnostics = {}
+    candidate_ids_by_target = {}
     for target in ("total", "chilled"):
         ids = [references[target], model_config["catboost"][target]["candidate_id"],
                model_config["lightgbm"][target]["candidate_id"]]
@@ -107,7 +105,10 @@ def run_experiment(panel: pd.DataFrame, table: pd.DataFrame, feature_config: dic
         ensemble_a = blend_equal_weight(cb, lgb, ensemble_a_id)
         all_predictions.append(ensemble_a)
         components[ensemble_a_id] = (ids[1], ids[2])
-        preliminary = [evaluate_candidate(combined, plan, target, candidate_id) for candidate_id in ids[1:]]
+        opposite = "chilled" if target == "total" else "total"
+        preliminary = [evaluate_candidate(combined, plan, target, candidate_id,
+            model_config[family][opposite]["candidate_id"])
+            for family, candidate_id in zip(("catboost", "lightgbm"), ids[1:], strict=True)]
         best_advanced = min(preliminary, key=lambda row: (row["overall_mae"], row["overall_rmse"],
             row["p90_absolute_error"], row["std_backtest_mae"], row["candidate_id"]))["candidate_id"]
         advanced = validate_candidate_predictions(combined, plan, target, best_advanced)
@@ -116,19 +117,30 @@ def run_experiment(panel: pd.DataFrame, table: pd.DataFrame, feature_config: dic
         ensemble_b = blend_equal_weight(advanced, reference, ensemble_b_id)
         all_predictions.append(ensemble_b)
         components[ensemble_b_id] = (best_advanced, ids[0])
-        candidate_ids = [*ids, ensemble_a_id, ensemble_b_id]
-        complete = pd.concat(all_predictions, ignore_index=True)
+        candidate_ids_by_target[target] = [*ids, ensemble_a_id, ensemble_b_id]
+    complete = pd.concat(all_predictions, ignore_index=True)
+    for target in ("total", "chilled"):
+        candidate_ids = candidate_ids_by_target[target]
+        ids = candidate_ids[:3]
+        opposite = "chilled" if target == "total" else "total"
         target_summaries = []
-        for candidate_id in candidate_ids:
-            result = evaluate_candidate(complete, plan, target, candidate_id)
+        for index, candidate_id in enumerate(candidate_ids):
+            result = evaluate_candidate(complete, plan, target, candidate_id,
+                                        candidate_ids_by_target[opposite][index])
             result["family"] = ("baseline" if candidate_id == ids[0] else
                 "catboost" if candidate_id == ids[1] else "lightgbm" if candidate_id == ids[2] else
-                "catboost_lightgbm_ensemble" if candidate_id == ensemble_a_id else "advanced_reference_ensemble")
+                "catboost_lightgbm_ensemble" if index == 3 else "advanced_reference_ensemble")
+            result["approach_family"] = result["family"]
             diagnostics[candidate_id] = {"per_series": result.pop("per_series"),
                                          "per_horizon": result.pop("per_horizon"),
                                          "backtests": result.pop("backtests")}
             target_summaries.append(result)
         champion, ranked = select_champion(target_summaries, ids[0])
+        for row in ranked:
+            row["eligible"] = row["selection_status"] in {"SELECTED", "REFERENCE", "ELIGIBLE"}
+            row["ineligibility_reason"] = (None if row["eligible"] else "NO_MATERIAL_MAE_IMPROVEMENT")
+            row["approach_type"] = ("baseline" if row["family"] == "baseline" else
+                                    "ensemble" if "ensemble" in row["family"] else "model")
         summaries.extend(ranked)
         selection["total" if target == "total" else "chilled_fresh"] = _champion_spec(
             champion["candidate_id"], target, model_config, folds, baseline_config, components)

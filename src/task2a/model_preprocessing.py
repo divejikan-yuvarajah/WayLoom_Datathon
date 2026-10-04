@@ -32,8 +32,10 @@ def feature_profile(config: dict[str, Any] | None = None) -> dict[str, Any]:
     if columns != enabled.feature_name.tolist() or len(columns) != len(set(columns)):
         raise ModelPreprocessingError("Phase 13 feature registry and allow-list disagree.")
     categorical = enabled.loc[enabled.categorical, "feature_name"].tolist()
-    identity = hashlib.sha256(json.dumps({"columns": columns, "categorical": categorical},
-                                      sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    lineage = enabled[["feature_name", "source", "formula", "availability_type",
+                       "missing_value_policy", "data_type"]].to_dict(orient="records")
+    identity = hashlib.sha256(json.dumps({"lineage": lineage, "feature_config": config},
+                                      sort_keys=True, default=str, separators=(",", ":")).encode()).hexdigest()
     return {"profile_id": "task2a_advanced_safe_v1", "columns": columns,
             "categorical": categorical, "numeric": [name for name in columns if name not in categorical],
             "registry_hash": identity, "forbidden_feature_count": 0}
