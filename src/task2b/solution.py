@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import tempfile
@@ -12,6 +11,7 @@ from pathlib import Path
 import pandas as pd
 import ortools
 
+from src.task2b.artifact_integrity import ALLOCATION_COLUMNS, sha256_file
 from src.task2b.cp_scaling import from_scaled_int
 from src.task2b.lexicographic_solver import SolveResult
 from src.task2b.optimizer import ModelBundle
@@ -21,7 +21,6 @@ class SolutionError(ValueError):
     """The solved model does not yield the expected allocation grain."""
 
 
-ALLOCATION_COLUMNS = ("scenario", "order_ref", "outlet_id", "decision", "vehicle_id", "trip_id")
 AUDIT_CHECK_NAMES = (
     "order_decisions", "assignment", "available_fleet", "same_brand", "same_district",
     "refrigeration", "van_only", "home_depot", "whole_order", "weight", "volume",
@@ -55,14 +54,6 @@ def extract_allocation(bundle: ModelBundle, result: SolveResult) -> pd.DataFrame
 def extract_solver_trip_minutes(bundle: ModelBundle, result: SolveResult) -> dict[tuple[str, int], object]:
     return {(v, t): from_scaled_int(result.solver.Value(variable), bundle.data.scales["time"])
             for (v, t), variable in bundle.trip_minutes.items()}
-
-
-def sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def validate_freeze_evidence(run: dict, stages: list[dict], audit: dict,
