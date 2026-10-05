@@ -24,7 +24,8 @@ def calculate_trip_time(candidate_orders:pd.DataFrame, district_travel_ref:pd.Da
  if required.difference(service_allowance_ref) or service_allowance_ref.duplicated(['brand','dock_type']).any(): raise TripTimeError('Service allowance reference is invalid.')
  joined=orders.merge(service_allowance_ref[['brand','dock_type','service_allowance_min']],on=['brand','dock_type'],how='left',validate='many_to_one')
  if joined.service_allowance_min.isna().any(): raise TripTimeError('Candidate trip has a missing brand+dock service allowance.')
- handling=float(joined.service_allowance_min.sum())
- if not np.isfinite(handling) or handling<0: raise TripTimeError('Service allowance must be finite and nonnegative.')
+ allowances=pd.to_numeric(joined.service_allowance_min,errors='coerce').to_numpy(dtype=float)
+ if not np.isfinite(allowances).all() or (allowances<0).any(): raise TripTimeError('Service allowance must be finite and nonnegative.')
+ handling=float(allowances.sum())
  inter_stop=inter*(len(orders)-1); total=outbound+inter_stop+handling
  return TripTimeBreakdown(brand,district,len(orders),outbound,inter_stop,handling,total,0.0)

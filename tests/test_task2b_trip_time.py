@@ -10,3 +10,10 @@ def test_count_orders_and_reference_fail_closed():
  t,a=_refs(); one=calculate_trip_time(_orders('Gampaha',['street']),t,a); assert one.inter_stop_minutes==0
  with pytest.raises(TripTimeError): calculate_trip_time(_orders('Gampaha',['other']),t,a)
  with pytest.raises(TripTimeError): calculate_trip_time(_orders('Gampaha',['street']),pd.concat([t,t.iloc[[0]]]),a)
+def test_string_encoded_service_allowances_are_summed_numerically():
+ t,a=_refs(); a['service_allowance_min']=a.service_allowance_min.astype(str)
+ result=calculate_trip_time(_orders('Gampaha',['rear_dock','street']),t,a)
+ assert result.handling_minutes==31 and result.trip_minutes==77
+ a.loc[a.dock_type.eq('street'),'service_allowance_min']='not-a-number'
+ with pytest.raises(TripTimeError,match='finite and nonnegative'):
+  calculate_trip_time(_orders('Gampaha',['rear_dock','street']),t,a)
