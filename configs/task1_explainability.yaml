@@ -1,0 +1,55 @@
+version: 1
+
+frozen:
+  final_model_config: configs/task1_final_models.yaml
+  service_model_dir: models/task1_service
+  late_model_dir: models/task1_late
+  task1_submission: outputs/submission_task1.csv
+  require_hash_stability: true
+
+feature_pipeline:
+  config: configs/task1_features.yaml
+  inference_config: configs/task1_inference.yaml
+  frozen_test_features: data/interim/task1_features_test.csv
+  prefer_frozen_materialized_features: true
+  reuse_canonical_phase06_phase10_pipeline: true
+
+population:
+  source: task1_test_features
+  max_rows: 2000
+  min_rows_if_available: 200
+  random_seed: 42
+  deterministic_sampling: true
+
+importance:
+  top_n: 20
+  prefer_native: true
+  fallback: mean_abs_shap
+
+shap:
+  strategy: auto_verified
+  reconstruction_tolerance: 1.0e-6
+  require_output_space_metadata: true
+  require_positive_class: 1
+
+local:
+  service_selector: median_prediction
+  late_selector: highest_predicted_probability
+  anonymize_identifiers: true
+  top_positive: 8
+  top_negative: 8
+
+business_drivers:
+  top_n_per_model: 10
+  require_feature_registry_match: true
+  require_leakage_safe: true
+  report_method_disagreement: true
+
+language:
+  require_noncausal_disclaimer: true
+  run_causal_phrase_audit: true
+
+privacy:
+  private_report_dir: reports/private/phase25_task1_explainability
+  expose_delivery_ids_in_docs: false
+  external_api_allowed: false
