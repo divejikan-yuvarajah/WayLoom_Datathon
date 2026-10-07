@@ -1,0 +1,13 @@
+{
+  "delivery_ref": "DEMO_DELIVERY_001",
+  "model_status": {
+    "late_model": "synthetic",
+    "service_model": "synthetic"
+  },
+  "prediction": {
+    "pred_late_prob": 0.201,
+    "pred_service_min": 14.7
+  },
+  "schema_version": "1.0",
+  "source_mode": "synthetic_demo"
+}

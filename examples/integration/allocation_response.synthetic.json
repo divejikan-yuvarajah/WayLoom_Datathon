@@ -1,0 +1,26 @@
+{
+  "constraint_summary": {
+    "fresh_vehicle_minutes_limit": 270,
+    "max_trips_per_vehicle": 2,
+    "style_tech_vehicle_minutes_limit": 480
+  },
+  "deferral_example_refs": [
+    "DEFERRAL_EXAMPLE_A",
+    "DEFERRAL_EXAMPLE_B"
+  ],
+  "reasoning": {
+    "hard_rules_precede_policy": true,
+    "policy_name": "WayLoom lexicographic allocation policy",
+    "policy_origin": "WayLoom engineering policy"
+  },
+  "scenario_ref": "DEMO_SCENARIO_01",
+  "schema_version": "1.0",
+  "source_mode": "synthetic_demo",
+  "summary": {
+    "orders_deferred": 2,
+    "orders_served": 10,
+    "orders_total": 12,
+    "trips_used": 7,
+    "vehicles_used": 5
+  }
+}

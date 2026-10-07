@@ -1,0 +1,13 @@
+{
+  "brand": "Fresh",
+  "depot": "Demo Depot",
+  "forecast_horizon": 1,
+  "forecast_ref": "DEMO_FORECAST_001",
+  "iso_week": 42,
+  "iso_year": 2026,
+  "pred_chilled_volume_m3": 9.56,
+  "pred_total_volume_m3": 16.28,
+  "schema_version": "1.0",
+  "source_mode": "synthetic_demo",
+  "uncertainty": null
+}

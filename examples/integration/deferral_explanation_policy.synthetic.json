@@ -1,0 +1,18 @@
+{
+  "availability": "synthetic_demo",
+  "evidence": {
+    "changed_order_count": 3,
+    "counterfactual_complete": true,
+    "first_degraded_policy_tier": "LEVEL_2"
+  },
+  "example_ref": "DEFERRAL_EXAMPLE_B",
+  "limitations": "This is an optimization explanation under the supplied rules and WayLoom policy; it is not a real-world causal claim.",
+  "primary_reason_code": "LOWER_POLICY_PRIORITY",
+  "reason_class": "POLICY_TRADEOFF",
+  "schema_version": "1.0",
+  "secondary_reason_codes": [
+    "TRIP_SLOT_LIMIT"
+  ],
+  "source_mode": "synthetic_demo",
+  "summary": "Serving this synthetic example would degrade a higher-ranked WayLoom policy tier."
+}

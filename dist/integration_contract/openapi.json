@@ -1,0 +1,1235 @@
+{
+  "components": {
+    "schemas": {
+      "AllocationInsightRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "scenario_ref": {
+            "const": "DEMO_SCENARIO_01",
+            "title": "Scenario Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scenario_ref"
+        ],
+        "title": "AllocationInsightRequest",
+        "type": "object"
+      },
+      "AllocationInsightResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "constraint_summary": {
+            "$ref": "#/components/schemas/ConstraintSummary"
+          },
+          "deferral_example_refs": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 3,
+            "title": "Deferral Example Refs",
+            "type": "array"
+          },
+          "reasoning": {
+            "$ref": "#/components/schemas/AllocationReasoning"
+          },
+          "scenario_ref": {
+            "const": "DEMO_SCENARIO_01",
+            "title": "Scenario Ref",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_mode": {
+            "enum": [
+              "synthetic_demo",
+              "private_local"
+            ],
+            "title": "Source Mode",
+            "type": "string"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/AllocationSummary"
+          }
+        },
+        "required": [
+          "source_mode",
+          "scenario_ref",
+          "summary",
+          "constraint_summary",
+          "reasoning"
+        ],
+        "title": "AllocationInsightResponse",
+        "type": "object",
+        "x-wayloom-semantic-rules": [
+          "orders_served + orders_deferred == orders_total"
+        ]
+      },
+      "AllocationReasoning": {
+        "additionalProperties": false,
+        "properties": {
+          "hard_rules_precede_policy": {
+            "const": true,
+            "title": "Hard Rules Precede Policy",
+            "type": "boolean"
+          },
+          "policy_name": {
+            "const": "WayLoom lexicographic allocation policy",
+            "title": "Policy Name",
+            "type": "string"
+          },
+          "policy_origin": {
+            "const": "WayLoom engineering policy",
+            "title": "Policy Origin",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_name",
+          "policy_origin",
+          "hard_rules_precede_policy"
+        ],
+        "title": "AllocationReasoning",
+        "type": "object"
+      },
+      "AllocationSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "orders_deferred": {
+            "minimum": 0.0,
+            "title": "Orders Deferred",
+            "type": "integer"
+          },
+          "orders_served": {
+            "minimum": 0.0,
+            "title": "Orders Served",
+            "type": "integer"
+          },
+          "orders_total": {
+            "minimum": 0.0,
+            "title": "Orders Total",
+            "type": "integer"
+          },
+          "trips_used": {
+            "minimum": 0.0,
+            "title": "Trips Used",
+            "type": "integer"
+          },
+          "vehicles_used": {
+            "minimum": 0.0,
+            "title": "Vehicles Used",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "orders_total",
+          "orders_served",
+          "orders_deferred",
+          "vehicles_used",
+          "trips_used"
+        ],
+        "title": "AllocationSummary",
+        "type": "object"
+      },
+      "ConstraintSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "fresh_vehicle_minutes_limit": {
+            "const": 270,
+            "default": 270,
+            "title": "Fresh Vehicle Minutes Limit",
+            "type": "integer"
+          },
+          "max_trips_per_vehicle": {
+            "const": 2,
+            "default": 2,
+            "title": "Max Trips Per Vehicle",
+            "type": "integer"
+          },
+          "style_tech_vehicle_minutes_limit": {
+            "const": 480,
+            "default": 480,
+            "title": "Style Tech Vehicle Minutes Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ConstraintSummary",
+        "type": "object"
+      },
+      "ContractResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "available_endpoints": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Available Endpoints",
+            "type": "array"
+          },
+          "contract_version": {
+            "const": "1.0.0",
+            "default": "1.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "integration_status": {
+            "const": "optional_shared",
+            "default": "optional_shared",
+            "title": "Integration Status",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "synthetic_demo",
+              "private_local"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "privacy_statement": {
+            "title": "Privacy Statement",
+            "type": "string"
+          },
+          "schema_versions": {
+            "additionalProperties": {
+              "const": "1.0",
+              "type": "string"
+            },
+            "title": "Schema Versions",
+            "type": "object"
+          }
+        },
+        "required": [
+          "schema_versions",
+          "available_endpoints",
+          "mode",
+          "privacy_statement"
+        ],
+        "title": "ContractResponse",
+        "type": "object"
+      },
+      "DeferralEvidence": {
+        "additionalProperties": false,
+        "properties": {
+          "changed_order_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changed Order Count"
+          },
+          "counterfactual_complete": {
+            "title": "Counterfactual Complete",
+            "type": "boolean"
+          },
+          "first_degraded_policy_tier": {
+            "anyOf": [
+              {
+                "pattern": "^LEVEL_[1-9][A-C]?$|^HARD_FEASIBILITY$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Degraded Policy Tier"
+          }
+        },
+        "required": [
+          "counterfactual_complete"
+        ],
+        "title": "DeferralEvidence",
+        "type": "object"
+      },
+      "DeferralExplanationResponse": {
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "availability": {
+                  "const": "not_available"
+                }
+              },
+              "required": [
+                "availability"
+              ]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "type": "null"
+                },
+                "primary_reason_code": {
+                  "type": "null"
+                },
+                "reason_class": {
+                  "type": "null"
+                },
+                "secondary_reason_codes": {
+                  "anyOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "maxItems": 0,
+                      "type": "array"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "availability": {
+                  "const": "available"
+                }
+              },
+              "required": [
+                "availability"
+              ]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "not": {
+                    "type": "null"
+                  }
+                },
+                "primary_reason_code": {
+                  "enum": [
+                    "HARD_NO_COMPATIBLE_VEHICLE",
+                    "CAPACITY_COMPETITION",
+                    "SCARCE_REEFER_CAPACITY",
+                    "SCARCE_REEFER_VAN_CAPACITY",
+                    "TRIP_SLOT_LIMIT",
+                    "FRESH_TIME_BUDGET",
+                    "STYLE_TECH_TIME_BUDGET",
+                    "LOWER_POLICY_PRIORITY",
+                    "ALTERNATIVE_FEASIBLE_ALLOCATION_CHOSEN"
+                  ]
+                },
+                "reason_class": {
+                  "enum": [
+                    "UNAVOIDABLE_HARD",
+                    "POLICY_TRADEOFF",
+                    "ALTERNATIVE_OPTIMUM"
+                  ]
+                },
+                "summary": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "reason_class",
+                "primary_reason_code",
+                "summary",
+                "evidence"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "availability": {
+                  "const": "synthetic_demo"
+                }
+              },
+              "required": [
+                "availability"
+              ]
+            },
+            "then": {
+              "properties": {
+                "evidence": {
+                  "not": {
+                    "type": "null"
+                  }
+                },
+                "primary_reason_code": {
+                  "enum": [
+                    "HARD_NO_COMPATIBLE_VEHICLE",
+                    "CAPACITY_COMPETITION",
+                    "SCARCE_REEFER_CAPACITY",
+                    "SCARCE_REEFER_VAN_CAPACITY",
+                    "TRIP_SLOT_LIMIT",
+                    "FRESH_TIME_BUDGET",
+                    "STYLE_TECH_TIME_BUDGET",
+                    "LOWER_POLICY_PRIORITY",
+                    "ALTERNATIVE_FEASIBLE_ALLOCATION_CHOSEN"
+                  ]
+                },
+                "reason_class": {
+                  "enum": [
+                    "UNAVOIDABLE_HARD",
+                    "POLICY_TRADEOFF",
+                    "ALTERNATIVE_OPTIMUM"
+                  ]
+                },
+                "source_mode": {
+                  "const": "synthetic_demo"
+                },
+                "summary": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "reason_class",
+                "primary_reason_code",
+                "summary",
+                "evidence"
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "availability": {
+            "enum": [
+              "available",
+              "not_available",
+              "synthetic_demo"
+            ],
+            "title": "Availability",
+            "type": "string"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DeferralEvidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "example_ref": {
+            "pattern": "^DEFERRAL_EXAMPLE_[A-Z]$",
+            "title": "Example Ref",
+            "type": "string"
+          },
+          "limitations": {
+            "maxLength": 500,
+            "minLength": 20,
+            "title": "Limitations",
+            "type": "string"
+          },
+          "primary_reason_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Reason Code"
+          },
+          "reason_class": {
+            "anyOf": [
+              {
+                "enum": [
+                  "UNAVOIDABLE_HARD",
+                  "POLICY_TRADEOFF",
+                  "ALTERNATIVE_OPTIMUM"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Class"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "secondary_reason_codes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Secondary Reason Codes"
+          },
+          "source_mode": {
+            "enum": [
+              "synthetic_demo",
+              "private_local"
+            ],
+            "title": "Source Mode",
+            "type": "string"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          }
+        },
+        "required": [
+          "source_mode",
+          "example_ref",
+          "availability",
+          "limitations"
+        ],
+        "title": "DeferralExplanationResponse",
+        "type": "object"
+      },
+      "DeliveryRiskRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "delivery_ref": {
+            "pattern": "^DEMO_DELIVERY_[0-9]{3}$",
+            "title": "Delivery Ref",
+            "type": "string"
+          },
+          "dock_type": {
+            "default": "standard",
+            "enum": [
+              "standard",
+              "restricted"
+            ],
+            "title": "Dock Type",
+            "type": "string"
+          },
+          "planned_arrival_hour": {
+            "maximum": 23.0,
+            "minimum": 0.0,
+            "title": "Planned Arrival Hour",
+            "type": "integer"
+          },
+          "route_distance_km": {
+            "maximum": 1000.0,
+            "minimum": 0.0,
+            "title": "Route Distance Km",
+            "type": "number"
+          }
+        },
+        "required": [
+          "delivery_ref",
+          "route_distance_km",
+          "planned_arrival_hour"
+        ],
+        "title": "DeliveryRiskRequest",
+        "type": "object"
+      },
+      "DemandForecastRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "brand": {
+            "enum": [
+              "Fresh",
+              "Style",
+              "Tech"
+            ],
+            "title": "Brand",
+            "type": "string"
+          },
+          "depot": {
+            "enum": [
+              "Demo Depot",
+              "Demo North Hub"
+            ],
+            "title": "Depot",
+            "type": "string"
+          },
+          "forecast_horizon": {
+            "default": 1,
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Forecast Horizon",
+            "type": "integer"
+          },
+          "iso_week": {
+            "maximum": 53.0,
+            "minimum": 1.0,
+            "title": "Iso Week",
+            "type": "integer"
+          },
+          "iso_year": {
+            "maximum": 2100.0,
+            "minimum": 2020.0,
+            "title": "Iso Year",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "depot",
+          "brand",
+          "iso_year",
+          "iso_week"
+        ],
+        "title": "DemandForecastRequest",
+        "type": "object"
+      },
+      "DemandForecastResponse": {
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "brand": {
+                  "enum": [
+                    "Style",
+                    "Tech"
+                  ]
+                }
+              },
+              "required": [
+                "brand"
+              ]
+            },
+            "then": {
+              "properties": {
+                "pred_chilled_volume_m3": {
+                  "const": 0
+                }
+              }
+            }
+          }
+        ],
+        "properties": {
+          "brand": {
+            "enum": [
+              "Fresh",
+              "Style",
+              "Tech"
+            ],
+            "title": "Brand",
+            "type": "string"
+          },
+          "depot": {
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Depot",
+            "type": "string"
+          },
+          "forecast_horizon": {
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Forecast Horizon",
+            "type": "integer"
+          },
+          "forecast_ref": {
+            "pattern": "^DEMO_FORECAST_[0-9]{3}$",
+            "title": "Forecast Ref",
+            "type": "string"
+          },
+          "iso_week": {
+            "maximum": 53.0,
+            "minimum": 1.0,
+            "title": "Iso Week",
+            "type": "integer"
+          },
+          "iso_year": {
+            "maximum": 2100.0,
+            "minimum": 2020.0,
+            "title": "Iso Year",
+            "type": "integer"
+          },
+          "pred_chilled_volume_m3": {
+            "minimum": 0.0,
+            "title": "Pred Chilled Volume M3",
+            "type": "number"
+          },
+          "pred_total_volume_m3": {
+            "minimum": 0.0,
+            "title": "Pred Total Volume M3",
+            "type": "number"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_mode": {
+            "enum": [
+              "synthetic_demo",
+              "private_local"
+            ],
+            "title": "Source Mode",
+            "type": "string"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ForecastUncertainty"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "source_mode",
+          "forecast_ref",
+          "depot",
+          "brand",
+          "iso_year",
+          "iso_week",
+          "forecast_horizon",
+          "pred_total_volume_m3",
+          "pred_chilled_volume_m3"
+        ],
+        "title": "DemandForecastResponse",
+        "type": "object",
+        "x-wayloom-semantic-rules": [
+          "pred_chilled_volume_m3 <= pred_total_volume_m3"
+        ]
+      },
+      "ForecastUncertainty": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "const": "unofficial",
+            "default": "unofficial",
+            "title": "Status",
+            "type": "string"
+          },
+          "target_coverage": {
+            "exclusiveMaximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Target Coverage",
+            "type": "number"
+          },
+          "total_lower_m3": {
+            "minimum": 0.0,
+            "title": "Total Lower M3",
+            "type": "number"
+          },
+          "total_upper_m3": {
+            "minimum": 0.0,
+            "title": "Total Upper M3",
+            "type": "number"
+          }
+        },
+        "required": [
+          "target_coverage",
+          "total_lower_m3",
+          "total_upper_m3"
+        ],
+        "title": "ForecastUncertainty",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "contract_version": {
+            "const": "1.0.0",
+            "default": "1.0.0",
+            "title": "Contract Version",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "synthetic_demo",
+              "private_local"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "service": {
+            "const": "wayloom-integration",
+            "default": "wayloom-integration",
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "ModelLoadRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "load": {
+            "const": true,
+            "default": true,
+            "title": "Load",
+            "type": "boolean"
+          }
+        },
+        "title": "ModelLoadRequest",
+        "type": "object"
+      },
+      "ModelLoadResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "loaded",
+              "already_loaded"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "synthetic_demo",
+              "private_local"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "models": {
+            "$ref": "#/components/schemas/ModelStates"
+          },
+          "real_models_loaded": {
+            "title": "Real Models Loaded",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "mode",
+          "action",
+          "real_models_loaded",
+          "models"
+        ],
+        "title": "ModelLoadResponse",
+        "type": "object"
+      },
+      "ModelStates": {
+        "additionalProperties": false,
+        "properties": {
+          "task1_late": {
+            "enum": [
+              "not_loaded",
+              "loaded",
+              "synthetic",
+              "error"
+            ],
+            "title": "Task1 Late",
+            "type": "string"
+          },
+          "task1_service": {
+            "enum": [
+              "not_loaded",
+              "loaded",
+              "synthetic",
+              "error"
+            ],
+            "title": "Task1 Service",
+            "type": "string"
+          },
+          "task2a_chilled_or_pipeline": {
+            "enum": [
+              "not_loaded",
+              "loaded",
+              "synthetic",
+              "error"
+            ],
+            "title": "Task2A Chilled Or Pipeline",
+            "type": "string"
+          },
+          "task2a_total": {
+            "enum": [
+              "not_loaded",
+              "loaded",
+              "synthetic",
+              "error"
+            ],
+            "title": "Task2A Total",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task1_service",
+          "task1_late",
+          "task2a_total",
+          "task2a_chilled_or_pipeline"
+        ],
+        "title": "ModelStates",
+        "type": "object"
+      },
+      "Task1ModelStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "late_model": {
+            "enum": [
+              "synthetic",
+              "loaded"
+            ],
+            "title": "Late Model",
+            "type": "string"
+          },
+          "service_model": {
+            "enum": [
+              "synthetic",
+              "loaded"
+            ],
+            "title": "Service Model",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service_model",
+          "late_model"
+        ],
+        "title": "Task1ModelStatus",
+        "type": "object"
+      },
+      "Task1Prediction": {
+        "additionalProperties": false,
+        "properties": {
+          "pred_late_prob": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Pred Late Prob",
+            "type": "number"
+          },
+          "pred_service_min": {
+            "minimum": 0.0,
+            "title": "Pred Service Min",
+            "type": "number"
+          }
+        },
+        "required": [
+          "pred_service_min",
+          "pred_late_prob"
+        ],
+        "title": "Task1Prediction",
+        "type": "object"
+      },
+      "Task1Response": {
+        "additionalProperties": false,
+        "properties": {
+          "delivery_ref": {
+            "pattern": "^DEMO_DELIVERY_[0-9]{3}$",
+            "title": "Delivery Ref",
+            "type": "string"
+          },
+          "model_status": {
+            "$ref": "#/components/schemas/Task1ModelStatus"
+          },
+          "prediction": {
+            "$ref": "#/components/schemas/Task1Prediction"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_mode": {
+            "enum": [
+              "synthetic_demo",
+              "private_local"
+            ],
+            "title": "Source Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_mode",
+          "delivery_ref",
+          "prediction",
+          "model_status"
+        ],
+        "title": "Task1Response",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Optional, synthetic-only local engineering contract; not an official submission interface.",
+    "title": "WayLoom Synthetic Integration",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/v1/allocation-insight": {
+      "post": {
+        "operationId": "allocation_endpoint_v1_allocation_insight_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AllocationInsightRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllocationInsightResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Allocation Endpoint"
+      }
+    },
+    "/v1/contract": {
+      "get": {
+        "operationId": "contract_v1_contract_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContractResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Contract"
+      }
+    },
+    "/v1/delivery-risk": {
+      "post": {
+        "operationId": "delivery_endpoint_v1_delivery_risk_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliveryRiskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task1Response"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delivery Endpoint"
+      }
+    },
+    "/v1/demand-forecast": {
+      "post": {
+        "operationId": "demand_endpoint_v1_demand_forecast_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemandForecastRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemandForecastResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Demand Endpoint"
+      }
+    },
+    "/v1/demo/deferral-explanations": {
+      "get": {
+        "operationId": "deferral_endpoint_v1_demo_deferral_explanations_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DeferralExplanationResponse"
+                  },
+                  "title": "Response Deferral Endpoint V1 Demo Deferral Explanations Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Deferral Endpoint"
+      }
+    },
+    "/v1/models/load": {
+      "post": {
+        "operationId": "load_models_v1_models_load_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModelLoadRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelLoadResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Load Models"
+      }
+    }
+  }
+}
