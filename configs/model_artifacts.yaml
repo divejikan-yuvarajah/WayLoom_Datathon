@@ -1,6 +1,6 @@
 version: 1
 phase: 32
-state: READY_FOR_LOCAL_PARITY
+state: PASS
 registry: models/artifact_registry.json
 task2a_manifest: models/task2a/artifact_manifest.json
 trusted_model_root: models

@@ -1594,32 +1594,34 @@ Each row includes: status checkbox, Task ID, Official/Engineering/Competitive ma
 
 | Status | Task | Mark | Pri | Dependency | Work item |
 |---|---|---:|---:|---|---|
-| [ ] | **DT-389** | [O] | P0 | Task 1, Task 2A and Task 2B finalized | Create TeamName_FinalNotebook.ipynb |
-| [ ] | **DT-390** | [E] | P0 | Phases 10,17,24 and documentation state | Add project/problem overview |
-| [ ] | **DT-391** | [E] | P0 | Phases 10,17,24 and documentation state | Add imports/configuration |
-| [ ] | **DT-392** | [E] | P0 | Phases 10,17,24 and documentation state | Add data loading |
-| [ ] | **DT-393** | [E] | P0 | Phases 10,17,24 and documentation state | Add data validation |
-| [ ] | **DT-394** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 1 label construction |
-| [ ] | **DT-395** | [O] | P0 | Phases 10,17,24 and documentation state | Add preprocessing cells |
-| [ ] | **DT-396** | [E] | P0 | Phases 10,17,24 and documentation state | Add EDA summary |
-| [ ] | **DT-397** | [O] | P0 | Phases 10,17,24 and documentation state | Add feature engineering |
-| [ ] | **DT-398** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 1 training cells |
-| [ ] | **DT-399** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 1 evaluation |
-| [ ] | **DT-400** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 2A aggregation |
-| [ ] | **DT-401** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 2A training/backtesting |
-| [ ] | **DT-402** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 2A evaluation |
-| [ ] | **DT-403** | [E] | P0 | Phases 10,17,24 and documentation state | Add Task 2B summary/pointer |
-| [ ] | **DT-404** | [O] | P0 | Saved models available | Add final inference section |
-| [ ] | **DT-405** | [O] | P0 | DT-412–DT-419 | Load saved models in final cell |
-| [ ] | **DT-406** | [O] | P0 | Phases 10,17,24 and documentation state | Demonstrate Task 1 inference |
-| [ ] | **DT-407** | [O] | P0 | Phases 10,17,24 and documentation state | Demonstrate Task 2A inference |
-| [ ] | **DT-408** | [O] | P0 | Phases 10,17,24 and documentation state | Clearly print inputs and predictions |
-| [ ] | **DT-409** | [O] | P0 | Phases 10,17,24 and documentation state | Restart kernel and run all |
-| [ ] | **DT-410** | [E] | P0 | Phases 10,17,24 and documentation state | Remove broken/temporary cells |
-| [ ] | **DT-411** | [O] | P0 | Phases 10,17,24 and documentation state | Ensure notebook runs without hidden state |
+| [x] | **DT-389** | [O] | P0 | Task 1, Task 2A and Task 2B finalized | Create TeamName_FinalNotebook.ipynb |
+| [x] | **DT-390** | [E] | P0 | Phases 10,17,24 and documentation state | Add project/problem overview |
+| [x] | **DT-391** | [E] | P0 | Phases 10,17,24 and documentation state | Add imports/configuration |
+| [x] | **DT-392** | [E] | P0 | Phases 10,17,24 and documentation state | Add data loading |
+| [x] | **DT-393** | [E] | P0 | Phases 10,17,24 and documentation state | Add data validation |
+| [x] | **DT-394** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 1 label construction |
+| [x] | **DT-395** | [O] | P0 | Phases 10,17,24 and documentation state | Add preprocessing cells |
+| [x] | **DT-396** | [E] | P0 | Phases 10,17,24 and documentation state | Add EDA summary |
+| [x] | **DT-397** | [O] | P0 | Phases 10,17,24 and documentation state | Add feature engineering |
+| [x] | **DT-398** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 1 training cells |
+| [x] | **DT-399** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 1 evaluation |
+| [x] | **DT-400** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 2A aggregation |
+| [x] | **DT-401** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 2A training/backtesting |
+| [x] | **DT-402** | [O] | P0 | Phases 10,17,24 and documentation state | Add Task 2A evaluation |
+| [x] | **DT-403** | [E] | P0 | Phases 10,17,24 and documentation state | Add Task 2B summary/pointer |
+| [x] | **DT-404** | [O] | P0 | Saved models available | Add final inference section |
+| [x] | **DT-405** | [O] | P0 | DT-412–DT-419 | Load saved models in final cell |
+| [x] | **DT-406** | [O] | P0 | Phases 10,17,24 and documentation state | Demonstrate Task 1 inference |
+| [x] | **DT-407** | [O] | P0 | Phases 10,17,24 and documentation state | Demonstrate Task 2A inference |
+| [x] | **DT-408** | [O] | P0 | Phases 10,17,24 and documentation state | Clearly print inputs and predictions |
+| [x] | **DT-409** | [O] | P0 | Phases 10,17,24 and documentation state | Restart kernel and run all |
+| [x] | **DT-410** | [E] | P0 | Phases 10,17,24 and documentation state | Remove broken/temporary cells |
+| [x] | **DT-411** | [O] | P0 | Phases 10,17,24 and documentation state | Ensure notebook runs without hidden state |
 
-**Phase complete:** [ ]  
-**READY FOR NEXT PHASE:** NO
+**Phase complete:** [x]
+**READY FOR NEXT PHASE:** YES
+
+Phase 31 closure: DT-389–DT-411 remain 23/23 PASS. Human-local clean-kernel Run All (DT-409) and separate fresh-kernel final-cell-only execution (DT-411) passed with zero errors; Task 1 and Task 2A saved-model parity passed. The Phase 31 completion report records the evidence and safeguards. The earlier independent review's formal FAIL reflected then-unfilled records and remains historical. A subsequent fresh read-only independent closure review returned PASS and explicitly authorized these phase-complete and next-phase-readiness updates. Phase 31 is formally closed; this status update does not start Phase 33 implementation.
 
 
 ### Phase 32 — Model artifact management
