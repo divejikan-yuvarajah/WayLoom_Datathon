@@ -5608,100 +5608,117 @@ Then STOP.
 
 # 129. Completion record
 
-```markdown
-# Phase 31 Completion Record
+# Phase 31 completion report
+
+- Phase name: Final competition notebook.
+- Date: 2026-10-08 (documentation reconciliation).
+- Operator: Codex for source/documentation checks; clean-kernel and private-data execution evidence was supplied from human-local runs, not executed by this agent.
+- Tasks in phase: DT-389 through DT-411 (23 P0 tasks).
+- Tasks completed [x]: 23/23 technical tasks, as individually judged PASS in the latest independent review and itemized below.
+- Tasks skipped: None.
+- Tasks blocked [!]: None. The earlier formal-documentation blocker was resolved and the fresh independent closure review passed.
+- Official rules verified: the challenge booklet requires `TeamName_FinalNotebook.ipynb`, substantive label-construction, preprocessing, training, and evaluation cells, and a last cell that loads saved models and prints Task 1 and Task 2A inputs/predictions. The latest source review found these requirements satisfied. No private competition rows were opened for this reconciliation.
+- Tests run and results: the latest independent reviewer and this reconciliation each ran 42 targeted synthetic tests (PASS), the full safe suite (765 passed, 1 skipped, 4 nonblocking warnings), `python -m pip check` (PASS), and `git diff --check` (PASS). The separately supplied human-local full suite reported 766 passed and 4 warnings. These are distinct runs; do not conflate their counts.
+- Checker/script evidence: this reconciliation reran source notebook validation (23/23 mappings, last-cell placement, zero broken/temporary cells, zero saved private outputs, Phase 32 artifact gate) and verified all 12 registered artifact checksums without private data. Official CSV and registry SHA256 values matched the pre-edit baselines. Human-local clean-kernel Run All passed with zero errors; separate fresh-kernel final-cell-only execution passed under the registered WayLoom Datathon `.venv` kernel. Human-local Task 1 and Task 2A saved-model parity and pre/post official-output/model hash guards passed. Agent-side source validation is not a substitute for those human-local runs.
+- Artifacts produced: no new competition output or model artifact. The tracked source is `TeamName_FinalNotebook.ipynb`; private executed evidence is saved only under ignored `reports/private/phase31_final_notebook/` and was not opened here.
+- Decision-log entries created: None; no model, feature, policy, or submission decision changed.
+- Data-safety check (no restricted data committed/uploaded): PASS based on source/Git review and supplied human-local guards; no commit, upload, private output inspection, retraining, or official-output regeneration occurred during reconciliation.
+- Issues found: the earlier independent review returned overall FAIL solely because this completion record and the master-plan Phase 31 statuses were then unfilled. That historical FAIL remains valid for its review point; the subsequent fresh read-only independent closure review returned PASS after those documentation changes.
+- Follow-ups: existing uncommitted Phase 31 work and narrow `.gitattributes` remain Git-workflow follow-ups, not notebook defects. This administrative synchronization does not authorize a commit or Phase 33 implementation in this turn.
+- READY FOR NEXT PHASE: YES (fresh independent closure review PASS; Phase 31 master-plan flag synchronized).
 
 ## Task coverage
 
-- [ ] DT-389
-- [ ] DT-390
-- [ ] DT-391
-- [ ] DT-392
-- [ ] DT-393
-- [ ] DT-394
-- [ ] DT-395
-- [ ] DT-396
-- [ ] DT-397
-- [ ] DT-398
-- [ ] DT-399
-- [ ] DT-400
-- [ ] DT-401
-- [ ] DT-402
-- [ ] DT-403
-- [ ] DT-404
-- [ ] DT-405
-- [ ] DT-406
-- [ ] DT-407
-- [ ] DT-408
-- [ ] DT-409
-- [ ] DT-410
-- [ ] DT-411
+- [x] DT-389 PASS - valid, correctly named source notebook; source validator and independent structural review.
+- [x] DT-390 PASS - problem/competition overview; notebook cells 0-1.
+- [x] DT-391 PASS - imports, frozen configuration, and reproducibility; cell 3.
+- [x] DT-392 PASS - authorized manifest-based local data loading; cell 5.
+- [x] DT-393 PASS - schema/key validation; cell 7.
+- [x] DT-394 PASS - canonical Task 1 label semantics and outcome leakage guard; cell 9 and `src/task1/labels.py`.
+- [x] DT-395 PASS - executable canonical preprocessing; cell 11.
+- [x] DT-396 PASS - useful EDA summaries/charts; cell 13 and human-local readable output confirmation.
+- [x] DT-397 PASS - final feature engineering/order and leakage barriers; cell 15.
+- [x] DT-398 PASS - frozen Task 1 training replay in memory, without model overwrite; cell 17.
+- [x] DT-399 PASS - Task 1 evaluation from actual labels/predictions; cell 19.
+- [x] DT-400 PASS - both-source, unique-order, requested-date ISO-week Task 2A history; cell 21 and `src/task2a/history.py`.
+- [x] DT-401 PASS - rolling backtest and frozen 50/50 CatBoost-LightGBM method; cell 23.
+- [x] DT-402 PASS - Task 2A evaluation and nonnegative/chilled constraints; cell 25.
+- [x] DT-403 PASS - Task 2B optimizer summary/pointer, no rerun; cell 26.
+- [x] DT-404 PASS - visible final inference heading; cell 28.
+- [x] DT-405 PASS - final cell loads through the secured Phase 32 registry, with verified paths/checksums before deserialization; cell 29 and `src/common/artifact_registry.py`.
+- [x] DT-406 PASS - Task 1 saved-model inference and human-local parity; cell 29.
+- [x] DT-407 PASS - Task 2A saved-model inference and human-local parity; cell 29.
+- [x] DT-408 PASS - bounded, labeled inputs and predictions for both tasks; cell 29.
+- [x] DT-409 PASS - supplied human-local clean-kernel Run All, zero errors; not independently rerun with private data by the agent.
+- [x] DT-410 PASS - source validator found zero broken/temporary cells and no saved private outputs.
+- [x] DT-411 PASS - supplied separate human-local fresh-kernel final-cell-only run; final cell self-bootstraps.
 
 ## Notebook
 
-- [ ] valid nbformat
-- [ ] correct naming pattern
-- [ ] no absolute paths
-- [ ] no install/network cells
-- [ ] final code cell is last
-- [ ] no cells after final inference
-- [ ] no broken/temp cells
+- [x] valid nbformat
+- [x] correct naming pattern
+- [x] no workstation-specific absolute paths
+- [x] no install/network cells
+- [x] final code cell is last
+- [x] no cells after final inference
+- [x] no broken/temp cells
 
 ## Task1
 
-- [ ] label construction
-- [ ] preprocessing
-- [ ] feature engineering
-- [ ] training
-- [ ] evaluation
-- [ ] saved-model inference
-- [ ] saved-model parity
+- [x] label construction
+- [x] preprocessing
+- [x] feature engineering
+- [x] training
+- [x] evaluation
+- [x] saved-model inference
+- [x] saved-model parity (human-local)
 
 ## Task2A
 
-- [ ] aggregation/history
-- [ ] feature construction
-- [ ] rolling backtesting
-- [ ] evaluation
-- [ ] saved-artifact inference
-- [ ] saved-model parity
+- [x] aggregation/history
+- [x] feature construction
+- [x] rolling backtesting
+- [x] evaluation
+- [x] saved-artifact inference
+- [x] saved-model parity (human-local)
 
 ## Task2B
 
-- [ ] summary/pointer
-- [ ] no optimizer rerun
-- [ ] checker feasibility-only
+- [x] summary/pointer
+- [x] no optimizer rerun
+- [x] checker feasibility-only
 
 ## Phase32 artifact gate
 
-- [ ] DT-412–DT-419 PASS
-- [ ] all saved objects load
-- [ ] loaded predictions reproduce canonical inference
+- [x] DT-412–DT-419 PASS (supplied Phase 32 independent review)
+- [x] all saved objects load (supplied Phase 32 validation and fresh-process evidence)
+- [x] loaded predictions reproduce canonical inference (supplied human-local parity)
 
 ## Execution
 
-- [ ] clean-kernel run-all
-- [ ] final-cell-only fresh kernel
-- [ ] 0 execution errors
-- [ ] hidden state NONE
+- [x] clean-kernel run-all (human-local)
+- [x] final-cell-only fresh kernel (human-local)
+- [x] 0 execution errors (human-local)
+- [x] hidden state NONE (separate human-local fresh-kernel proof)
 
 ## Frozen artifacts
 
-- official outputs changed: NO
-- saved models changed: NO
-- Task2B policy changed: NO
+- official outputs changed: NO (human-local pre/post guards; safe hash recheck)
+- saved models changed: NO (human-local pre/post guards; registry checksum verification)
+- Task2B policy changed: NO (Git/source check)
 
 ## Review
 
-- independent review: PASS / FAIL
+- earlier independent review: 23/23 technical tasks PASS; overall formal closure FAIL because the completion record and master-plan statuses were unfilled at that time. Preserve this historical verdict.
+- subsequent fresh read-only independent closure review: PASS. It verified 23/23 task statuses, the populated completion report, master-plan task synchronization, notebook integrity, human-local execution evidence provenance, official CSV and Phase 32 artifact integrity, safe tests, and repository privacy. It explicitly authorized formal Phase 31 closure and updating the remaining master-plan completion/readiness flags; it did not itself edit those flags.
 
 ## Verdict
 
-PHASE 31 STATUS: PASS / PENDING / FAIL
-FINAL NOTEBOOK: COMPETITION-READY / INCOMPLETE
-HIDDEN STATE: NONE / PRESENT / PENDING
-READY FOR PHASE33: YES / NO
-```
+PHASE 31 TECHNICAL STATUS: 23/23 PASS
+PHASE 31 FORMAL STATUS: PASS - CLOSED
+FINAL NOTEBOOK: COMPETITION-READY ON REVIEWED TECHNICAL EVIDENCE
+HIDDEN STATE: NONE ON SUPPLIED HUMAN-LOCAL PROOF
+READY FOR PHASE33: YES (authorization only; Phase 33 not started here)
 
 ---
 
@@ -5709,38 +5726,38 @@ READY FOR PHASE33: YES / NO
 
 Before final Phase31 closure:
 
-- [ ] Exact 23 tasks DT-389–DT-411 covered.
-- [ ] Official final notebook requirement satisfied.
-- [ ] Cells for label construction retained.
-- [ ] Cells for preprocessing retained.
-- [ ] Cells for training retained.
-- [ ] Cells for evaluation retained.
-- [ ] Task1 label semantics exact.
-- [ ] Task1 leakage safeguards exact.
-- [ ] Task2A history rules exact.
-- [ ] Task2A rolling validation exact.
-- [ ] Task2B summary accurate.
-- [ ] Final cell is the actual final cell.
-- [ ] Final cell reloads saved models/artifacts.
-- [ ] Phase32 artifact gate passed.
-- [ ] Task1 inference demonstrated.
-- [ ] Task2A inference demonstrated.
-- [ ] Inputs clearly printed.
-- [ ] Predictions clearly printed.
-- [ ] Saved-model parity checks pass.
-- [ ] Official output files unchanged.
-- [ ] Canonical saved artifacts unchanged.
-- [ ] Clean-kernel run-all passes.
-- [ ] Final-cell-only fresh-kernel execution passes.
-- [ ] Hidden state is absent.
-- [ ] No errors/temp/broken cells.
-- [ ] No install/network/proprietary API cells.
-- [ ] Source notebook safe for tracked repo.
-- [ ] Private executed evidence remains private.
-- [ ] Safe tests pass.
-- [ ] Full suite passes.
-- [ ] `pip check` passes.
-- [ ] Fresh independent review passes.
+- [x] Exact 23 tasks DT-389–DT-411 covered.
+- [x] Official final notebook requirement satisfied.
+- [x] Cells for label construction retained.
+- [x] Cells for preprocessing retained.
+- [x] Cells for training retained.
+- [x] Cells for evaluation retained.
+- [x] Task1 label semantics exact.
+- [x] Task1 leakage safeguards exact.
+- [x] Task2A history rules exact.
+- [x] Task2A rolling validation exact.
+- [x] Task2B summary accurate.
+- [x] Final cell is the actual final cell.
+- [x] Final cell reloads saved models/artifacts.
+- [x] Phase32 artifact gate passed.
+- [x] Task1 inference demonstrated.
+- [x] Task2A inference demonstrated.
+- [x] Inputs clearly printed.
+- [x] Predictions clearly printed.
+- [x] Saved-model parity checks pass.
+- [x] Official output files unchanged.
+- [x] Canonical saved artifacts unchanged.
+- [x] Clean-kernel run-all passes.
+- [x] Final-cell-only fresh-kernel execution passes.
+- [x] Hidden state is absent.
+- [x] No errors/temp/broken cells.
+- [x] No install/network/proprietary API cells.
+- [x] Source notebook safe for tracked repo.
+- [x] Private executed evidence remains private.
+- [x] Safe tests pass.
+- [x] Full suite passes.
+- [x] `pip check` passes.
+- [x] Fresh independent review of the reconciled formal closure passes.
 
 Only then:
 

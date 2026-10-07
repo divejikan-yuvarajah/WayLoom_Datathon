@@ -25,7 +25,7 @@ final_inference:
   do_not_write_official_outputs: true
   numeric_tolerance: 1.0e-09
 phase32:
-  status: AWAITING_PHASE32
+  status: PASS
   artifact_registry: models/artifact_registry.json
   loader_module: src.artifacts.final_inference
   loader_callable: run_saved_artifact_inference_demo

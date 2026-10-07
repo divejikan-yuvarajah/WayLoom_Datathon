@@ -696,7 +696,7 @@ Final deliverables: `outputs/submission_task2b.csv` and `docs/task2b_policy.md`.
             """
 # 15. Execution and hidden-state assurance
 
-The tracked notebook has no saved private outputs, broken cells, install commands, network calls, or model-search cells. Final closure requires two human-local executions after Phase 32: a fresh-kernel run-all and a separate fresh-kernel execution of the final cell alone. Those gates prove ordered execution and absence of hidden model/preprocessor state. Until the Phase 32 secured artifact registry is available, DT-405 remains `BLOCKED_BY_PHASE32` and DT-409/DT-411 remain pending final runtime evidence.
+The tracked notebook has no saved private outputs, broken cells, install commands, network calls, or model-search cells. The Phase 32 secured artifact registry has passed independent review and is the final inference authority (DT-405). Human-local clean-kernel Run All and separate final-cell-only fresh-kernel runs passed under the registered WayLoom Datathon (.venv) kernel, with zero execution errors. This supports DT-409 and DT-411; formal phase readiness is recorded in the Phase 31 completion record and master plan.
 """,
             "dt-409",
             "dt-410",
