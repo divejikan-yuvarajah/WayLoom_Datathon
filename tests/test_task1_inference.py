@@ -20,6 +20,7 @@ from src.task1.inference import (
     assert_no_forbidden_inference_features,
     assert_probabilities_valid,
     assert_saved_models_present,
+    assert_saved_feature_set_compatible,
     join_route_legs_test,
     load_task1_test_inputs,
     predict_late_from_bundle,
@@ -240,6 +241,15 @@ def test_historical_transform_requires_no_test_labels() -> None:
 def test_forbidden_features_absent() -> None:
     with pytest.raises(Task1InferenceError, match="Forbidden"):
         assert_no_forbidden_inference_features(["numeric_1", "actual_depart_time", "late_flag"])
+
+
+def test_saved_schema_owns_order_but_feature_set_must_match() -> None:
+    schema = {"feature_columns": ["brand", "depot", "numeric_1"]}
+    assert_saved_feature_set_compatible(schema, ["numeric_1", "brand", "depot"])
+    with pytest.raises(Task1InferenceError, match="missing=.*depot.*unexpected=.*new_feature"):
+        assert_saved_feature_set_compatible(schema, ["brand", "numeric_1", "new_feature"])
+    with pytest.raises(Task1InferenceError, match="duplicate"):
+        assert_saved_feature_set_compatible(schema, ["brand", "depot", "numeric_1", "numeric_1"])
 
 
 def test_service_output_length_finite_and_repeatable(tmp_path: Path) -> None:

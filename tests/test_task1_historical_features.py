@@ -70,3 +70,27 @@ def test_dt119_deterministic_under_shuffle() -> None:
     # Compare after restoring original index order
     out2 = out2.reindex(out1.index)
     pd.testing.assert_frame_equal(out1.sort_index(), out2.sort_index())
+
+
+def test_dt119_running_median_is_exact_across_even_and_odd_history() -> None:
+    X = pd.DataFrame(
+        {
+            "date": ["2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04"],
+            "outlet_id": ["O1"] * 4,
+            "brand": ["Fresh"] * 4,
+            "dock_type": ["rear_dock"] * 4,
+        }
+    )
+    service = pd.Series([40.0, 10.0, 30.0, 20.0])
+    late = pd.Series([0, 1, 1, 0])
+
+    out = Task1HistoricalFeatureTransformer(date_col="date").fit_transform_training_chronological(
+        X, service, late
+    )
+
+    assert out["outlet_prior_service_median"].tolist()[1:] == pytest.approx(
+        [40.0, 25.0, 30.0]
+    )
+    assert out["outlet_prior_late_rate"].tolist()[1:] == pytest.approx(
+        [0.0, 0.5, 2.0 / 3.0]
+    )
