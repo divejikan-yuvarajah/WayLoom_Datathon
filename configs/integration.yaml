@@ -1,0 +1,33 @@
+version: 1
+contract_version: 1.0.0
+schema_version: "1.0"
+mode: synthetic_demo
+
+network:
+  default_host: 127.0.0.1
+  default_port: 8088
+  cors_allow_origins: []
+
+privacy:
+  allow_competition_records: false
+  allow_private_paths: false
+  redact_paths_in_errors: true
+  log_request_bodies: false
+  log_response_bodies: false
+
+models:
+  allow_real_model_loading: false
+  configured_artifacts: {}
+
+synthetic:
+  seed: 42
+
+phase26:
+  enabled_if_available: true
+
+phase27:
+  expose_uncertainty_if_available: false
+
+export:
+  generated_at: "2026-01-01T00:00:00Z"
+  integration_status: optional_shared

@@ -1,0 +1,13 @@
+{
+  "brand": "Style",
+  "depot": "Demo North Hub",
+  "forecast_horizon": 1,
+  "forecast_ref": "DEMO_FORECAST_002",
+  "iso_week": 43,
+  "iso_year": 2026,
+  "pred_chilled_volume_m3": 0.0,
+  "pred_total_volume_m3": 13.92,
+  "schema_version": "1.0",
+  "source_mode": "synthetic_demo",
+  "uncertainty": null
+}

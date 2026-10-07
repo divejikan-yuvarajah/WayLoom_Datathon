@@ -1,0 +1,16 @@
+{
+  "availability": "synthetic_demo",
+  "evidence": {
+    "changed_order_count": 0,
+    "counterfactual_complete": true,
+    "first_degraded_policy_tier": "HARD_FEASIBILITY"
+  },
+  "example_ref": "DEFERRAL_EXAMPLE_A",
+  "limitations": "This is an optimization explanation under the supplied rules and WayLoom policy; it is not a real-world causal claim.",
+  "primary_reason_code": "HARD_NO_COMPATIBLE_VEHICLE",
+  "reason_class": "UNAVOIDABLE_HARD",
+  "schema_version": "1.0",
+  "secondary_reason_codes": [],
+  "source_mode": "synthetic_demo",
+  "summary": "No synthetic demo vehicle satisfies every whole-order compatibility rule."
+}
