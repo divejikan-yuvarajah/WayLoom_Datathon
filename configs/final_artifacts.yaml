@@ -1,0 +1,53 @@
+version: 1
+phase: 32
+status: PASS
+tasks:
+  DT-412: PASS
+  DT-413: PASS
+  DT-414: PASS
+  DT-415: PASS
+  DT-416: PASS
+  DT-417: PASS
+  DT-418: PASS
+  DT-419: PASS
+artifact_paths:
+- models/task1_service/feature_schema.json
+- models/task1_service/metadata.json
+- models/task1_service/model.joblib
+- models/task1_late/feature_schema.json
+- models/task1_late/metadata.json
+- models/task1_late/model.joblib
+- models/task2a_total/component.joblib
+- models/task2a_total/metadata.json
+- models/task2a_chilled/component.joblib
+- models/task2a_chilled/metadata.json
+artifact_sha256:
+  models/task1_service/feature_schema.json: 705d55510112bb0c26e19678a8648b9b175acb52afb18182fab7ce8bbd9fde33
+  models/task1_service/metadata.json: 9398b6840610f8cf86b25fe399160c7d2af1368cc302f7634a30768fba1ddffa
+  models/task1_service/model.joblib: 43f3759d9c6e63058b6a7f93175c254e2ca9158d95c4a570fce320745041ca76
+  models/task1_late/feature_schema.json: 705d55510112bb0c26e19678a8648b9b175acb52afb18182fab7ce8bbd9fde33
+  models/task1_late/metadata.json: 7d0b8c150859b5fde884627ea32848b0a4c7e245c4c2acc37193a82e98c328a7
+  models/task1_late/model.joblib: 93550d0d0b5500f624eab20e46a5c2ebaccf96fe764f49d63b26f0bcadfd5563
+  models/task2a_total/component.joblib: 3e917b71e9cca5c737a0f5e387836f6dcc49afb79ee3b059bfcd781f25e7c10e
+  models/task2a_total/metadata.json: ab0189bb4332d18a972988e4dbea765084a4befe581ab27882df86d09676b4a9
+  models/task2a_chilled/component.joblib: 0ca7ee226bfd6cdb617c4b861f0a9b454944c4349238eba3236d405dacb4b541
+  models/task2a_chilled/metadata.json: f19f1e239d91b5af0051aa7714c33850ad56caa1b91c7ea30cb84f6043c134f3
+interfaces:
+  task1_service_dir: models/task1_service
+  task1_late_dir: models/task1_late
+  task2a_total_bundle: models/task2a_total/component.joblib
+  task2a_chilled_bundle: models/task2a_chilled/component.joblib
+library_versions:
+  python: 3.13.7
+  numpy: 2.5.3
+  pandas: 3.0.6
+  scikit-learn: 1.9.1
+  catboost: 1.2.10
+  lightgbm: 4.7.0
+  joblib: 1.6.0
+roundtrip_parity:
+  task1: PASS
+  task2a: PASS
+preprocessing:
+  task1: BUNDLED_SCHEMA
+  task2a: BUNDLED_WITH_COMPONENTS

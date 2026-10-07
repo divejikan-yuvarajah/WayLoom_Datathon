@@ -1,0 +1,29 @@
+version: 1
+phase: 32
+state: READY_FOR_LOCAL_PARITY
+registry: models/artifact_registry.json
+task2a_manifest: models/task2a/artifact_manifest.json
+trusted_model_root: models
+legacy_manifest:
+  path: configs/final_artifacts.yaml
+  authoritative: false
+  require_registry_alignment: true
+final_configs:
+  task1: configs/task1_final_models.yaml
+  task2a: configs/task2a_final_models.yaml
+protected_outputs:
+  - outputs/submission_task1.csv
+  - outputs/submission_task2a.csv
+  - outputs/submission_task2b.csv
+  - docs/task2b_policy.md
+private_report_dir: reports/private/phase32_model_artifacts
+security:
+  require_relative_paths: true
+  require_models_root_containment: true
+  verify_sha256_before_deserialization: true
+  reject_network_urls: true
+  allowed_serializers: [json, joblib]
+parity:
+  numeric_tolerance: 1.0e-09
+  require_exact_identity_and_order: true
+  require_postprocessing_parity: true

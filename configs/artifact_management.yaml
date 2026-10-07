@@ -1,0 +1,33 @@
+version: 1
+state: PASS
+paths:
+  manifest: configs/final_artifacts.yaml
+  private_report_dir: reports/private/phase32_artifacts
+  task1_service_dir: models/task1_service
+  task1_late_dir: models/task1_late
+  task2a_total_bundle: models/task2a_total/component.joblib
+  task2a_total_metadata: models/task2a_total/metadata.json
+  task2a_chilled_bundle: models/task2a_chilled/component.joblib
+  task2a_chilled_metadata: models/task2a_chilled/metadata.json
+  task1_labels: data/interim/task1_training_labels.csv
+  task2a_weekly_panel: data/interim/task2a_weekly_panel.csv
+  task2a_multihorizon_table: data/interim/task2a_multihorizon_train.csv
+configs:
+  dataset_manifest: configs/dataset_manifest.yaml
+  task1_features: configs/task1_features.yaml
+  task1_final_models: configs/task1_final_models.yaml
+  task1_inference: configs/task1_inference.yaml
+  task2a_history: configs/task2a_history.yaml
+  task2a_features: configs/task2a_features.yaml
+  task2a_final_models: configs/task2a_final_models.yaml
+  task2a_inference: configs/task2a_inference.yaml
+  final_notebook: configs/final_notebook.yaml
+frozen_outputs:
+  task1: outputs/submission_task1.csv
+  task2a: outputs/submission_task2a.csv
+serialization:
+  format: joblib
+  require_hash_verification_before_load: true
+  require_roundtrip_parity: true
+  numeric_tolerance: 1.0e-09
+  overwrite_after_pass: false

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import heapq
 from typing import Any
 
 import numpy as np
@@ -46,10 +47,40 @@ def _safe_late_rate(sum_late: float, count: int, fallback: float) -> float:
     return float(sum_late / count)
 
 
-def _safe_service_median(values: list[float], fallback: float) -> float:
-    if not values:
-        return float(fallback)
-    return float(np.median(values))
+class _RunningMedian:
+    """Maintain an exact median without repeatedly scanning all prior rows."""
+
+    __slots__ = ("_lower", "_upper")
+
+    def __init__(self) -> None:
+        self._lower: list[float] = []
+        self._upper: list[float] = []
+
+    def add(self, value: float) -> None:
+        if not self._lower or value <= -self._lower[0]:
+            heapq.heappush(self._lower, -value)
+        else:
+            heapq.heappush(self._upper, value)
+
+        if len(self._lower) > len(self._upper) + 1:
+            heapq.heappush(self._upper, -heapq.heappop(self._lower))
+        elif len(self._upper) > len(self._lower):
+            heapq.heappush(self._lower, -heapq.heappop(self._upper))
+
+    def median(self) -> float:
+        if not self._lower:
+            return np.nan
+        if len(self._lower) == len(self._upper):
+            return float((-self._lower[0] + self._upper[0]) / 2.0)
+        return float(-self._lower[0])
+
+
+_MISSING_KEY = object()
+
+
+def _history_key(row: pd.Series, cols: tuple[str, ...]) -> tuple[Any, ...]:
+    """Return a stable dictionary key, including for missing category values."""
+    return tuple(_MISSING_KEY if pd.isna(row[c]) else row[c] for c in cols)
 
 
 class Task1HistoricalFeatureTransformer:
@@ -190,31 +221,35 @@ class Task1HistoricalFeatureTransformer:
             raise Task1HistoricalFeatureError("Historical chronological targets are invalid.")
 
         work[self.date_col] = pd.to_datetime(work[self.date_col], errors="raise")
-        prior_service_values: dict[tuple[tuple[str, ...], tuple[Any, ...]], list[float]] = {}
+        prior_service_values: dict[
+            tuple[tuple[str, ...], tuple[Any, ...]], _RunningMedian
+        ] = {}
         prior_late_sum_count: dict[tuple[tuple[str, ...], tuple[Any, ...]], tuple[float, int]] = {}
-        prior_global_service: list[float] = []
+        prior_global_service = _RunningMedian()
         prior_global_late_sum = 0.0
         prior_global_count = 0
 
-        out = pd.DataFrame(index=X.index)
-        for spec in HISTORICAL_FEATURE_SPECS:
-            out[spec.feature_name] = np.nan
+        feature_names = [spec.feature_name for spec in HISTORICAL_FEATURE_SPECS]
+        feature_positions = {name: pos for pos, name in enumerate(feature_names)}
+        values = np.full((len(work), len(feature_names)), np.nan, dtype=float)
+        work = work.assign(_history_position=np.arange(len(work), dtype=int))
 
-        for date_val, date_grp in work.groupby(self.date_col, sort=True):
+        for _, date_grp in work.groupby(self.date_col, sort=True):
             # Compute today's features from strictly earlier history (no same-date leakage).
-            for idx, row in date_grp.iterrows():
+            for _, row in date_grp.iterrows():
+                position = int(row["_history_position"])
                 # A cold-start date has no historical target information. Preserve
                 # missing values rather than borrowing a full-period/global future
                 # target statistic. Later model-phase imputation is fit-scoped.
                 service_fb = (
-                    float(np.median(prior_global_service))
-                    if prior_global_service
+                    prior_global_service.median()
+                    if prior_global_count
                     else np.nan
                 )
                 for keys in (("outlet_id",), ("brand", "dock_type"), ("brand",)):
-                    vals = prior_service_values.get((keys, _key_tuple(row, keys)))
-                    if vals:
-                        service_fb = float(np.median(vals))
+                    state = prior_service_values.get((keys, _history_key(row, keys)))
+                    if state is not None:
+                        service_fb = state.median()
                         break
 
                 late_fb = (
@@ -223,62 +258,63 @@ class Task1HistoricalFeatureTransformer:
                     else np.nan
                 )
                 for keys in (("outlet_id",), ("brand", "dock_type"), ("brand",)):
-                    lc = prior_late_sum_count.get((keys, _key_tuple(row, keys)))
+                    lc = prior_late_sum_count.get((keys, _history_key(row, keys)))
                     if lc is not None and lc[1] > 0:
                         late_fb = float(lc[0] / lc[1])
                         break
 
-                out.at[idx, "outlet_prior_service_median"] = float(
-                    _safe_service_median(
-                        prior_service_values.get((("outlet_id",), _key_tuple(row, ("outlet_id",))), []),
-                        service_fb,
-                    )
+                outlet_service = prior_service_values.get(
+                    (("outlet_id",), _history_key(row, ("outlet_id",)))
                 )
-                out.at[idx, "brand_dock_prior_service_median"] = float(
-                    _safe_service_median(
-                        prior_service_values.get(
-                            (("brand", "dock_type"), _key_tuple(row, ("brand", "dock_type"))),
-                            [],
-                        ),
-                        service_fb,
-                    )
+                brand_dock_service = prior_service_values.get(
+                    (("brand", "dock_type"), _history_key(row, ("brand", "dock_type")))
                 )
-                out.at[idx, "brand_prior_service_median"] = float(
-                    _safe_service_median(
-                        prior_service_values.get((("brand",), _key_tuple(row, ("brand",))), []),
-                        service_fb,
-                    )
+                brand_service = prior_service_values.get(
+                    (("brand",), _history_key(row, ("brand",)))
+                )
+                values[position, feature_positions["outlet_prior_service_median"]] = (
+                    outlet_service.median() if outlet_service is not None else service_fb
+                )
+                values[position, feature_positions["brand_dock_prior_service_median"]] = (
+                    brand_dock_service.median()
+                    if brand_dock_service is not None
+                    else service_fb
+                )
+                values[position, feature_positions["brand_prior_service_median"]] = (
+                    brand_service.median() if brand_service is not None else service_fb
                 )
 
                 outlet_late = prior_late_sum_count.get(
-                    (("outlet_id",), _key_tuple(row, ("outlet_id",))), (0.0, 0)
+                    (("outlet_id",), _history_key(row, ("outlet_id",))), (0.0, 0)
                 )
                 bd_late = prior_late_sum_count.get(
-                    (("brand", "dock_type"), _key_tuple(row, ("brand", "dock_type"))),
+                    (("brand", "dock_type"), _history_key(row, ("brand", "dock_type"))),
                     (0.0, 0),
                 )
                 b_late = prior_late_sum_count.get(
-                    (("brand",), _key_tuple(row, ("brand",))), (0.0, 0)
+                    (("brand",), _history_key(row, ("brand",))), (0.0, 0)
                 )
-                out.at[idx, "outlet_prior_late_rate"] = float(
+                values[position, feature_positions["outlet_prior_late_rate"]] = float(
                     _safe_late_rate(outlet_late[0], outlet_late[1], late_fb)
                 )
-                out.at[idx, "brand_dock_prior_late_rate"] = float(
+                values[position, feature_positions["brand_dock_prior_late_rate"]] = float(
                     _safe_late_rate(bd_late[0], bd_late[1], late_fb)
                 )
-                out.at[idx, "brand_prior_late_rate"] = float(
+                values[position, feature_positions["brand_prior_late_rate"]] = float(
                     _safe_late_rate(b_late[0], b_late[1], late_fb)
                 )
 
             # Update history after computing all rows on this date.
             for _, row in date_grp.iterrows():
-                prior_global_service.append(float(row["_service"]))
+                prior_global_service.add(float(row["_service"]))
                 prior_global_late_sum += float(row["_late"])
                 prior_global_count += 1
                 for keys in (("outlet_id",), ("brand", "dock_type"), ("brand",)):
-                    k = (keys, _key_tuple(row, keys))
-                    prior_service_values.setdefault(k, []).append(float(row["_service"]))
+                    k = (keys, _history_key(row, keys))
+                    prior_service_values.setdefault(k, _RunningMedian()).add(
+                        float(row["_service"])
+                    )
                     s, c = prior_late_sum_count.get(k, (0.0, 0))
                     prior_late_sum_count[k] = (s + float(row["_late"]), c + 1)
 
-        return out.astype(float)
+        return pd.DataFrame(values, index=X.index, columns=feature_names)

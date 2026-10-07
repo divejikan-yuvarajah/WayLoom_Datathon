@@ -114,6 +114,21 @@ def assert_no_forbidden_inference_features(columns: list[str]) -> None:
         raise Task1InferenceError(f"Forbidden inference features present: {forbidden}")
 
 
+def assert_saved_feature_set_compatible(saved_schema: dict[str, Any], generated_columns: list[str]) -> None:
+    """Require the frozen feature set while allowing the saved schema to own order."""
+    expected = list(saved_schema.get("feature_columns") or [])
+    actual = list(generated_columns)
+    if len(expected) != len(set(expected)) or len(actual) != len(set(actual)):
+        raise Task1InferenceError("Saved or generated Task 1 feature schema contains duplicate names.")
+    missing = sorted(set(expected).difference(actual))
+    unexpected = sorted(set(actual).difference(expected))
+    if missing or unexpected:
+        raise Task1InferenceError(
+            "Train/test feature schema mismatch "
+            f"(missing={missing}, unexpected={unexpected})."
+        )
+
+
 def apply_service_postprocessing(raw: np.ndarray, policy: str) -> tuple[np.ndarray, dict[str, Any]]:
     values = np.asarray(raw, dtype=float)
     if not np.isfinite(values).all():
@@ -213,6 +228,23 @@ def run_saved_model_inference(
         "",
     }
     late_bundle = load_model_bundle(late_dir, require_calibration=require_cal)
+    return run_loaded_bundle_inference(
+        X_test,
+        service_bundle,
+        late_bundle,
+        final_config,
+        inference_config,
+    )
+
+
+def run_loaded_bundle_inference(
+    X_test: pd.DataFrame,
+    service_bundle: dict[str, Any],
+    late_bundle: dict[str, Any],
+    final_config: dict[str, Any],
+    inference_config: dict[str, Any] | None = None,
+) -> pd.DataFrame:
+    """Predict from already integrity-verified Task 1 bundles."""
     assert_no_forbidden_inference_features(list(X_test.columns))
     assert_feature_schema_equal(service_bundle["schema"], list(service_bundle["schema"]["feature_columns"]))
     generated = list(service_bundle["schema"]["feature_columns"])
@@ -234,6 +266,54 @@ def run_saved_model_inference(
         },
         index=X_test.index,
     )
+
+
+def run_task1_inference_from_loaded_bundles(
+    *,
+    raw_root: Path,
+    feature_registry_path: Path,
+    final_config_path: Path,
+    service_bundle: dict[str, Any],
+    late_bundle: dict[str, Any],
+    inference_config_path: Path | None = None,
+    historical_train_labels: pd.DataFrame | None = None,
+) -> dict[str, Any]:
+    """Full Task 1 inference using only preverified saved-model bundles."""
+    final_config = load_frozen_final_config(final_config_path)
+    inference_config = load_yaml(inference_config_path) if inference_config_path else {}
+    X_test, trace = prepare_test_features_from_raw(
+        raw_root,
+        feature_registry_path,
+        historical_train_labels=historical_train_labels,
+    )
+    generated = resolve_feature_columns(
+        X_test,
+        str(service_bundle["schema"].get("feature_profile") or "safe_core_plus_history"),
+    )
+    assert_saved_feature_set_compatible(service_bundle["schema"], generated)
+    preds = run_loaded_bundle_inference(
+        X_test,
+        service_bundle,
+        late_bundle,
+        final_config,
+        inference_config,
+    )
+    preds = preds.copy()
+    preds["delivery_id"] = (
+        X_test["delivery_id"].to_numpy()
+        if "delivery_id" in X_test.columns
+        else trace["delivery_id"].to_numpy()
+    )
+    assembled = assemble_official_predictions(
+        trace.assign(**{c: X_test[c] for c in ("delivery_id",) if c in X_test.columns}),
+        preds,
+    )
+    return {
+        "predictions": assembled,
+        "test_inputs": trace,
+        "final_config": final_config,
+        "inference_config": inference_config,
+    }
 
 
 def _manifest_file(raw_root: Path, filename: str) -> Path:
@@ -363,10 +443,7 @@ def run_task1_inference(
         X_test,
         str(service_bundle["schema"].get("feature_profile") or "safe_core_plus_history"),
     )
-    try:
-        assert_feature_schema_equal(service_bundle["schema"], generated)
-    except Task1FinalTrainError as exc:
-        raise Task1InferenceError(str(exc)) from exc
+    assert_saved_feature_set_compatible(service_bundle["schema"], generated)
     preds = run_saved_model_inference(
         X_test,
         service_model_dir,

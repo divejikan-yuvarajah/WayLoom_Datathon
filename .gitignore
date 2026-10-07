@@ -38,6 +38,7 @@ models/**
 outputs/**
 reports/checker/**
 reports/private/**
+models/.staging/**
 logs/
 *.log
 !models/.gitkeep
