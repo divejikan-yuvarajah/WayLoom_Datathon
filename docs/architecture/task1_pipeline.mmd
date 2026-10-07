@@ -1,0 +1,77 @@
+%% diagram_id: task1_pipeline
+%% title: Task 1 service-time and lateness pipeline
+%% phase: 29
+%% source_contracts: Phases 04, 06, 07, 09 and 10; configs/task1_final_models.yaml
+%% status: final
+%% contains_private_data: false
+flowchart LR
+    subgraph trainingZone["TRAINING AND LABEL CONSTRUCTION"]
+        historicalOrders["Dispatched historical orders"]
+        historicalLegs["Historical route legs with actual timestamps"]
+        joinedTraining["One-to-one order and route-leg join"]
+        serviceStart["service_start = max(actual arrival, window opening)"]
+        serviceMinutes["service_minutes = leave_outlet_time - service_start"]
+        lateFlag["late_flag = 1 only when actual arrival > window_close_time"]
+        boundaryNotes["Early waiting is not service; arrival exactly at close is not late"]
+    end
+
+    subgraph predictionZone["PREDICTION-TIME FEATURE BOUNDARY"]
+        plannedContext["Planned departure, travel, arrival, distance and slack"]
+        orderContext["Order size, brand, outlet, district, depot and dock context"]
+        routeContext["Route position, workload, capacity utilization and prior planned stops"]
+        calendarContext["Calendar context and service allowance"]
+        historyContext["Chronology-safe outlet, brand and dock historical aggregates"]
+        forbiddenActuals["TRAINING ONLY - actual_depart_time, actual_travel_duration_min, arrival_time, leave_outlet_time"]
+        frozenFeatures["Frozen safe_core_plus_history feature schema; road and traffic context disabled"]
+    end
+
+    subgraph validationZone["FROZEN VALIDATION"]
+        timeValidation["Chronological expanding-window validation"]
+        parity["Train-test schema parity and leakage audits"]
+    end
+
+    subgraph modelZone["FINAL MODELS"]
+        serviceCatBoost["CatBoost regressor - catboost_regression_default"]
+        lateCatBoost["CatBoost classifier - catboost_classifier_default"]
+        rawProbability["Raw late probability; no additional calibrator"]
+        servicePolicy["Negative service policy: fail; no clipping"]
+        savedBundles["Saved models, feature schema and metadata"]
+    end
+
+    testInputs["Planned Task 1 test inputs and route legs"]
+    inference["Frozen test inference; no retraining"]
+    officialOutput["Official output: delivery_id, pred_service_min, pred_late_prob"]
+
+    historicalOrders --> joinedTraining
+    historicalLegs --> joinedTraining
+    joinedTraining --> serviceStart --> serviceMinutes
+    joinedTraining --> lateFlag
+    boundaryNotes -.-> serviceStart
+    boundaryNotes -.-> lateFlag
+    plannedContext --> frozenFeatures
+    orderContext --> frozenFeatures
+    routeContext --> frozenFeatures
+    calendarContext --> frozenFeatures
+    historyContext --> frozenFeatures
+    forbiddenActuals -.->|"Excluded from current predictors"| frozenFeatures
+    serviceMinutes --> timeValidation
+    lateFlag --> timeValidation
+    frozenFeatures --> timeValidation --> parity
+    parity --> serviceCatBoost --> servicePolicy --> savedBundles
+    parity --> lateCatBoost --> rawProbability --> savedBundles
+    testInputs --> frozenFeatures
+    savedBundles --> inference
+    frozenFeatures --> inference --> officialOutput
+
+    classDef data fill:#e8f1fb,stroke:#24527a,color:#102a43,stroke-width:2px;
+    classDef process fill:#eaf7ee,stroke:#2f6f44,color:#173d26,stroke-width:2px;
+    classDef model fill:#f1eafa,stroke:#6d4c91,color:#352347,stroke-width:2px;
+    classDef validation fill:#fff8cc,stroke:#8a7400,color:#453a00,stroke-width:2px;
+    classDef output fill:#e6f7f7,stroke:#287878,color:#143d3d,stroke-width:2px;
+    classDef privacy fill:#fff0f0,stroke:#9b2c2c,color:#4f1616,stroke-width:2px,stroke-dasharray:6 4;
+    class historicalOrders,historicalLegs,plannedContext,orderContext,routeContext,calendarContext,historyContext,testInputs data;
+    class joinedTraining,serviceStart,serviceMinutes,lateFlag,frozenFeatures,inference process;
+    class serviceCatBoost,lateCatBoost,rawProbability,servicePolicy,savedBundles model;
+    class timeValidation,parity validation;
+    class officialOutput output;
+    class forbiddenActuals,boundaryNotes privacy;

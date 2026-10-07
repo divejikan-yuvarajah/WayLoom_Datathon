@@ -1,0 +1,70 @@
+%% diagram_id: high_level_datathon
+%% title: High-level WayLoom Datathon architecture
+%% phase: 29
+%% source_contracts: Official Challenge Booklet; Phases 04-24; frozen final configs
+%% status: final
+%% contains_private_data: false
+flowchart LR
+    subgraph privateZone["PRIVATE COMPETITION DATA - secure boundary"]
+        history["Historical deliveries and route legs"]
+        planned["Planned Task 1 inputs"]
+        references["Calendar, outlets, vehicles and travel references"]
+        scenario["Task 2B S1 orders and fleet status"]
+    end
+
+    shared["Schema validation, time and calendar parsing, reference joins, data-quality checks"]
+
+    subgraph taskOne["Task 1 - service time and lateness"]
+        labels["Label construction with waiting-aware service start"]
+        featuresOne["Leakage-safe prediction-time features and chronology-safe history"]
+        serviceModel["CatBoost service regressor"]
+        lateModel["CatBoost late classifier with raw probability"]
+        taskOneOutput["submission_task1.csv"]
+    end
+
+    subgraph taskTwoA["Task 2A - ten-week demand forecast"]
+        demandHistory["Unique-order requested-week demand history"]
+        weeklyFeatures["Weekly aggregation and direct-global horizon features"]
+        forecastModels["Separate 50/50 CatBoost and LightGBM ensembles"]
+        taskTwoAOutput["submission_task2a.csv"]
+    end
+
+    subgraph taskTwoB["Task 2B - peak-day optimization"]
+        compatibility["Scenario, usable fleet and compatibility"]
+        tripTime["Exact trip-time calculation"]
+        optimization["Official hard rules plus WayLoom policy in CP-SAT"]
+        allocationChecks["Freeze audit, independent validator and organizer feasibility checker"]
+        taskTwoBOutput["submission_task2b.csv and written policy"]
+    end
+
+    finalGate["Validated final artifacts and controlled exports"]
+    deliverables["Final submission package target: models, notebook, three CSVs, policy, architecture and preprocessing docs, demo, AI disclosure"]
+    decisionSupport["Waypoint planning and competition decision support"]
+
+    history --> shared
+    planned --> shared
+    references --> shared
+    scenario --> shared
+    shared --> labels --> featuresOne
+    featuresOne --> serviceModel --> taskOneOutput
+    featuresOne --> lateModel --> taskOneOutput
+    shared --> demandHistory --> weeklyFeatures --> forecastModels --> taskTwoAOutput
+    shared --> compatibility --> tripTime --> optimization --> allocationChecks --> taskTwoBOutput
+    taskOneOutput --> finalGate
+    taskTwoAOutput --> finalGate
+    taskTwoBOutput --> finalGate
+    finalGate --> deliverables --> decisionSupport
+
+    classDef data fill:#e8f1fb,stroke:#24527a,color:#102a43,stroke-width:2px;
+    classDef process fill:#eaf7ee,stroke:#2f6f44,color:#173d26,stroke-width:2px;
+    classDef model fill:#f1eafa,stroke:#6d4c91,color:#352347,stroke-width:2px;
+    classDef optimizer fill:#fff1dd,stroke:#a65d00,color:#5e3600,stroke-width:2px;
+    classDef validation fill:#fff8cc,stroke:#8a7400,color:#453a00,stroke-width:2px;
+    classDef output fill:#e6f7f7,stroke:#287878,color:#143d3d,stroke-width:2px;
+    classDef privacy fill:#fff0f0,stroke:#9b2c2c,color:#4f1616,stroke-width:2px;
+    class history,planned,references,scenario data;
+    class shared,labels,featuresOne,demandHistory,weeklyFeatures,compatibility,tripTime process;
+    class serviceModel,lateModel,forecastModels model;
+    class optimization optimizer;
+    class allocationChecks,finalGate validation;
+    class taskOneOutput,taskTwoAOutput,taskTwoBOutput,deliverables,decisionSupport output;

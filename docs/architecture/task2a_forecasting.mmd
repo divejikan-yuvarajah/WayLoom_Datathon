@@ -1,0 +1,48 @@
+%% diagram_id: task2a_forecasting
+%% title: Task 2A ten-week demand forecasting pipeline
+%% phase: 29
+%% source_contracts: Phases 11, 13, 14, 16 and 17; configs/task2a_final_models.yaml
+%% status: final
+%% contains_private_data: false
+%%{init: {"flowchart": {"wrappingWidth": 700, "nodeSpacing": 30, "rankSpacing": 35}}}%%
+flowchart TB
+    subgraph sourceZone["1. DATA SOURCES"]
+        dataSources["deliveries_train plus task1_test_inputs plus calendar"]
+    end
+
+    subgraph historyZone["2. UNIQUE-ORDER WEEKLY DEMAND HISTORY"]
+        demandHistory["Unique delivery_id orders counted once; include attempted, deferred and not_run demand; assign to requested order_date; map to calendar ISO year and ISO week; aggregate depot plus brand plus requested week; Fresh chilled demand only; Style and Tech chilled = 0"]
+    end
+
+    subgraph featureZone["3. DIRECT-GLOBAL FORECAST FEATURES"]
+        forecastFeatures["Latest chronology-safe origin history; origin-relative lags: 1, 2, 4, 13 and 52 weeks; rolling means: 4, 8 and 13 weeks plus trend; target-week operating, payday, holiday, festival and monsoon context; direct horizon feature h = 1 through 10"]
+    end
+
+    subgraph validationModelZone["4. TIME-AWARE VALIDATION AND FROZEN MODELS"]
+        direction TB
+        rollingValidation["Four deterministic rolling-origin backtests; ten-week horizon; no future leakage"]
+        frozenModels["Separate frozen targets: Total volume - 50/50 CatBoost plus LightGBM ensemble; Fresh chilled volume - 50/50 CatBoost plus LightGBM ensemble"]
+        rollingValidation --> frozenModels
+    end
+
+    subgraph outputZone["5. TEN-WEEK INFERENCE AND OFFICIAL OUTPUT"]
+        direction TB
+        tenWeekInference["One global final origin; direct forecasts for horizons 1 through 10"]
+        postprocessing["Clip negatives to zero; cap chilled at total; force Style and Tech chilled to zero"]
+        officialOutput["submission_task2a.csv: row_id, pred_total_volume_m3, pred_chilled_volume_m3"]
+        tenWeekInference --> postprocessing --> officialOutput
+    end
+
+    dataSources --> demandHistory --> forecastFeatures --> rollingValidation
+    frozenModels --> tenWeekInference
+
+    classDef data fill:#e8f1fb,stroke:#24527a,color:#102a43,stroke-width:2px;
+    classDef process fill:#eaf7ee,stroke:#2f6f44,color:#173d26,stroke-width:2px;
+    classDef model fill:#f1eafa,stroke:#6d4c91,color:#352347,stroke-width:2px;
+    classDef validation fill:#fff8cc,stroke:#8a7400,color:#453a00,stroke-width:2px;
+    classDef output fill:#e6f7f7,stroke:#287878,color:#143d3d,stroke-width:2px;
+    class dataSources data;
+    class demandHistory,forecastFeatures,tenWeekInference,postprocessing process;
+    class frozenModels model;
+    class rollingValidation validation;
+    class officialOutput output;

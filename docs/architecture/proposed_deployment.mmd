@@ -1,0 +1,59 @@
+%% diagram_id: proposed_deployment
+%% title: Proposed private batch deployment
+%% phase: 29
+%% source_contracts: Official deliverable requirement; frozen Phases 10, 17 and 24; optional Phase 28
+%% status: final
+%% contains_private_data: false
+flowchart LR
+    proposedBanner["PROPOSED DEPLOYMENT - not a claim of a live production system"]
+
+    subgraph secureZone["SECURE INTERNAL ENVIRONMENT"]
+        privateStore["Private operational data store or warehouse"]
+        internalScheduler["Proposed internal batch scheduler"]
+        featureLayer["Validation, preprocessing and feature build"]
+        modelStore["Versioned saved model artifacts"]
+        taskOneWorker["Task 1 CatBoost inference worker"]
+        taskTwoAWorker["Task 2A ensemble forecast worker"]
+        taskTwoBWorker["Task 2B local CP-SAT optimizer worker"]
+        validationGates["Schema, prediction, freeze, independent validator and checker gates"]
+        artifactStore["Controlled versioned artifact and report store"]
+        monitoring["Aggregate technical status and failure logging only"]
+    end
+
+    controlledOutputs["Controlled official submissions and documentation artifacts"]
+    internalConsumer["Internal Waypoint planning and decision-support consumer"]
+    optionalContract["OPTIONAL Phase 28 synthetic or internal integration contract; Hackathon integration not required"]
+    privacyRules["Private rows remain internal; local model and solver execution; no proprietary external modelling API; no public row publication"]
+
+    proposedBanner --> privateStore
+    privateStore --> internalScheduler --> featureLayer
+    modelStore --> taskOneWorker
+    modelStore --> taskTwoAWorker
+    featureLayer --> taskOneWorker
+    featureLayer --> taskTwoAWorker
+    featureLayer --> taskTwoBWorker
+    taskOneWorker --> validationGates
+    taskTwoAWorker --> validationGates
+    taskTwoBWorker --> validationGates
+    validationGates --> artifactStore --> controlledOutputs --> internalConsumer
+    monitoring -.-> internalScheduler
+    validationGates -.-> monitoring
+    artifactStore -.-> optionalContract
+    privacyRules -.-> privateStore
+
+    classDef data fill:#e8f1fb,stroke:#24527a,color:#102a43,stroke-width:2px;
+    classDef process fill:#eaf7ee,stroke:#2f6f44,color:#173d26,stroke-width:2px;
+    classDef model fill:#f1eafa,stroke:#6d4c91,color:#352347,stroke-width:2px;
+    classDef optimizer fill:#fff1dd,stroke:#a65d00,color:#5e3600,stroke-width:2px;
+    classDef validation fill:#fff8cc,stroke:#8a7400,color:#453a00,stroke-width:2px;
+    classDef output fill:#e6f7f7,stroke:#287878,color:#143d3d,stroke-width:2px;
+    classDef optional fill:#f7f7f7,stroke:#666666,color:#333333,stroke-width:2px,stroke-dasharray:6 4;
+    classDef privacy fill:#fff0f0,stroke:#9b2c2c,color:#4f1616,stroke-width:2px,stroke-dasharray:6 4;
+    class privateStore,modelStore data;
+    class internalScheduler,featureLayer process;
+    class taskOneWorker,taskTwoAWorker model;
+    class taskTwoBWorker optimizer;
+    class validationGates,monitoring validation;
+    class artifactStore,controlledOutputs,internalConsumer output;
+    class optionalContract optional;
+    class proposedBanner,privacyRules privacy;
