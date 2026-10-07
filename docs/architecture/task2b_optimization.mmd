@@ -1,0 +1,86 @@
+%% diagram_id: task2b_optimization
+%% title: Task 2B peak-day optimization pipeline
+%% phase: 29
+%% source_contracts: Official Task 2B rules; Phases 18-24; frozen Task 2B configs
+%% status: final
+%% contains_private_data: false
+flowchart TD
+    subgraph inputs["S1 INPUTS"]
+        sOneOrders["S1 peak-day orders"]
+        fleetStatus["Scenario fleet status"]
+        vehicleReference["Vehicle capability and capacity reference"]
+        districtTravel["District outbound and inter-stop travel reference"]
+        serviceAllowance["Service allowance by brand plus dock_type"]
+    end
+
+    scenarioFleet["Canonical S1 scenario and available fleet only"]
+    compatibility["Order x vehicle compatibility"]
+    tripFormula["trip minutes = outbound + inter-stop x orders minus one + sum service allowance"]
+    noReturn["No return leg is added"]
+
+    subgraph hardRules["OFFICIAL HARD FEASIBILITY - seven rule groups"]
+        ruleOne["1. Same brand and district per trip"]
+        ruleTwo["2. Chilled requires reefer"]
+        ruleThree["3. van_only requires van"]
+        ruleFour["4. Home depot must match"]
+        ruleFive["5. Whole order; no split"]
+        ruleSix["6. Weight and volume capacity"]
+        ruleSeven["7. At most two trips; Fresh <= 270 min; Style plus Tech <= 480 min"]
+    end
+
+    subgraph softPolicy["WAYLOOM SOFT PRIORITY - not organizer priority"]
+        policyOne["1 MAX served orders; 2 MAX previous-deferred served; 3 MAX waiting-days served"]
+        policyTwo["4 MAX low-flexibility served; 5 MAX Fresh chilled served; 6 MAX Fresh served"]
+        policyThree["7A MIN avoidable reefer-van; 7B MIN avoidable reefer; 7C MIN avoidable van"]
+    end
+
+    cpSat["Deterministic OR-Tools CP-SAT lexicographic optimization"]
+    optimalStages["Require all nine objective stages OPTIMAL"]
+    freeze["Independent solution audit, deterministic evidence and frozen allocation"]
+    independentValidator["Phase 23 solver-neutral feasibility validator"]
+    organizerChecker["Organizer check_allocation.py - feasibility only; does not prove optimality"]
+    templateExport["Official template and identity-preserving export"]
+    officialOutput["Official output: scenario, order_ref, outlet_id, decision, vehicle_id, trip_id"]
+    writtenPolicy["Separate Task 2B written prioritization policy"]
+    excludedSignals["Not hard constraints: delivery windows, fuel, return journey, Task 1 predictions, Task 2A forecasts"]
+
+    sOneOrders --> scenarioFleet
+    fleetStatus --> scenarioFleet
+    vehicleReference --> scenarioFleet
+    scenarioFleet --> compatibility
+    districtTravel --> tripFormula
+    serviceAllowance --> tripFormula
+    compatibility --> ruleOne
+    compatibility --> ruleTwo
+    compatibility --> ruleThree
+    compatibility --> ruleFour
+    compatibility --> ruleFive
+    compatibility --> ruleSix
+    tripFormula --> ruleSeven
+    noReturn -.-> tripFormula
+    ruleOne --> cpSat
+    ruleTwo --> cpSat
+    ruleThree --> cpSat
+    ruleFour --> cpSat
+    ruleFive --> cpSat
+    ruleSix --> cpSat
+    ruleSeven --> cpSat
+    policyOne --> cpSat
+    policyTwo --> cpSat
+    policyThree --> cpSat
+    excludedSignals -.-> cpSat
+    cpSat --> optimalStages --> freeze --> independentValidator --> organizerChecker --> templateExport --> officialOutput
+    freeze --> writtenPolicy
+
+    classDef data fill:#e8f1fb,stroke:#24527a,color:#102a43,stroke-width:2px;
+    classDef process fill:#eaf7ee,stroke:#2f6f44,color:#173d26,stroke-width:2px;
+    classDef optimizer fill:#fff1dd,stroke:#a65d00,color:#5e3600,stroke-width:2px;
+    classDef validation fill:#fff8cc,stroke:#8a7400,color:#453a00,stroke-width:2px;
+    classDef output fill:#e6f7f7,stroke:#287878,color:#143d3d,stroke-width:2px;
+    classDef optional fill:#f7f7f7,stroke:#666666,color:#333333,stroke-width:2px,stroke-dasharray:6 4;
+    class sOneOrders,fleetStatus,vehicleReference,districtTravel,serviceAllowance data;
+    class scenarioFleet,compatibility,tripFormula,ruleOne,ruleTwo,ruleThree,ruleFour,ruleFive,ruleSix,ruleSeven process;
+    class policyOne,policyTwo,policyThree,cpSat optimizer;
+    class optimalStages,freeze,independentValidator,organizerChecker validation;
+    class templateExport,officialOutput,writtenPolicy output;
+    class noReturn,excludedSignals optional;
