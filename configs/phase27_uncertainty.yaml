@@ -1,0 +1,56 @@
+version: 1
+
+coverage_levels: [0.80, 0.90]
+
+quantile:
+  method: finite_sample_higher
+  require_oos_residuals: true
+
+task1_service:
+  enabled: true
+  calibration_source: frozen_oos_validation
+  grouping: global
+  optional_segment_grouping: null
+  min_segment_residuals: 30
+  min_global_residuals: 30
+  lower_bound: 0.0
+  features_path: data/interim/task1_features_train.csv
+  labels_path: data/interim/task1_training_labels.csv
+  validation_config_path: configs/task1_validation.yaml
+  advanced_config_path: configs/task1_advanced_models.yaml
+
+task2a:
+  enabled: true
+  calibration_source: frozen_rolling_oos
+  candidate_predictions_path: reports/private/phase16_task2a_advanced/candidate_predictions.csv
+  grouping: horizon
+  min_residuals_per_horizon: 20
+  min_pooled_target_residuals: 20
+  fallback: pooled_target
+  chilled_zero_brands: [Style, Tech]
+  enforce_nonnegative: true
+  create_coherent_chilled_view: true
+
+coverage_evaluation:
+  task2a_sequential_backtest: true
+  task1_independent_only_if_available: true
+
+official_schema_guard:
+  enabled: true
+  require_hash_stability: true
+
+privacy:
+  private_report_dir: reports/private/phase27_uncertainty
+  include_ids_only_in_private_artifacts: true
+
+frozen_artifacts:
+  - configs/task1_final_models.yaml
+  - models/task1_service
+  - models/task1_late
+  - outputs/submission_task1.csv
+  - configs/task2a_final_models.yaml
+  - outputs/submission_task2a.csv
+  - data/interim/task2b_final_allocation.csv
+  - data/interim/task2b_final_trip_summary.csv
+  - outputs/submission_task2b.csv
+  - docs/task2b_policy.md
