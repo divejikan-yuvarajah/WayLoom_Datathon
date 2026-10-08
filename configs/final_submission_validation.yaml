@@ -1,0 +1,49 @@
+version: 1
+
+submission_dir: outputs
+raw_root: data/raw
+filenames:
+  task1: submission_task1.csv
+  task2a: submission_task2a.csv
+  task2b: submission_task2b.csv
+
+templates:
+  resolve_from_dataset_manifest: true
+
+task1:
+  expected_columns: [delivery_id, pred_service_min, pred_late_prob]
+  require_original_row_order: true
+  require_finite_predictions: true
+  probability_min: 0.0
+  probability_max: 1.0
+  engineering_require_nonnegative_service: true
+
+task2a:
+  expected_columns: [row_id, pred_total_volume_m3, pred_chilled_volume_m3]
+  require_template_row_identity: true
+  require_template_row_order: true
+  require_finite: true
+  require_nonnegative: true
+  zero_chilled_brands: [Style, Tech]
+  require_chilled_le_total: true
+
+task2b:
+  expected_columns: [scenario, order_ref, outlet_id, decision, vehicle_id, trip_id]
+  require_template_identity: true
+  require_template_row_order: true
+  allowed_decisions: [served, deferred]
+  served_trip_ids: ["1", "2"]
+  deferred_fields_must_be_raw_blank: true
+  run_independent_validator: true
+  run_official_checker: true
+  scenario_config: configs/task2b_scenario.yaml
+  validation_config: configs/task2b_validation.yaml
+
+integrity:
+  read_only: true
+  pre_post_sha256_equal: true
+
+privacy:
+  report_dir: reports/private/phase33_final_submissions
+  print_ids: false
+  print_rows: false
