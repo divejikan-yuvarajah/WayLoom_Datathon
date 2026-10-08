@@ -86,3 +86,34 @@ def test_unknown_serializer_and_corrupt_registered_file_fail_safely(tmp_path: Pa
     with pytest.raises(ArtifactIOError, match="could not be loaded safely") as caught:
         load_verified_joblib(tmp_path, entry)
     assert str(path) not in str(caught.value)
+
+
+def test_symlink_escape_is_rejected_before_deserialization(tmp_path: Path, monkeypatch) -> None:
+    models = tmp_path / "models"
+    models.mkdir()
+    outside = tmp_path / "outside.joblib"
+    outside.write_bytes(b"synthetic harmless payload")
+    linked = models / "linked.joblib"
+    try:
+        linked.symlink_to(outside)
+    except OSError as exc:
+        pytest.skip(f"symlink creation is unavailable in this environment: {type(exc).__name__}")
+
+    called = False
+
+    def forbidden_load(_path):
+        nonlocal called
+        called = True
+        raise AssertionError("deserializer must not run")
+
+    monkeypatch.setattr(artifact_io.joblib, "load", forbidden_load)
+    entry = {
+        "relative_path": "models/linked.joblib",
+        "sha256": hashlib.sha256(outside.read_bytes()).hexdigest(),
+        "size_bytes": outside.stat().st_size,
+        "serializer": "joblib",
+        "format": "joblib",
+    }
+    with pytest.raises(ArtifactIOError, match="escapes"):
+        load_verified_joblib(tmp_path, entry)
+    assert called is False

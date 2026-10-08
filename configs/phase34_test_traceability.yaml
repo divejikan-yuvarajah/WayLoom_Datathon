@@ -1,0 +1,205 @@
+version: 1
+phase: 34
+task_range:
+  first: DT-438
+  last: DT-450
+expected_task_count: 13
+execution:
+  runner: pytest
+  synthetic_only: true
+  deterministic: true
+  private_data_required: false
+
+tasks:
+  DT-438:
+    requirement: Create a deterministic, CI-safe pytest suite with explicit Phase 34 traceability.
+    coverage:
+      positive: The canonical manifest loads and exposes exactly all thirteen master tasks.
+      negative: Missing tasks and empty node mappings are rejected by the manifest contract test.
+      boundary: Every mapped node must resolve to a real pytest function without importing private data.
+    nodes:
+      - tests/test_phase34_traceability.py::test_phase34_manifest_has_exact_master_inventory
+      - tests/test_phase34_traceability.py::test_malformed_traceability_is_rejected
+      - tests/test_phase34_traceability.py::test_mapped_nodes_exist_and_are_synthetic_only
+      - tests/test_phase34_traceability.py::test_traceability_manifest_is_deterministic
+      - tests/test_phase34_traceability.py::test_remediation_evidence_is_mapped_to_the_correct_tasks
+
+  DT-439:
+    requirement: Validate required and exact schemas, identifiers, uniqueness, and rejection behavior.
+    coverage:
+      positive: Valid canonical synthetic schemas and exact final-output schemas are accepted.
+      negative: Missing, reordered, duplicate, extra, case-mismatched, or incorrectly typed columns and invalid keys are rejected.
+      boundary: Exact column order and case-sensitive names are enforced; header-only submissions fail row-count validation.
+    nodes:
+      - tests/test_schema_assertions.py::test_assert_required_columns_pass
+      - tests/test_schema_assertions.py::test_assert_required_columns_fail
+      - tests/test_final_submission_task1.py::test_exact_columns_required
+      - tests/test_final_submission_task1.py::test_case_mismatched_columns_are_rejected
+      - tests/test_final_submission_task1.py::test_header_only_submission_is_rejected
+      - tests/test_final_submission_task1.py::test_row_and_id_integrity
+      - tests/test_final_submission_task1.py::test_probability_range_rejects_invalid_values
+      - tests/test_final_submission_task2a.py::test_task2a_exact_filename_and_schema
+      - tests/test_final_submission_task2b.py::test_task2b_exact_filename_and_columns
+      - tests/test_final_submission_contract.py::test_strict_csv_preflight_rejects_bad_csv
+      - tests/test_data_quality.py::test_dt039_semantic_type_validation
+
+  DT-440:
+    requirement: Verify join cardinality, composite keys, left-row preservation, and fail-closed lookup behavior.
+    coverage:
+      positive: Official composite route keys join one-to-one while preserving left identity and order.
+      negative: Duplicate right keys, unmatched rows, and destination mismatches fail closed.
+      boundary: Calendar many-to-one joins reject duplicate or absent requested dates.
+    nodes:
+      - tests/test_task1_labels.py::test_join_orders_to_route_legs_uses_official_composite_key_and_left_join
+      - tests/test_task1_labels.py::test_join_orders_to_route_legs_raises_when_route_key_is_duplicated
+      - tests/test_task1_inference.py::test_unmatched_test_order_fails
+      - tests/test_task1_inference.py::test_destination_mismatch_fails
+      - tests/test_task2a_history.py::test_calendar_duplicate_or_unmatched_date_is_a_blocker
+
+  DT-441:
+    requirement: Test clock parsing, chronology, early-window waiting, strict close boundaries, and ISO week rollover.
+    coverage:
+      positive: Valid daytime, midnight, and requested-date calendar cases resolve deterministically.
+      negative: Invalid clocks, impossible chronology, and February 29 in a non-leap year are rejected.
+      boundary: Leap-day midnight transitions, equality at window close, and ISO week-year rollover resolve deterministically.
+    nodes:
+      - tests/test_task1_labels.py::test_dt062_parse_clock_rejects_invalid_values
+      - tests/test_task1_labels.py::test_dt063_resolve_route_actual_datetimes_midnight_rollover
+      - tests/test_task1_labels.py::test_dt063_leap_day_midnight_transitions
+      - tests/test_task1_labels.py::test_dt062_invalid_non_leap_february_29_rejected
+      - tests/test_task1_labels.py::test_dt063_impossible_chronology_raises_on_travel_conflict
+      - tests/test_task1_labels.py::test_dt064_service_start_uses_max_of_arrival_and_window_open
+      - tests/test_task1_labels.py::test_dt066_late_flag_strict_boundary
+      - tests/test_task2a_history.py::test_iso_year_week_53_and_same_week_number_across_years_use_calendar
+
+  DT-442:
+    requirement: Protect canonical service-minute and strict-lateness label generation.
+    coverage:
+      positive: Service and lateness labels are generated from eligible dispatched route events.
+      negative: Negative service duration, missing actual times, and inconsistent labels are rejected.
+      boundary: Early waiting is excluded, exact close is on time, and one minute after close is late.
+    nodes:
+      - tests/test_task1_labels.py::test_dt065_service_minutes_excludes_early_waiting_official_example
+      - tests/test_task1_labels.py::test_dt065_service_minutes_negative_raises
+      - tests/test_task1_labels.py::test_dt066_late_flag_strict_boundary
+      - tests/test_task1_labels.py::test_dt067_validate_task1_labels_fails_on_bad_late_flag
+      - tests/test_task1_labels.py::test_dt067_validate_task1_labels_rejects_missing_datetime_or_late_flag
+
+  DT-443:
+    requirement: Protect stable feature schemas and exclude outcome or future-information leakage.
+    coverage:
+      positive: Canonical train/test features retain identical ordered schemas.
+      negative: Direct forbidden fields and renamed forbidden lineage are rejected.
+      boundary: Same-day/future records cannot influence prior features and shuffled history is deterministic.
+    nodes:
+      - tests/test_task1_features.py::test_full_build_train_test_parity_and_forbidden_excluded
+      - tests/test_task1_feature_leakage.py::test_dt121_direct_forbidden_column_rejected
+      - tests/test_task1_feature_leakage.py::test_dt121_lineage_rejects_renamed_leakage
+      - tests/test_task1_historical_features.py::test_dt119_current_same_day_future_excluded
+      - tests/test_task1_historical_features.py::test_dt119_deterministic_under_shuffle
+      - tests/test_task2a_features.py::test_future_mutation_cannot_change_prior_origin_features
+
+  DT-444:
+    requirement: Test saved-model Task 1 inference, prediction bounds, feature coherence, identity, and order.
+    coverage:
+      positive: Reloaded bundles produce finite repeatable service and bounded late probabilities.
+      negative: Missing models, corrupt feature schemas, and forbidden features fail without retraining.
+      boundary: Unseen categories use frozen preprocessing and arbitrary official ID order is restored exactly.
+    nodes:
+      - tests/test_task1_inference.py::test_missing_model_fails_without_training
+      - tests/test_task1_inference.py::test_unseen_test_category_uses_frozen_preprocessing
+      - tests/test_task1_inference.py::test_service_output_length_finite_and_repeatable
+      - tests/test_task1_inference.py::test_late_probability_bounds_and_identity
+      - tests/test_task1_inference.py::test_restore_arbitrary_official_order
+      - tests/test_task1_inference.py::test_reload_then_infer_not_in_memory_object
+      - tests/test_task1_inference.py::test_train_test_feature_schema_and_order
+      - tests/test_task1_inference.py::test_forbidden_features_absent
+
+  DT-445:
+    requirement: Test Task 2A aggregation across both sources using one order once and requested-date ISO weeks.
+    coverage:
+      positive: Attempted, deferred, and not-run demand from both sources is retained and reconciled.
+      negative: Duplicate delivery IDs, invalid volume, non-Fresh chilled contradictions, and missing calendar dates fail.
+      boundary: ISO week 53/year rollover and zero-volume/interior-zero weeks are handled explicitly.
+    nodes:
+      - tests/test_task2a_history.py::test_build_history_retains_both_sources_statuses_and_requested_dates
+      - tests/test_task2a_history.py::test_duplicate_ids_across_sources_are_a_hard_blocker
+      - tests/test_task2a_history.py::test_not_run_with_blank_operational_fields_is_demand
+      - tests/test_task2a_history.py::test_iso_year_week_53_and_same_week_number_across_years_use_calendar
+      - tests/test_task2a_history.py::test_fresh_chilled_and_ambient_are_separated_and_nonfresh_contradictions_block
+      - tests/test_task2a_history.py::test_invalid_volume_is_rejected
+      - tests/test_task2a_history.py::test_confirmed_zero_interior_week_is_filled_but_boundary_is_not
+
+  DT-446:
+    requirement: Test Task 2A forecast identity, finiteness, nonnegativity, structural zeros, and chilled-total relation.
+    coverage:
+      positive: Deterministic forecasts preserve row IDs and satisfy all final volume constraints.
+      negative: NaN, missing IDs, Style chilled, and chilled above total are rejected or frozen-postprocessed.
+      boundary: Zero totals, exact chilled-equals-total, and the ten-horizon official grid remain valid.
+    nodes:
+      - tests/test_task2a_final_inference.py::test_test_grid_origin_calendar_and_horizons_are_exact
+      - tests/test_task2a_final_inference.py::test_postprocessing_structural_zero_clipping_and_capping
+      - tests/test_task2a_final_inference.py::test_frozen_ensemble_inference_is_direct_and_deterministic
+      - tests/test_task2a_submission.py::test_mapping_is_by_row_id_and_atomic_export_round_trips
+      - tests/test_task2a_submission.py::test_template_and_prediction_integrity_fail_closed
+
+  DT-447:
+    requirement: Test Task 2B availability, refrigeration, access, depot, grouping, and capacity compatibility rules.
+    coverage:
+      positive: Available compatible reefer vans and reefer vehicles carrying ambient demand are accepted.
+      negative: Workshop, dry-for-chilled, truck-for-van-only, wrong-depot, mixed-group, and over-capacity cases fail.
+      boundary: Repeated outlet IDs are allowed while unique order_ref remains the allocation key.
+    nodes:
+      - tests/test_task2b_scenario.py::test_fleet_references_and_s1_availability_are_fail_closed
+      - tests/test_task2b_compatibility.py::test_cross_product_rules_and_reasons_are_complete
+      - tests/test_task2b_allocation_validator.py::test_each_official_hard_rule_mutation_fails
+      - tests/test_task2b_allocation_validator.py::test_valid_allocation_is_deterministic_read_only_and_allows_repeated_outlet_and_trip2_only
+
+  DT-448:
+    requirement: Test exact Task 2B trip arithmetic, no return leg, trip caps, and per-vehicle time budgets.
+    coverage:
+      positive: Official 101/112-minute examples and valid two-trip schedules pass.
+      negative: Missing references, third trips, and budgets one minute over the limit fail.
+      boundary: One-stop inter-stop time is zero; Fresh 270 and Style plus Tech 480 are inclusive limits.
+    nodes:
+      - tests/test_task2b_trip_time.py::test_official_examples_and_no_return
+      - tests/test_task2b_trip_time.py::test_count_orders_and_reference_fail_closed
+      - tests/test_task2b_allocation_validator.py::test_exact_fresh_and_style_tech_budget_boundaries
+      - tests/test_task2b_optimizer_constraints.py::test_official_trip_time_examples_and_combined_fresh_budget
+      - tests/test_task2b_optimizer_constraints.py::test_fresh_exact_budget_boundary_and_separate_style_tech_budget
+      - tests/test_task2b_allocation_validator.py::test_identity_decision_and_served_field_mutations_fail
+
+  DT-449:
+    requirement: Test optimizer output coverage, whole orders, trip domains, hard feasibility, and deterministic proof status.
+    coverage:
+      positive: Synthetic optimization produces deterministic, independently feasible complete allocations.
+      negative: Duplicate/missing orders, split/group violations, infeasible capacity, and unproven final status fail.
+      boundary: Exactly two trips and exact capacity/time limits pass while the next increment fails.
+    nodes:
+      - tests/test_task2b_optimizer_constraints.py::test_whole_order_and_group_constraints
+      - tests/test_task2b_optimizer_constraints.py::test_combined_weight_and_volume_and_group_separation
+      - tests/test_task2b_lexicographic_solver.py::test_all_stages_proven_and_deterministic
+      - tests/test_task2b_lexicographic_solver.py::test_final_stage_rejects_nonoptimal_status
+      - tests/test_task2b_allocation_validator.py::test_duplicate_served_order_fails_coverage_and_whole_order_audits
+      - tests/test_task2b_solution_audit.py::test_recomputes_hard_rules_from_extracted_rows
+      - tests/test_task2b_solution_audit.py::test_all_deferred_retains_empty_trip_summary_schema
+
+  DT-450:
+    requirement: Test registry-secured saved-model loading, integrity-before-deserialization, schema coherence, and fresh process inference.
+    coverage:
+      positive: All twelve registered artifacts load and infer in a fresh process with coherent schemas and class mapping.
+      negative: Bad checksum, unsafe path, symlink escape, unknown serializer, unsupported registry version, and schema/preprocessor-reference mismatch fail before unsafe loading.
+      boundary: Positive class index, calibration state, feature schema references, and deterministic parity survive roundtrip.
+    nodes:
+      - tests/test_artifact_security.py::test_unsafe_artifact_paths_are_rejected
+      - tests/test_artifact_security.py::test_checksum_mismatch_fails_before_joblib_deserialization
+      - tests/test_artifact_security.py::test_symlink_escape_is_rejected_before_deserialization
+      - tests/test_artifact_security.py::test_unknown_serializer_and_corrupt_registered_file_fail_safely
+      - tests/test_artifact_registry.py::test_final_registry_has_complete_versioned_task_inventory
+      - tests/test_artifact_registry.py::test_secured_loader_rejects_unsupported_registry_schema_before_artifact_access
+      - tests/test_artifact_registry.py::test_secured_loader_rejects_schema_and_preprocessor_reference_mismatches_before_artifact_access
+      - tests/test_artifact_clean_process_load.py::test_all_final_artifacts_load_in_a_fresh_python_process
+      - tests/test_preprocessing_artifacts.py::test_external_preprocessor_requires_registered_state
+      - tests/test_preprocessing_artifacts.py::test_embedded_or_deterministic_preprocessing_rejects_duplicate_reference
+      - tests/test_task1_artifact_roundtrip.py::test_task1_class_calibration_schema_and_canonical_bytes_are_preserved
+      - tests/test_task1_artifact_roundtrip.py::test_task1_late_loaded_classes_must_match_registry
