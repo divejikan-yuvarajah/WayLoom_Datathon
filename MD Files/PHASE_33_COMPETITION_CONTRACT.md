@@ -58,29 +58,29 @@ The finalized WayLoom master inventory defines exactly:
 
 | Status | Task | Mark | Priority | Dependency | Work item |
 |---|---|---:|---:|---|---|
-| [ ] | **DT-420** | [O] | P0 | Submission files generated | Test Task 1 filename |
-| [ ] | **DT-421** | [O] | P0 | Phases 10,17,24 | Test Task 1 columns |
-| [ ] | **DT-422** | [O] | P0 | Phases 10,17,24 | Test Task 1 row count |
-| [ ] | **DT-423** | [O] | P0 | Phases 10,17,24 | Test Task 1 row order |
-| [ ] | **DT-424** | [O] | P0 | Phases 10,17,24 | Test Task 1 IDs unchanged |
-| [ ] | **DT-425** | [O] | P0 | Phases 10,17,24 | Test Task 1 predictions finite |
-| [ ] | **DT-426** | [O] | P0 | Phases 10,17,24 | Test Task 1 probabilities in range |
-| [ ] | **DT-427** | [O] | P0 | Phases 10,17,24 | Test Task 2A filename |
-| [ ] | **DT-428** | [O] | P0 | Phases 10,17,24 | Test Task 2A row IDs unchanged |
-| [ ] | **DT-429** | [O] | P0 | Phases 10,17,24 | Test Task 2A predictions nonnegative |
-| [ ] | **DT-430** | [O] | P0 | Phases 10,17,24 | Test Style chilled exactly zero |
-| [ ] | **DT-431** | [O] | P0 | Phases 10,17,24 | Test Tech chilled exactly zero |
-| [ ] | **DT-432** | [O] | P0 | Phases 10,17,24 | Test chilled ≤ total |
-| [ ] | **DT-433** | [O] | P0 | Phases 10,17,24 | Test Task 2B filename |
-| [ ] | **DT-434** | [O] | P0 | Phases 10,17,24 | Test Task 2B all orders present |
-| [ ] | **DT-435** | [O] | P0 | Phases 10,17,24 | Test Task 2B all placeholders removed |
-| [ ] | **DT-436** | [O] | P0 | Phases 10,17,24 | Test served/deferred spelling/format |
-| [ ] | **DT-437** | [O] | P0 | Phases 10,17,24 | Test Task 2B with official checker again |
+| [x] | **DT-420** | [O] | P0 | Submission files generated | Test Task 1 filename |
+| [x] | **DT-421** | [O] | P0 | Phases 10,17,24 | Test Task 1 columns |
+| [x] | **DT-422** | [O] | P0 | Phases 10,17,24 | Test Task 1 row count |
+| [x] | **DT-423** | [O] | P0 | Phases 10,17,24 | Test Task 1 row order |
+| [x] | **DT-424** | [O] | P0 | Phases 10,17,24 | Test Task 1 IDs unchanged |
+| [x] | **DT-425** | [O] | P0 | Phases 10,17,24 | Test Task 1 predictions finite |
+| [x] | **DT-426** | [O] | P0 | Phases 10,17,24 | Test Task 1 probabilities in range |
+| [x] | **DT-427** | [O] | P0 | Phases 10,17,24 | Test Task 2A filename |
+| [x] | **DT-428** | [O] | P0 | Phases 10,17,24 | Test Task 2A row IDs unchanged |
+| [x] | **DT-429** | [O] | P0 | Phases 10,17,24 | Test Task 2A predictions nonnegative |
+| [x] | **DT-430** | [O] | P0 | Phases 10,17,24 | Test Style chilled exactly zero |
+| [x] | **DT-431** | [O] | P0 | Phases 10,17,24 | Test Tech chilled exactly zero |
+| [x] | **DT-432** | [O] | P0 | Phases 10,17,24 | Test chilled ≤ total |
+| [x] | **DT-433** | [O] | P0 | Phases 10,17,24 | Test Task 2B filename |
+| [x] | **DT-434** | [O] | P0 | Phases 10,17,24 | Test Task 2B all orders present |
+| [x] | **DT-435** | [O] | P0 | Phases 10,17,24 | Test Task 2B all placeholders removed |
+| [x] | **DT-436** | [O] | P0 | Phases 10,17,24 | Test served/deferred spelling/format |
+| [x] | **DT-437** | [O] | P0 | Phases 10,17,24 | Test Task 2B with official checker again |
 
 **Expected Phase 33 tasks:** 18  
 **Missing tasks allowed:** 0  
-**Phase complete:** [ ]  
-**READY FOR PHASE 34:** NO
+**Phase complete:** [x]
+**READY FOR PHASE 34:** YES
 
 ---
 
@@ -3051,67 +3051,67 @@ Do not have the implementing session self-approve the phase.
 
 Phase 33 is complete only when:
 
-- [ ] DT-420 PASS
-- [ ] DT-421 PASS
-- [ ] DT-422 PASS
-- [ ] DT-423 PASS
-- [ ] DT-424 PASS
-- [ ] DT-425 PASS
-- [ ] DT-426 PASS
-- [ ] DT-427 PASS
-- [ ] DT-428 PASS
-- [ ] DT-429 PASS
-- [ ] DT-430 PASS
-- [ ] DT-431 PASS
-- [ ] DT-432 PASS
-- [ ] DT-433 PASS
-- [ ] DT-434 PASS
-- [ ] DT-435 PASS
-- [ ] DT-436 PASS
-- [ ] DT-437 PASS
-- [ ] exact `submission_task1.csv` filename
-- [ ] exact Task1 three-column schema
-- [ ] Task1 row count matches official template
-- [ ] Task1 original row order exact
-- [ ] Task1 IDs exact
-- [ ] Task1 prediction values finite
-- [ ] Task1 service nonnegative final-pipeline guard
-- [ ] Task1 late probabilities inclusive [0,1]
-- [ ] exact `submission_task2a.csv` filename
-- [ ] exact Task2A three-column schema
-- [ ] Task2A row IDs exact
-- [ ] Task2A template row order preserved
-- [ ] Task2A values finite/nonnegative
-- [ ] Style chilled exactly zero
-- [ ] Tech chilled exactly zero
-- [ ] chilled <= total for every row
-- [ ] exact `submission_task2b.csv` filename
-- [ ] exact Task2B six-column schema
-- [ ] all official Task2B orders exactly once
-- [ ] scenario/order_ref/outlet_id exact
-- [ ] no placeholders
-- [ ] decision exactly served/deferred
-- [ ] served vehicle/trip format exact
-- [ ] deferred vehicle/trip raw blank
-- [ ] Phase23 independent validator passes on final Task2B file
-- [ ] official checker runs again
-- [ ] official checker passes
-- [ ] official checker input is exact final file or proven byte-identical staged copy
-- [ ] official checker source unchanged
-- [ ] official checker documented as feasibility-only
-- [ ] Task1 pre/post SHA256 unchanged
-- [ ] Task2A pre/post SHA256 unchanged
-- [ ] Task2B pre/post SHA256 unchanged
-- [ ] no hardcoded real row counts
-- [ ] no fabricated PASS result
-- [ ] no private identifiers in normal output
-- [ ] targeted Phase33 tests pass
-- [ ] relevant Phase10/17/23/24 regressions pass
-- [ ] full safe suite passes
-- [ ] `python -m pip check` passes
-- [ ] `git diff --check` passes
-- [ ] fresh independent Phase33 review passes
-- [ ] no unresolved STOP condition
+- [x] DT-420 PASS
+- [x] DT-421 PASS
+- [x] DT-422 PASS
+- [x] DT-423 PASS
+- [x] DT-424 PASS
+- [x] DT-425 PASS
+- [x] DT-426 PASS
+- [x] DT-427 PASS
+- [x] DT-428 PASS
+- [x] DT-429 PASS
+- [x] DT-430 PASS
+- [x] DT-431 PASS
+- [x] DT-432 PASS
+- [x] DT-433 PASS
+- [x] DT-434 PASS
+- [x] DT-435 PASS
+- [x] DT-436 PASS
+- [x] DT-437 PASS
+- [x] exact `submission_task1.csv` filename
+- [x] exact Task1 three-column schema
+- [x] Task1 row count matches official template
+- [x] Task1 original row order exact
+- [x] Task1 IDs exact
+- [x] Task1 prediction values finite
+- [x] Task1 service nonnegative final-pipeline guard
+- [x] Task1 late probabilities inclusive [0,1]
+- [x] exact `submission_task2a.csv` filename
+- [x] exact Task2A three-column schema
+- [x] Task2A row IDs exact
+- [x] Task2A template row order preserved
+- [x] Task2A values finite/nonnegative
+- [x] Style chilled exactly zero
+- [x] Tech chilled exactly zero
+- [x] chilled <= total for every row
+- [x] exact `submission_task2b.csv` filename
+- [x] exact Task2B six-column schema
+- [x] all official Task2B orders exactly once
+- [x] scenario/order_ref/outlet_id exact
+- [x] no placeholders
+- [x] decision exactly served/deferred
+- [x] served vehicle/trip format exact
+- [x] deferred vehicle/trip raw blank
+- [x] Phase23 independent validator passes on final Task2B file
+- [x] official checker runs again
+- [x] official checker passes
+- [x] official checker input is exact final file or proven byte-identical staged copy
+- [x] official checker source unchanged
+- [x] official checker documented as feasibility-only
+- [x] Task1 pre/post SHA256 unchanged
+- [x] Task2A pre/post SHA256 unchanged
+- [x] Task2B pre/post SHA256 unchanged
+- [x] no hardcoded real row counts
+- [x] no fabricated PASS result
+- [x] no private identifiers in normal output
+- [x] targeted Phase33 tests pass
+- [x] relevant Phase10/17/23/24 regressions pass
+- [x] full safe suite passes
+- [x] `python -m pip check` passes
+- [x] `git diff --check` passes
+- [x] fresh independent Phase33 review passes
+- [x] no unresolved STOP condition
 
 Then:
 
@@ -3127,42 +3127,45 @@ READY FOR PHASE 34: YES
 
 # 127. Completion record
 
-```markdown
 # Phase 33 Completion Record
 
 ## Task1
 
-- [ ] DT-420 filename
-- [ ] DT-421 columns
-- [ ] DT-422 row count
-- [ ] DT-423 row order
-- [ ] DT-424 IDs
-- [ ] DT-425 finite predictions
-- [ ] DT-426 probability range
+- [x] DT-420 exact filename
+- [x] DT-421 exact columns and order
+- [x] DT-422 template-derived row count
+- [x] DT-423 original row order
+- [x] DT-424 identifiers unchanged
+- [x] DT-425 finite predictions and engineering nonnegative-service guard
+- [x] DT-426 inclusive probability range `[0,1]`
 
 ## Task2A
 
-- [ ] DT-427 filename
-- [ ] DT-428 row IDs
-- [ ] DT-429 nonnegative predictions
-- [ ] DT-430 Style chilled zero
-- [ ] DT-431 Tech chilled zero
-- [ ] DT-432 chilled <= total
+- [x] DT-427 exact filename and schema
+- [x] DT-428 template row identity/order and canonical `row_id` brand mapping
+- [x] DT-429 finite, nonnegative predictions
+- [x] DT-430 Style chilled exactly zero
+- [x] DT-431 Tech chilled exactly zero
+- [x] DT-432 chilled <= total
 
 ## Task2B
 
-- [ ] DT-433 filename
-- [ ] DT-434 all orders
-- [ ] DT-435 no placeholders
-- [ ] DT-436 served/deferred format
-- [ ] independent validator PASS
-- [ ] DT-437 official checker PASS
+- [x] DT-433 exact filename and six-column schema
+- [x] DT-434 all orders exactly once with identity triple preserved
+- [x] DT-435 no answer placeholders
+- [x] DT-436 exact lowercase decision and dependent raw-field format
+- [x] Phase 23 independent validator PASS on the final Task2B CSV
+- [x] DT-437 official `check_allocation.py` PASS on the direct final file
+- [x] Official checker meaning recorded as feasibility only, not optimality
 
 ## Integrity
 
-- Task1 hash changed: NO
-- Task2A hash changed: NO
-- Task2B hash changed: NO
+- Human-local Task1 pre/post hash: UNCHANGED
+- Human-local Task2A pre/post hash: UNCHANGED
+- Human-local Task2B pre/post hash: UNCHANGED
+- Closure-recovery frozen CSV worktree comparison: UNCHANGED
+- Phase 32 artifact registry worktree comparison: UNCHANGED
+- Phase 32 registered artifact checksum validation: PASS
 
 ## Safety
 
@@ -3170,19 +3173,34 @@ READY FOR PHASE 34: YES
 - fabricated PASS: NO
 - private IDs printed: NO
 - final files rewritten: NO
+- private row-level evidence accessed by the closure agent: NO
+- official checker source modified: NO
+
+## Verification evidence
+
+- Sanitized human-local final-file validation: DT-420 through DT-437 PASS; independent Task2B validator PASS; official checker PASS; all three CSV hash guards UNCHANGED; private identifiers printed NO.
+- Fresh independent Phase 33 review (2026-10-08): PASS; 18/18 tasks PASS; final submission files VALIDATED; official Task2B checker PASS; official CSVs UNCHANGED; blockers NONE; READY FOR PHASE 34 YES.
+- Fresh independent-review targeted suite: 80 passed.
+- Fresh independent-review Phase 10/17/23/24 regression suite: 128 passed.
+- Fresh independent-review full safe suite: 845 passed, 1 skipped, 5 warnings.
+- Fresh independent-review dependency and Git checks: `pip check` PASS; `git diff --check` PASS.
+- Closure-recovery revalidation: 80 targeted Phase 33 tests passed; Phase 32 artifact checksums, feature schemas, fresh-process load and fresh-process synthetic inference PASS.
+
+The human-local results above are recorded as operator-provided sanitized evidence. The independent reviewer did not claim to have executed those private-data checks. No earlier Phase 33 FAIL verdict was found or rewritten; the implementation-stage wait for human-local validation remains part of the historical sequence.
 
 ## Review
 
-- independent Phase33 review: PASS / FAIL
+- independent Phase33 review: PASS
+- review provenance: fresh read-only independent review in the current Phase 33 review session
+- formal closure authorization: YES
 
 ## Verdict
 
-PHASE 33 STATUS: PASS / FAIL
-FINAL SUBMISSION FILES: VALIDATED / NOT VALIDATED
-TASK2B OFFICIAL CHECKER: PASS / FAIL
-OFFICIAL SUBMISSION CSVs: UNCHANGED / CHANGED
-READY FOR PHASE 34: YES / NO
-```
+PHASE 33 STATUS: PASS
+FINAL SUBMISSION FILES: VALIDATED
+TASK2B OFFICIAL CHECKER: PASS
+OFFICIAL SUBMISSION CSVs: UNCHANGED
+READY FOR PHASE 34: YES
 
 ---
 
@@ -5629,40 +5647,40 @@ Do not start Phase34.
 
 Before Phase 34:
 
-- [ ] Exact DT-420–DT-437 coverage.
-- [ ] All three exact official filenames.
-- [ ] Task1 exact three-column schema.
-- [ ] Task1 template row count.
-- [ ] Task1 original row order.
-- [ ] Task1 identifiers exact.
-- [ ] Task1 predictions finite.
-- [ ] Task1 probabilities [0,1].
-- [ ] Task2A exact three-column schema.
-- [ ] Task2A row IDs/template rows exact.
-- [ ] Task2A values finite/nonnegative.
-- [ ] Style chilled exactly zero.
-- [ ] Tech chilled exactly zero.
-- [ ] chilled <= total.
-- [ ] Task2B exact six-column schema.
-- [ ] Every official Task2B order exactly once.
-- [ ] Task2B identity triple exact.
-- [ ] No placeholders.
-- [ ] `decision` exact lowercase `served` / `deferred`.
-- [ ] Served vehicle/trip populated/canonical.
-- [ ] Deferred vehicle/trip raw blank.
-- [ ] Independent Task2B validator PASS.
-- [ ] Official `check_allocation.py` PASS on final bytes.
-- [ ] Official checker = feasibility only.
-- [ ] Final CSV pre/post hashes unchanged.
-- [ ] No hardcoded real row counts.
-- [ ] No fabricated check status.
-- [ ] No private IDs in normal output.
-- [ ] Targeted Phase33 tests PASS.
-- [ ] Prior validator regressions PASS.
-- [ ] Full safe suite PASS.
-- [ ] `pip check` PASS.
-- [ ] `git diff --check` PASS.
-- [ ] Fresh independent Phase33 review PASS.
+- [x] Exact DT-420–DT-437 coverage.
+- [x] All three exact official filenames.
+- [x] Task1 exact three-column schema.
+- [x] Task1 template row count.
+- [x] Task1 original row order.
+- [x] Task1 identifiers exact.
+- [x] Task1 predictions finite.
+- [x] Task1 probabilities [0,1].
+- [x] Task2A exact three-column schema.
+- [x] Task2A row IDs/template rows exact.
+- [x] Task2A values finite/nonnegative.
+- [x] Style chilled exactly zero.
+- [x] Tech chilled exactly zero.
+- [x] chilled <= total.
+- [x] Task2B exact six-column schema.
+- [x] Every official Task2B order exactly once.
+- [x] Task2B identity triple exact.
+- [x] No placeholders.
+- [x] `decision` exact lowercase `served` / `deferred`.
+- [x] Served vehicle/trip populated/canonical.
+- [x] Deferred vehicle/trip raw blank.
+- [x] Independent Task2B validator PASS.
+- [x] Official `check_allocation.py` PASS on final bytes.
+- [x] Official checker = feasibility only.
+- [x] Final CSV pre/post hashes unchanged.
+- [x] No hardcoded real row counts.
+- [x] No fabricated check status.
+- [x] No private IDs in normal output.
+- [x] Targeted Phase33 tests PASS.
+- [x] Prior validator regressions PASS.
+- [x] Full safe suite PASS.
+- [x] `pip check` PASS.
+- [x] `git diff --check` PASS.
+- [x] Fresh independent Phase33 review PASS.
 
 Only then:
 

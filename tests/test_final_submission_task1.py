@@ -42,6 +42,25 @@ def test_exact_columns_required(tmp_path, header, row):
     assert validate_final_task1(read_strict_csv(submission.path), template).checks["DT-421"] == "FAIL"
 
 
+def test_case_mismatched_columns_are_rejected(tmp_path):
+    submission, template = _files(tmp_path)
+    submission.path.write_text(
+        "Delivery_ID,pred_service_min,pred_late_prob\n"
+        "d1,10,0\n"
+        "d2,20,1\n",
+        encoding="utf-8",
+    )
+    report = validate_final_task1(read_strict_csv(submission.path), template)
+    assert report.checks["DT-421"] == "FAIL"
+
+
+def test_header_only_submission_is_rejected(tmp_path):
+    submission, template = _files(tmp_path)
+    submission.path.write_text(HEADER, encoding="utf-8")
+    report = validate_final_task1(read_strict_csv(submission.path), template)
+    assert report.checks["DT-422"] == "FAIL"
+
+
 @pytest.mark.parametrize(("body", "task"), [
     ("d1,10,0\n", "DT-422"),
     ("d2,20,1\nd1,10,0\n", "DT-423"),

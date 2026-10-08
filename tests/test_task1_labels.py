@@ -516,6 +516,44 @@ def test_dt063_resolve_route_actual_datetimes_midnight_rollover() -> None:
     assert resolved.loc[0, "arrival_day_offset"] == 1
 
 
+@pytest.mark.parametrize(
+    ("route_date", "arrival_date", "leave_date"),
+    [
+        ("2024-02-28", "2024-02-29", "2024-02-29"),
+        ("2024-02-29", "2024-03-01", "2024-03-01"),
+    ],
+)
+def test_dt063_leap_day_midnight_transitions(
+    route_date: str,
+    arrival_date: str,
+    leave_date: str,
+) -> None:
+    route_legs = pd.DataFrame(
+        [
+            {
+                "route_id": "LEAP",
+                "seq": 0,
+                "date": route_date,
+                "actual_depart_time": "23:50",
+                "arrival_time": "00:10",
+                "leave_outlet_time": "00:30",
+                "actual_travel_duration_min": 20.0,
+            }
+        ]
+    )
+    resolved = resolve_route_actual_datetimes(route_legs, travel_tolerance_min=0.5)
+    assert resolved.loc[0, "arrival_time_dt"] == pd.Timestamp(f"{arrival_date} 00:10:00")
+    assert resolved.loc[0, "leave_outlet_time_dt"] == pd.Timestamp(f"{leave_date} 00:30:00")
+    assert (
+        resolved.loc[0, "arrival_time_dt"] - resolved.loc[0, "actual_depart_time_dt"]
+    ).total_seconds() == 20 * 60
+
+
+def test_dt062_invalid_non_leap_february_29_rejected() -> None:
+    with pytest.raises(Task1JoinBlockerError, match="Invalid date value"):
+        combine_local_date_clock("2025-02-29", "12:00")
+
+
 def test_dt063_window_anchor_and_cross_midnight_window() -> None:
     route_legs = pd.DataFrame(
         [
