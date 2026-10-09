@@ -1731,17 +1731,18 @@ Phase 34 closure: DT-438-DT-450 are 13/13 PASS. The fresh independent re-review 
 
 | Status | Task | Mark | Pri | Dependency | Work item |
 |---|---|---:|---:|---|---|
-| [ ] | **DT-456** | [E] | P1 | Stable repository and outputs | Write Datathon README |
-| [ ] | **DT-457** | [E] | P1 | Stable repository and outputs | Explain project objectives |
-| [ ] | **DT-458** | [E] | P1 | Stable repository and outputs | Explain folder structure |
-| [ ] | **DT-459** | [E] | P1 | Stable repository and outputs | Explain environment setup |
-| [ ] | **DT-460** | [E] | P1 | Stable repository and outputs | Explain how to run notebook |
-| [ ] | **DT-461** | [E] | P1 | Stable repository and outputs | Explain model files |
-| [ ] | **DT-462** | [E] | P1 | Stable repository and outputs | Explain how outputs are generated |
-| [ ] | **DT-463** | [E] | P1 | Stable repository and outputs | Document random seed/reproducibility |
+| [x] | **DT-456** | [E] | P1 | Stable repository and outputs | Write Datathon README |
+| [x] | **DT-457** | [E] | P1 | Stable repository and outputs | Explain project objectives |
+| [x] | **DT-458** | [E] | P1 | Stable repository and outputs | Explain folder structure |
+| [x] | **DT-459** | [E] | P1 | Stable repository and outputs | Explain environment setup |
+| [x] | **DT-460** | [E] | P1 | Stable repository and outputs | Explain how to run notebook |
+| [x] | **DT-461** | [E] | P1 | Stable repository and outputs | Explain model files |
+| [x] | **DT-462** | [E] | P1 | Stable repository and outputs | Explain how outputs are generated |
+| [x] | **DT-463** | [E] | P1 | Stable repository and outputs | Document random seed/reproducibility |
+**Phase complete:** [x]
+**READY FOR NEXT PHASE:** YES
 
-**Phase complete:** [ ]  
-**READY FOR NEXT PHASE:** NO
+Phase 36 closure: DT-456–DT-463 are 8/8 PASS. The fresh independent re-review confirmed the earlier DT-460 private-output-path defect was fully resolved, verified the README command and Windows path containment, observed 25 targeted tests and 895 passed / 2 skipped / 4 warnings in the full safe suite, confirmed protected CSV/registry/model integrity and Git/privacy safety, and explicitly authorized formal administrative closure. Phase 35 remains open and unchanged; this status synchronization does not start Phase 37 implementation.
 
 
 ### Phase 37 — Results summary and competition evidence
