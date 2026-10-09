@@ -1,0 +1,171 @@
+version: "1.0"
+manifest_name: "wayloom_datathon_official_dataset_manifest"
+description: "Authoritative manifest of the 18 official Rootcode Tech-Triathlon 2026 Datathon artifacts"
+
+artifacts:
+  # TRAINING ARTIFACTS
+  - filename: "deliveries_train.csv"
+    category: "training"
+    format: "csv"
+    required: true
+    grain: "One row per order delivery attempt"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["delivery_id"]
+    official_purpose: "Historical order delivery records used for Task 1 model training and Task 2A historical demand baseline"
+
+  - filename: "route_legs_train.csv"
+    category: "training"
+    format: "csv"
+    required: true
+    grain: "One row per route leg journey segment"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["leg_id"]
+    composite_route_keys: ["route_id", "seq"]
+    official_purpose: "Historical route leg actuals and timings used to construct Task 1 training labels (service time and late arrivals)"
+
+  # TEST ARTIFACTS
+  - filename: "task1_test_inputs.csv"
+    category: "test"
+    format: "csv"
+    required: true
+    grain: "One row per planned delivery in Task 1 test horizon"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["delivery_id"]
+    official_purpose: "Planned delivery inputs for Task 1 predictions; also forms part of Task 2A demand history"
+
+  - filename: "route_legs_test.csv"
+    category: "test"
+    format: "csv"
+    required: true
+    grain: "One row per planned route leg in Task 1 test horizon"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["leg_id"]
+    composite_route_keys: ["route_id", "seq"]
+    official_purpose: "Planned route leg parameters for Task 1 test deliveries (contains planned timings only, no actuals)"
+
+  - filename: "task2a_test_inputs.csv"
+    category: "test"
+    format: "csv"
+    required: true
+    grain: "One row per depot, brand, and future forecast week"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["row_id"]
+    official_purpose: "Future demand forecast requirements for Task 2A (total volume and chilled volume)"
+
+  - filename: "task2b_peak_day_scenarios.csv"
+    category: "test"
+    format: "csv"
+    required: true
+    grain: "One row per customer order in peak day scenarios"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["order_ref"]
+    composite_keys: ["scenario", "order_ref"]
+    official_purpose: "Peak day customer orders for Task 2B vehicle and trip allocation; order_ref is the allocation key (outlet_id is not the key)"
+
+  - filename: "task2b_peak_day_fleet.csv"
+    category: "test"
+    format: "csv"
+    required: true
+    grain: "One row per fleet vehicle available in peak day scenarios"
+    key_status: "CANDIDATE_KEY_VERIFY_PHASE_03"
+    composite_keys: ["scenario", "vehicle_id"]
+    official_purpose: "Fleet vehicles available for peak day scenario allocation at Peliyagoda depot"
+
+  # GENERAL / REFERENCE ARTIFACTS
+  - filename: "outlets.csv"
+    category: "general"
+    format: "csv"
+    required: true
+    grain: "One row per retail outlet"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["outlet_id"]
+    official_purpose: "Outlet master data including dock types, parking constraints, and operating delivery windows"
+
+  - filename: "vehicles.csv"
+    category: "general"
+    format: "csv"
+    required: true
+    grain: "One row per fleet vehicle"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["vehicle_id"]
+    official_purpose: "Vehicle master data including weight/volume capacity, temperature capabilities, and fuel quotas"
+
+  - filename: "calendar.csv"
+    category: "general"
+    format: "csv"
+    required: true
+    grain: "One row per calendar date"
+    key_status: "OFFICIAL_KEY"
+    primary_keys: ["date"]
+    official_purpose: "Calendar reference table including day of week, holidays, festivals, paydays, and monsoon flags"
+
+  - filename: "district_travel.csv"
+    category: "general"
+    format: "csv"
+    required: true
+    grain: "One row per depot-to-district corridor"
+    key_status: "CANDIDATE_KEY_VERIFY_PHASE_03"
+    composite_keys: ["district", "depot"]
+    official_purpose: "Free-flow travel distances and durations between depots and districts, plus inter-stop metrics"
+
+  - filename: "service_allowance.csv"
+    category: "general"
+    format: "csv"
+    required: true
+    grain: "One row per brand and dock type combination"
+    key_status: "OFFICIAL_COMPOSITE_KEY"
+    composite_keys: ["brand", "dock_type"]
+    official_purpose: "Standard service time allowances in minutes per brand and dock type"
+
+  - filename: "traffic_speed.csv"
+    category: "general"
+    format: "csv"
+    required: true
+    grain: "Traffic speed index observation records"
+    key_status: "CANDIDATE_KEY_VERIFY_PHASE_03"
+    official_purpose: "Observed traffic speed indices by time / area for travel adjustment"
+
+  - filename: "road_conditions.csv"
+    category: "general"
+    format: "csv"
+    required: true
+    grain: "Road condition disruption observation records"
+    key_status: "CANDIDATE_KEY_VERIFY_PHASE_03"
+    official_purpose: "Road condition and disruption index data affecting transport corridors"
+
+  # SUBMISSION TEMPLATES
+  - filename: "submission_task1.csv"
+    category: "templates"
+    format: "csv"
+    required: true
+    grain: "One row per Task 1 test delivery"
+    key_status: "NO_PRIMARY_KEY_REQUIRED"
+    primary_keys: ["delivery_id"]
+    official_purpose: "Official submission template for Task 1: delivery_id, pred_service_min, pred_late_prob"
+
+  - filename: "submission_task2a.csv"
+    category: "templates"
+    format: "csv"
+    required: true
+    grain: "One row per Task 2A forecast row"
+    key_status: "NO_PRIMARY_KEY_REQUIRED"
+    primary_keys: ["row_id"]
+    official_purpose: "Official submission template for Task 2A: row_id, pred_total_order_volume_m3, pred_chilled_order_volume_m3"
+
+  - filename: "submission_task2b.csv"
+    category: "templates"
+    format: "csv"
+    required: true
+    grain: "One row per Task 2B order_ref in scenario S1"
+    key_status: "NO_PRIMARY_KEY_REQUIRED"
+    primary_keys: ["order_ref"]
+    official_purpose: "Official submission template for Task 2B: order_ref, decision, vehicle_id, trip_id"
+
+  # VALIDATION SCRIPT
+  - filename: "check_allocation.py"
+    category: "validation"
+    format: "python"
+    required: true
+    grain: "Python script"
+    key_status: "NO_PRIMARY_KEY_REQUIRED"
+    official_purpose: "Official organizer validation script to verify feasibility of Task 2B submission allocation against constraints"

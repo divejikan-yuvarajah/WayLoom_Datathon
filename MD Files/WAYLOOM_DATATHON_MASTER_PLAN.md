@@ -1713,14 +1713,16 @@ Phase 34 closure: DT-438-DT-450 are 13/13 PASS. The fresh independent re-review 
 
 | Status | Task | Mark | Pri | Dependency | Work item |
 |---|---|---:|---:|---|---|
-| [ ] | **DT-451** | [O] | P0 | Maintain throughout project | Record all AI-assisted activities |
-| [ ] | **DT-452** | [O] | P0 | Ongoing log from project start; finalize after core work | Record human-controlled modelling work |
-| [ ] | **DT-453** | [O] | P0 | Ongoing log from project start; finalize after core work | Record where AI was not used |
-| [ ] | **DT-454** | [O] | P0 | Ongoing log from project start; finalize after core work | Confirm compliance with competition restrictions |
-| [ ] | **DT-455** | [O] | P0 | Ongoing log from project start; finalize after core work | Write final AI-tool disclosure |
+| [x] | **DT-451** | [O] | P0 | Maintain throughout project | Record all AI-assisted activities |
+| [x] | **DT-452** | [O] | P0 | Ongoing log from project start; finalize after core work | Record human-controlled modelling work |
+| [x] | **DT-453** | [O] | P0 | Ongoing log from project start; finalize after core work | Record where AI was not used |
+| [x] | **DT-454** | [O] | P0 | Ongoing log from project start; finalize after core work | Confirm compliance with competition restrictions |
+| [x] | **DT-455** | [O] | P0 | Ongoing log from project start; finalize after core work | Write final AI-tool disclosure |
 
-**Phase complete:** [ ]  
-**READY FOR NEXT PHASE:** NO
+**Phase complete:** [x]
+**READY FOR NEXT PHASE:** YES
+
+Phase 35 closure: DT-451–DT-455 are 5/5 PASS. The final narrow fresh independent DT-455 re-review verified the corrected cross-document evidence, negative regression coverage and hash-bound exact-version human approval; reconfirmed DT-451–DT-454; found no blockers; and explicitly authorized formal closure. Confirmed external competition-data sharing remains truthfully disclosed, while organizer guidance is limited to the disclosed incident and is not recorded as a blanket exemption. Protected submissions, registry, 12 registered artifacts, final notebook and private Git safety remained unchanged. Phase 36 remains closed and unchanged; this status synchronization does not start Phase 37 implementation.
 
 
 ### Phase 36 — README / project documentation

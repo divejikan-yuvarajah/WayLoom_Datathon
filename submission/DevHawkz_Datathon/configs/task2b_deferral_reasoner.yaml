@@ -1,0 +1,42 @@
+version: 1
+
+reason_codes:
+  source: phase21
+
+counterfactual:
+  force_target_served: true
+  require_optimal_policy_stages: true
+  random_seed: 42
+  num_search_workers: 1
+  max_time_seconds_per_stage: 120
+
+minimal_change:
+  enabled: true
+  require_optimal: true
+
+direct_insertion:
+  enabled: true
+  fail_if_direct_insert_possible: true
+
+classification:
+  allow_multiple_secondary_reasons: true
+  allow_unresolved: false
+
+demo:
+  max_examples: 2
+  anonymize_identifiers: true
+  deterministic: true
+
+frozen:
+  require_phase22_hash_match: true
+  require_phase23_pass: true
+  require_phase24_pass: true
+  trip_summary_path: data/interim/task2b_final_trip_summary.csv
+  priority_config_path: configs/task2b_priority.yaml
+  optimizer_config_path: configs/task2b_optimizer.yaml
+  policy_path: docs/task2b_policy.md
+  phase24_export_manifest: reports/private/phase24_task2b_output/export_manifest.json
+  phase24_policy_validation: reports/private/phase24_task2b_output/policy_fact_validation.json
+
+reports:
+  private_output_dir: reports/private/phase26_task2b_deferral_reasoner

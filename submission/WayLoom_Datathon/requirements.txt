@@ -1,0 +1,13 @@
+pandas
+numpy
+scikit-learn
+catboost
+lightgbm
+matplotlib
+plotly
+shap
+joblib
+jupyterlab
+pytest
+ortools
+pyyaml
