@@ -1,0 +1,31 @@
+{
+  "class_weight_policy": null,
+  "config_id": "catboost_regression_default",
+  "feature_registry_version": 1,
+  "feature_schema_hash": "506dbc860c3c104b551e90834716b7c46ed2dcdae69a052e5a2c51d7b1f25498",
+  "git_commit": "784e27cffaabc3e83d0710a211cb142604bc09a0",
+  "iteration_policy": {
+    "method": "median_best_iteration",
+    "value": 200
+  },
+  "library_versions": {
+    "catboost": "1.2.10",
+    "joblib": "1.6.0",
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "sklearn": "1.9.1",
+    "xgboost": "not_installed"
+  },
+  "model_family": "catboost",
+  "negative_service_policy": "fail",
+  "resampling_policy": "none",
+  "seed": 42,
+  "task": "task1_service",
+  "trained_at_utc": "2026-10-03T15:22:41.955899+00:00",
+  "training_date_range": {
+    "max": "2026-02-14",
+    "min": "2024-01-01"
+  },
+  "training_row_count": 91894
+}

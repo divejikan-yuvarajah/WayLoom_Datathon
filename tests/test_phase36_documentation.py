@@ -172,12 +172,11 @@ def _validate_schemas(text: str) -> None:
 
 def _validate_status_honesty(text: str) -> None:
     required = (
-        "Phase 35 AI-use disclosure also remains open",
-        "awaiting a fresh independent review",
-        "Pending Phase 37",
+        "Phase 35 AI-use disclosure and Phase 36 documentation have completed their independent reviews and formal administrative closure",
+        "Phase 37 results evidence remains formally open",
         "Pending Phase 38",
-        "Pending Phases 40–42",
-        "does not close Phase 35",
+        "demo-link verification, final human approval, and organizer upload remain pending",
+        "does not itself authorize submission",
     )
     missing = [phrase for phrase in required if phrase not in text]
     if missing:
@@ -185,8 +184,9 @@ def _validate_status_honesty(text: str) -> None:
     if re.search(r"(?:youtube\.com|youtu\.be)/", text, flags=re.IGNORECASE):
         raise ValueError("A demo-video URL cannot be documented before Phase 38 evidence exists.")
     forbidden_claims = (
-        "Phase 36 formally closed",
-        "Phase 35 formally closed",
+        "Phase 35 AI-use disclosure also remains open",
+        "Phase 37 formally closed",
+        "video complete",
         "organizer blanket clearance",
     )
     if any(claim.lower() in text.lower() for claim in forbidden_claims):
@@ -344,15 +344,16 @@ def test_unknown_documented_script_is_rejected() -> None:
         _validate_documented_scripts("run scripts\\does_not_exist.py now")
 
 
-def test_master_inventory_and_traceability_are_exact_and_open() -> None:
+def test_master_inventory_and_traceability_are_exact_and_closed() -> None:
     master = _text(MASTER)
     phase = master.split("### Phase 36 — README / project documentation", 1)[1].split(
         "### Phase 37 — Results summary and competition evidence", 1
     )[0]
     for task, title in EXPECTED_TASKS.items():
-        assert f"| [ ] | **{task}** | [E] | P1 | Stable repository and outputs | {title} |" in phase
-    assert "**Phase complete:** [ ]" in phase
-    assert "**READY FOR NEXT PHASE:** NO" in phase
+        assert f"| [x] | **{task}** | [E] | P1 | Stable repository and outputs | {title} |" in phase
+    assert "**Phase complete:** [x]" in phase
+    assert "**READY FOR NEXT PHASE:** YES" in phase
+    assert "Phase 36 closure: DT-456–DT-463 are 8/8 PASS." in phase
     _validate_traceability(_text(TRACEABILITY))
 
 

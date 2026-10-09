@@ -1,0 +1,196 @@
+version: 1
+phase: 37
+status: PREPARATORY_REVIEW_PENDING
+phase_complete: false
+ready_for_next_phase: false
+dependency: Final metrics/outputs
+priority: P1
+mark: "[E]"
+phase_gate: Final evidence includes only the strongest metrics/charts needed to support the technical story.
+
+privacy:
+  allow_private_rows: false
+  allow_real_identifiers: false
+  allow_official_submission_values: false
+  allow_private_notebook_outputs: false
+
+tasks:
+  - id: DT-464
+    title: Produce final Task 1 metrics table
+    status: PREP_ONLY
+    evidence: [E-P37-003, E-P37-005]
+  - id: DT-465
+    title: Compare Task 1 baseline vs final model
+    status: PREP_ONLY
+    evidence: [E-P37-003, E-P37-004]
+  - id: DT-466
+    title: Produce calibration visualization
+    status: BLOCKED
+    evidence: [E-P37-003, E-P37-005]
+    blocker: Approved calibration-bin aggregates are NOT AVAILABLE.
+  - id: DT-467
+    title: Produce Task 1 feature explanation
+    status: PREP_ONLY
+    evidence: [E-P37-006, E-P37-013]
+    blocker: Explicit owner approval for public release is not recorded.
+  - id: DT-468
+    title: Produce Task 2A backtesting results
+    status: PREP_ONLY
+    evidence: [E-P37-007]
+  - id: DT-469
+    title: Compare Task 2A baselines/final model
+    status: PREP_ONLY
+    evidence: [E-P37-007, E-P37-008]
+  - id: DT-470
+    title: Produce future-demand chart
+    status: BLOCKED
+    evidence: [E-P37-008]
+    blocker: An approved public aggregate forecast series is NOT AVAILABLE.
+  - id: DT-471
+    title: Produce Task 2B scarcity summary
+    status: PREP_ONLY
+    evidence: [E-P37-009, E-P37-013]
+    blocker: Complete internal claim evidence exists but publication approval is pending.
+  - id: DT-472
+    title: Produce served/deferred summary
+    status: PREP_ONLY
+    evidence: [E-P37-009, E-P37-013]
+    blocker: Complete internal claim evidence exists but publication approval is pending.
+  - id: DT-473
+    title: Produce solver/checker evidence
+    status: PASS_CANDIDATE
+    evidence: [E-P37-010, E-P37-011, E-P37-015]
+  - id: DT-474
+    title: Select only strongest charts for demo
+    status: PREP_ONLY
+    evidence: [E-P37-006, E-P37-009]
+    blocker: No Phase 37 result asset is approved for public or demo release.
+
+metrics:
+  - id: M-T1-SERVICE-MAE
+    task: DT-464
+    target: Task 1 service time
+    metric: MAE
+    formula: mean(abs(predicted_service_minutes - actual_service_minutes))
+    unit: minutes
+    split: chronological validation and final 42-day holdout
+    source: configs/task1_validation.yaml
+    provenance: REPO_VERIFIED
+    audience: internal_definition_only
+    value: NOT_AVAILABLE
+  - id: M-T1-SERVICE-RMSE
+    task: DT-464
+    target: Task 1 service time
+    metric: RMSE
+    formula: sqrt(mean((predicted_service_minutes - actual_service_minutes)^2))
+    unit: minutes
+    split: chronological validation and final 42-day holdout
+    source: configs/task1_validation.yaml
+    provenance: REPO_VERIFIED
+    audience: internal_definition_only
+    value: NOT_AVAILABLE
+  - id: M-T1-LATE-LOGLOSS
+    task: DT-464
+    target: Task 1 late probability
+    metric: log_loss
+    formula: binary cross-entropy for int(arrival_dt > window_close_dt)
+    unit: unitless
+    split: chronological validation and final 42-day holdout
+    source: configs/task1_validation.yaml
+    provenance: REPO_VERIFIED
+    audience: internal_definition_only
+    value: NOT_AVAILABLE
+  - id: M-T1-LATE-BRIER
+    task: DT-464
+    target: Task 1 late probability
+    metric: Brier score
+    formula: mean((predicted_late_probability - late_flag)^2)
+    unit: unitless
+    split: chronological validation and final 42-day holdout
+    source: configs/task1_validation.yaml
+    provenance: REPO_VERIFIED
+    audience: internal_definition_only
+    value: NOT_AVAILABLE
+  - id: M-T2A-TOTAL-MAE
+    task: DT-468
+    target: Task 2A total volume
+    metric: pooled MAE
+    formula: mean(abs(predicted_total_m3 - actual_total_m3))
+    unit: m3
+    split: latest four eligible rolling origins, complete horizons 1-10
+    source: docs/task2a_validation_spec.md
+    provenance: REPO_VERIFIED
+    audience: internal_definition_only
+    value: NOT_AVAILABLE
+  - id: M-T2A-CHILLED-MAE
+    task: DT-468
+    target: Task 2A Fresh chilled volume
+    metric: pooled Fresh-only MAE
+    formula: mean(abs(predicted_chilled_m3 - actual_chilled_m3)) for Fresh only
+    unit: m3
+    split: latest four eligible rolling origins, complete horizons 1-10
+    source: docs/task2a_validation_spec.md
+    provenance: REPO_VERIFIED
+    audience: internal_definition_only
+    value: NOT_AVAILABLE
+
+numeric_claims:
+  authority: CANONICAL_PHASE37_NUMERICAL_CLAIM_REGISTER
+  source_provenance: TRACKED_INTERNAL_AGGREGATE
+  publication_policy: Claims without explicit publication approval remain internal and must not be selected for public release.
+  items:
+    - {id: N-T2B-001, definition: served whole orders, value: 79, unit: orders, population: all 85 Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-002, definition: total Scenario S1 orders, value: 85, unit: orders, population: all Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-003, definition: deferred whole orders, value: 6, unit: orders, population: all 85 Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-004, definition: served share rounded to one decimal place, value: 92.9, unit: percent, population: all 85 Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: 100 times served orders divided by total orders and rounded to one decimal place, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-005, definition: deferred share rounded to one decimal place, value: 7.1, unit: percent, population: all 85 Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: 100 times deferred orders divided by total orders and rounded to one decimal place, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-006, definition: total outcome share, value: 100.0, unit: percent, population: all 85 Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: served share plus deferred share before display rounding, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-007, definition: usable home-depot vehicles, value: 28, unit: vehicles, population: Scenario S1 home-depot fleet after availability filtering, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-008, definition: usable reefers, value: 4, unit: vehicles, population: usable Scenario S1 home-depot vehicles, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-009, definition: usable reefer vans, value: 1, unit: vehicles, population: usable Scenario S1 home-depot vehicles, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-010, definition: workshop-unavailable vehicles, value: 10, unit: vehicles, population: listed Scenario S1 vehicles, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-011, definition: used trip slots, value: 44, unit: trip slots, population: frozen Scenario S1 allocation, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-012, definition: theoretical trip slots, value: 56, unit: trip slots, population: 28 usable vehicles at no more than two trips each, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: two permitted trips times 28 usable vehicles, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-013, definition: peak Fresh vehicle time, value: 268, unit: minutes, population: vehicles assigned Fresh trips in the frozen Scenario S1 allocation, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-014, definition: Fresh vehicle time limit, value: 270, unit: minutes, population: combined Fresh trips per vehicle, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: official hard-limit value recorded in the tracked policy, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-015, definition: peak Style plus Tech vehicle time, value: 183, unit: minutes, population: vehicles assigned Style or Tech trips in the frozen Scenario S1 allocation, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-016, definition: Style plus Tech vehicle time limit, value: 480, unit: minutes, population: combined Style and Tech trips per vehicle, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: official hard-limit value recorded in the tracked policy, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-017, definition: peak trip weight loading, value: 99.2, unit: percent, population: trips in the frozen Scenario S1 allocation, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-018, definition: peak trip volume loading, value: 99.7, unit: percent, population: trips in the frozen Scenario S1 allocation, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-019, definition: deferred orders with no compatible available vehicle, value: 1, unit: orders, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-020, definition: deferred orders with an individually compatible vehicle but allocation tradeoffs, value: 5, unit: orders, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: deferred total minus no-compatible count as stated by the tracked policy, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-021, definition: previously deferred orders, value: 10, unit: orders, population: Scenario S1 orders marked previously deferred, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-022, definition: previously deferred orders served, value: 9, unit: orders, population: ten previously deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-023, definition: previously deferred orders still deferred, value: 1, unit: orders, population: ten previously deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-024, definition: deferred Fresh orders, value: 5, unit: orders, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-025, definition: deferred Style orders, value: 1, unit: orders, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-026, definition: outlets affected by deferral, value: 6, unit: outlets, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-027, definition: deferred demand units, value: 1188, unit: units, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-028, definition: deferred demand weight, value: 9770.9, unit: kg, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-029, definition: deferred demand volume, value: 81.57, unit: m3, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-030, definition: chilled deferred orders, value: 5, unit: orders, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-031, definition: chilled deferred volume, value: 40.91, unit: m3, population: five chilled deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-032, definition: mean deferred-order wait, value: 2, unit: days, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+    - {id: N-T2B-033, definition: maximum deferred-order wait, value: 5, unit: days, population: six deferred Scenario S1 orders, source: docs/task2b_policy.md, evidence_id: E-P37-009, extraction_provenance: copied from tracked policy aggregate, audience: internal competition evidence only, publication_approval: PENDING, approval_provenance: no explicit owner publication approval is recorded, selected_for_public_release: false}
+
+visuals:
+  selected: []
+  internal_candidates:
+    - id: V-P37-001
+      task: DT-467
+      title: Task 1 tracked feature rankings
+      source: docs/task1_explainability.md
+      publication_approval: PENDING
+    - id: V-P37-002
+      task: DT-472
+      title: Task 2B served versus deferred aggregate
+      source: docs/task2b_policy.md
+      publication_approval: PENDING
+    - id: V-P37-003
+      task: DT-471
+      title: Task 2B constraint pressure
+      source: docs/task2b_policy.md
+      publication_approval: PENDING
+  unavailable:
+    - {id: V-P37-004, task: DT-466, title: Task 1 calibration curve, reason: Approved calibration-bin data is NOT AVAILABLE.}
+    - {id: V-P37-005, task: DT-470, title: Task 2A future-demand chart, reason: Approved public aggregate forecast data is NOT AVAILABLE.}

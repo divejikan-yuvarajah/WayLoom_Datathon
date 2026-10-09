@@ -1,8 +1,10 @@
-# WayLoom — Rootcode Tech-Triathlon 2026 Datathon
+# WayLoom — DevHawkz Datathon Submission
+
+**Official team:** DevHawkz. **Project:** WayLoom. **Competition:** Rootcode Tech Triathlon 2026 — Datathon. The final submission copy is packaged under `submission/DevHawkz_Datathon/` with the notebook named `DevHawkz_FinalNotebook.ipynb`; the frozen development notebook retains its original `TeamName_FinalNotebook.ipynb` filename.
 
 WayLoom is a local, reproducible solution for the three Datathon tasks: predicting delivery service time and lateness risk, forecasting weekly depot demand, and producing a feasible peak-day vehicle allocation. The repository keeps the prediction, forecasting, and optimization workflows separate while sharing schema validation, time handling, artifact integrity, and privacy controls.
 
-This README is the Phase 36 project guide. Phase 36 implementation is awaiting a fresh independent review; its master-plan task boxes and readiness flag intentionally remain open. The Phase 35 AI-use disclosure also remains open pending its own factual approval and review.
+This README is the project guide. Phase 35 AI-use disclosure and Phase 36 documentation have completed their independent reviews and formal administrative closure; the approved Phase 35 disclosure remains byte-protected. Phase 37 results evidence remains formally open, so unavailable or unapproved performance claims are not part of the final package.
 
 ## Project objectives
 
@@ -126,7 +128,7 @@ git status --short
 git diff --cached --name-only
 ```
 
-Use the [judge walkthrough](docs/DATATHON_JUDGE_WALKTHROUGH.md) for a concise, row-free review route. A fresh read-only Phase 36 review must independently verify these docs and the protected hashes before any Phase 36 completion flag changes.
+Use the [judge walkthrough](docs/DATATHON_JUDGE_WALKTHROUGH.md) for a concise, row-free review route. Phase 36's independent review and administrative closure are recorded in the master plan; the protected hashes must still be checked before final submission.
 
 ## Deliverables and current status
 
@@ -138,10 +140,10 @@ Use the [judge walkthrough](docs/DATATHON_JUDGE_WALKTHROUGH.md) for a concise, r
 | Final notebook | [TeamName_FinalNotebook.ipynb](TeamName_FinalNotebook.ipynb) — source notebook present. |
 | Task 1, Task 2A, Task 2B CSVs | Frozen controlled files under `outputs/`; exact filenames and schemas are documented above, with no row content reproduced here. |
 | Task 2B written policy | [Prioritization policy](docs/task2b_policy.md) — implemented. |
-| AI-tool disclosure | [AI-use disclosure](docs/AI_USE_DISCLOSURE.md) — draft; Phase 35 and final human approval remain open. |
-| Results summary | Pending Phase 37; no competition metric is invented here. |
+| AI-tool disclosure | [AI-use disclosure](docs/AI_USE_DISCLOSURE.md) — exact-version human-approved; Phase 35 formally closed. |
+| Results summary | Phase 37 has an internal evidence draft, but it is not approved for public or demo release and is not linked here. Formal closure remains pending; no unsupported competition metric is invented here. |
 | Demo video | Pending Phase 38; no URL or completion claim exists yet. |
-| Final folder/ZIP/upload | Pending Phases 40–42 and authorized human submission. |
+| Final folder/ZIP/upload | The `submission/DevHawkz_Datathon.zip` package candidate is prepared; demo-link verification, final human approval, and organizer upload remain pending. |
 
 ## Privacy, limitations, and review boundaries
 
@@ -149,4 +151,4 @@ Use the [judge walkthrough](docs/DATATHON_JUDGE_WALKTHROUGH.md) for a concise, r
 - The tests in this repository use synthetic fixtures unless a command is explicitly described as human-local. Passing them does not substitute for authorized private validation.
 - No final performance score is claimed before Phase 37. No production deployment is claimed; the deployment architecture is a proposal.
 - The factual AI-use record includes known external sharing and unresolved scope details. The team-reported organizer response is not described as blanket written clearance. Refer to the disclosure itself and do not infer broader permission.
-- Phase 36 implementation does not close Phase 35, change any official submission/model/notebook byte, begin Phase 37, or authorize packaging/upload.
+- Phase 35 and Phase 36 are formally closed; that does not itself authorize submission, prove Phase 37 completion, or grant a blanket competition-rule exemption.
