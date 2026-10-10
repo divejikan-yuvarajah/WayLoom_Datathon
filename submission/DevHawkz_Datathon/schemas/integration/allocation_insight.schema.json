@@ -1,0 +1,148 @@
+{
+  "$defs": {
+    "AllocationReasoning": {
+      "additionalProperties": false,
+      "properties": {
+        "hard_rules_precede_policy": {
+          "const": true,
+          "title": "Hard Rules Precede Policy",
+          "type": "boolean"
+        },
+        "policy_name": {
+          "const": "WayLoom lexicographic allocation policy",
+          "title": "Policy Name",
+          "type": "string"
+        },
+        "policy_origin": {
+          "const": "WayLoom engineering policy",
+          "title": "Policy Origin",
+          "type": "string"
+        }
+      },
+      "required": [
+        "policy_name",
+        "policy_origin",
+        "hard_rules_precede_policy"
+      ],
+      "title": "AllocationReasoning",
+      "type": "object"
+    },
+    "AllocationSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "orders_deferred": {
+          "minimum": 0,
+          "title": "Orders Deferred",
+          "type": "integer"
+        },
+        "orders_served": {
+          "minimum": 0,
+          "title": "Orders Served",
+          "type": "integer"
+        },
+        "orders_total": {
+          "minimum": 0,
+          "title": "Orders Total",
+          "type": "integer"
+        },
+        "trips_used": {
+          "minimum": 0,
+          "title": "Trips Used",
+          "type": "integer"
+        },
+        "vehicles_used": {
+          "minimum": 0,
+          "title": "Vehicles Used",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "orders_total",
+        "orders_served",
+        "orders_deferred",
+        "vehicles_used",
+        "trips_used"
+      ],
+      "title": "AllocationSummary",
+      "type": "object"
+    },
+    "ConstraintSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "fresh_vehicle_minutes_limit": {
+          "const": 270,
+          "default": 270,
+          "title": "Fresh Vehicle Minutes Limit",
+          "type": "integer"
+        },
+        "max_trips_per_vehicle": {
+          "const": 2,
+          "default": 2,
+          "title": "Max Trips Per Vehicle",
+          "type": "integer"
+        },
+        "style_tech_vehicle_minutes_limit": {
+          "const": 480,
+          "default": 480,
+          "title": "Style Tech Vehicle Minutes Limit",
+          "type": "integer"
+        }
+      },
+      "title": "ConstraintSummary",
+      "type": "object"
+    }
+  },
+  "$id": "https://wayloom.local/integration/1.0/allocation_insight.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "constraint_summary": {
+      "$ref": "#/$defs/ConstraintSummary"
+    },
+    "deferral_example_refs": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 3,
+      "title": "Deferral Example Refs",
+      "type": "array"
+    },
+    "reasoning": {
+      "$ref": "#/$defs/AllocationReasoning"
+    },
+    "scenario_ref": {
+      "const": "DEMO_SCENARIO_01",
+      "title": "Scenario Ref",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_mode": {
+      "enum": [
+        "synthetic_demo",
+        "private_local"
+      ],
+      "title": "Source Mode",
+      "type": "string"
+    },
+    "summary": {
+      "$ref": "#/$defs/AllocationSummary"
+    }
+  },
+  "required": [
+    "source_mode",
+    "scenario_ref",
+    "summary",
+    "constraint_summary",
+    "reasoning"
+  ],
+  "title": "AllocationInsightResponse",
+  "type": "object",
+  "x-wayloom-semantic-rules": [
+    "orders_served + orders_deferred == orders_total"
+  ]
+}

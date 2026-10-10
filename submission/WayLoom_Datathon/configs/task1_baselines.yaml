@@ -1,0 +1,41 @@
+version: 1
+validation:
+  use_phase07_plan: true
+  use_final_holdout: false
+service_baselines:
+  global_median: {enabled: true}
+  brand_median: {enabled: true, group_keys: [brand], fallback: global_median}
+  brand_dock_median:
+    enabled: true
+    group_keys: [brand, dock_type]
+    fallback_order: [brand_median, global_median]
+lateness_baselines:
+  constant_probability: {enabled: true, estimator: training_mean}
+  grouped_rate:
+    enabled: true
+    group_keys: [brand, dock_type]
+    fallback_order: [brand_rate, global_rate]
+    smoothing: {enabled: false}
+linear_regression:
+  enabled: true
+  estimator: LinearRegression
+  include_historical_target_features: false
+logistic_regression:
+  enabled: true
+  estimator: LogisticRegression
+  solver: lbfgs
+  max_iter: 2000
+  class_weight: null
+  C: 1.0
+  random_state: 42
+  include_historical_target_features: false
+preprocessing:
+  numeric_imputer: median
+  scale_numeric: true
+  categorical_missing_token: __MISSING__
+  categorical_encoder: one_hot
+  handle_unknown: ignore
+metrics:
+  use_phase07_contract: true
+artifacts:
+  private_output_dir: reports/private/phase08_task1_baselines
