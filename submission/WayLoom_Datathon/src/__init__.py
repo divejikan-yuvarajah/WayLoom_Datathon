@@ -1,1 +1,0 @@
-"""WayLoom Datathon source package."""
