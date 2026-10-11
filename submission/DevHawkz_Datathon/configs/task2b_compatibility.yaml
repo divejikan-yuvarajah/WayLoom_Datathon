@@ -1,0 +1,4 @@
+version: 1
+tolerance: 1.0e-9
+low_flexibility_threshold: 2
+private_output_dir: reports/private/phase19_task2b_compatibility

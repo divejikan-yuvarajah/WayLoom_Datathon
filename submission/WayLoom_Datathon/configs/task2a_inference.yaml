@@ -1,0 +1,21 @@
+version: 1
+final_model_config: configs/task2a_final_models.yaml
+required_frozen_state: FROZEN
+weekly_panel: data/interim/task2a_weekly_panel.csv
+multihorizon_table: data/interim/task2a_multihorizon_train.csv
+forecast_origin: latest_complete_historical_week
+require_global_origin: true
+expected_horizons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+future_calendar_coverage_required: true
+postprocessing:
+  clip_negative: true
+  enforce_chilled_le_total: true
+  rounding: none
+structural_output_rules:
+  style_chilled_zero: true
+  tech_chilled_zero: true
+submission:
+  key: row_id
+  preserve_template_order: true
+  atomic_write: true
+private_report_dir: reports/private/phase17_task2a_final

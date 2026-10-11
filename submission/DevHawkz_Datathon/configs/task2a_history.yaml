@@ -1,0 +1,44 @@
+version: 1
+
+official_sources:
+  deliveries_train: deliveries_train.csv
+  task1_test_inputs: task1_test_inputs.csv
+  calendar: calendar.csv
+
+order_key: delivery_id
+requested_date_column: order_date
+volume_column: order_volume_m3
+required_dispatch_statuses: [attempted, deferred, not_run]
+series_keys: [depot, brand]
+week_keys: [iso_year, iso_week]
+
+chilled:
+  eligible_brand: Fresh
+  chilled_temp_value: chilled
+  nonfresh_brands: [Style, Tech]
+  strict_nonfresh_chilled_input_check: true
+
+calendar:
+  join_key: order_date
+  calendar_date_column: date
+  use_calendar_iso_fields_as_source_of_truth: true
+  require_unique_calendar_date: true
+  require_all_order_dates_matched: true
+
+panel:
+  build_calendar_week_spine: true
+  require_missing_week_investigation: true
+  zero_fill_only_confirmed_gaps: true
+  flag_boundary_partial_weeks: true
+  unresolved_gap_is_blocker: true
+
+validation:
+  require_unique_combined_delivery_id: true
+  require_nonnegative_volume: true
+  require_finite_volume: true
+  require_chilled_le_total: true
+  require_style_chilled_zero: true
+  require_tech_chilled_zero: true
+  require_weekly_total_reconciliation: true
+
+private_output_dir: reports/private/phase11_task2a_history

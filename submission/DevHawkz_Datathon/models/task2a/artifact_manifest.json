@@ -1,0 +1,51 @@
+{
+  "artifact_schema_version": 1,
+  "components": [
+    {
+      "artifact_kind": "ensemble_bundle",
+      "candidate_id": "ensemble_cb_lgb_total_equal_v1",
+      "component_families": [
+        "catboost",
+        "lightgbm"
+      ],
+      "component_weights": [
+        0.5,
+        0.5
+      ],
+      "relative_path": "models/task2a_total/component.joblib",
+      "sha256": "3e917b71e9cca5c737a0f5e387836f6dcc49afb79ee3b059bfcd781f25e7c10e",
+      "target": "total"
+    },
+    {
+      "artifact_kind": "ensemble_bundle",
+      "candidate_id": "ensemble_cb_lgb_chilled_equal_v1",
+      "component_families": [
+        "catboost",
+        "lightgbm"
+      ],
+      "component_weights": [
+        0.5,
+        0.5
+      ],
+      "relative_path": "models/task2a_chilled/component.joblib",
+      "sha256": "0ca7ee226bfd6cdb617c4b861f0a9b454944c4349238eba3236d405dacb4b541",
+      "target": "chilled"
+    }
+  ],
+  "feature_schema_ref": "models/task2a/feature_schema.json",
+  "final_strategy": "fixed_equal_weight_catboost_lightgbm_ensemble",
+  "forecast_horizon_weeks": 10,
+  "postprocessing": {
+    "clip_negative": true,
+    "enforce_chilled_le_total": true,
+    "rounding": "none",
+    "style_chilled_zero": true,
+    "tech_chilled_zero": true
+  },
+  "preprocessing": {
+    "feature_builder": "src.task2a.final_inference.build_final_test_features",
+    "learned_component_state": "embedded",
+    "mode": "embedded"
+  },
+  "task": "task2a"
+}

@@ -1,0 +1,90 @@
+WAYLOOM DATATHON — PHASE 35 FRESH INDEPENDENT REVIEW
+AI-USE DISCLOSURE | DT-451–DT-455 | STRICT READ-ONLY
+
+ROLE
+You are an INDEPENDENT competition rules reviewer, technical writer, privacy auditor, and repository-integrity verifier. New session; no prior coding involvement. Work READ-ONLY. No edits, automatic fixes, staging, commits, model runs, output regeneration or Phase36 implementation.
+
+SOURCES (AUTHORITY ORDER)
+1. Official MD Files/Challenge Booklet.pdf, printed p22 (Rules/Terms/Deliverables), and any organizer FAQ/clarification actually included in the repository.
+2. MD Files/WAYLOOM_DATATHON_MASTER_PLAN.md: exact Phase35 DT-451 through DT-455 titles, task mark, priority, dependency and completion gate. NOTE: External handoff confirms the ID range and theme, NOT titles. First verify the five exact entries; flag any contract/name drift.
+3. MD Files/PHASE_35_COMPETITION_CONTRACT.md.
+4. Phase34 independent PASS + formal closure record, and relevant Phase31–33 records.
+5. Actual AI disclosure document, safe evidence and implementation history; validate claims with repository evidence when possible and HUMAN ATTESTATIONS where necessarily external.
+6. AGENTS.md, CODEX_HANDOFF_PHASE_11_ONWARDS.md.
+
+READ-ONLY PRECONDITION CHECK
+- Phase34 DT-438–DT-450 13/13 checked, phase complete [x], readiness YES and independent PASS evidence recorded.
+- Preserve current git status; do not restore pre-existing changes.
+- Verify no private information needs to be read; use filenames/hashes and aggregate sanitized summaries only.
+- If master plan lacks exact DT-451–455 inventory, STOP and report unable to verify task names; do not fill titles from inference.
+
+REVIEW ALL FIVE TASKS INDIVIDUALLY
+For each DT-451, DT-452, DT-453, DT-454, DT-455: quote exact master work item; map to content/line references/test; issue PASS/FAIL; list specific blocking remedy. No easy all-PASS based on presence of a heading.
+
+OFFICIAL DISCLOSURE REQUIREMENT (BOOKLET PRINTED P22)
+The submitted AI-use disclosure must explain WHICH work was AI-assisted, WHICH was not, and HOW tools were used. Verify identifiable tools and actual scopes; do not accept unsupported 'we used AI ethically' platitudes.
+
+SUBSTANTIVE REVIEW
+A. Tool inventory: Evidence-backed tools/platforms and version if known; no hallucinated versions, dates or vendors; other contest tracks not misattributed to Datathon.
+B. Work breakdown: Distinguish ideation, documentation, Python coding, testing, model training, training-run execution, actual saved models, inference, allocation optimization, validation, packaging and submission, with AI/human role accurate for each.
+C. Human-owned / NOT AI assisted work: Explicit and evidence-supported, not a bare 'humans reviewed all'. Human-local activities must be tagged HUMAN-ATTESTED, not independently rerun by agent.
+D. How tools were used: qualitative workflow details, safe category-level inputs and outputs, iterations, reviews, independent checks; no private prompts, identifiers, real rows, private predictions.
+E. Official restrictions: prohibited pretrained models (limited official exceptions), prohibited proprietary API-based modelling/preprocessing and fully automated modelling tools; dataset third-party transfer, derivative publication and confidentiality. Check that claims are nuanced, actual evidence exists, risks are escalated; generic statements are not proof. The fact that an LLM helped write/correct code does not automatically mean it supplied the prediction model or processed private data; conversely avoid treating that distinction as proof of compliance.
+F. Completeness: Final document readable, submission-ready, consistent with final notebook, architecture/README, final code/test history, without contradicting the earlier Phase34 report or Phase32 artifact registry.
+G. Provenance: VERIFIED, HUMAN-CONFIRMED and UNKNOWN separated; unresolved material compliance or factual unknowns are FAIL until clarified by the human/organizer. Human sign-off documented but not forged.
+H. No sensitive data or disallowed path exposure in final disclosure, docs, repo status or stdout.
+I. No developer-generated 'approved by organizer' claim absent documentary evidence. Do not change source files to make review pass.
+
+TEST/SAFETY VERIFICATION (ONLY NON-DESTRUCTIVE)
+- Run available disclosure structure/lint tests, deterministic assertions against public text, and task-to-evidence mapping checks.
+- If appropriate run existing safe targeted tests. Full suite not necessarily needed for documentation-only diff; if omitted, state NOT RUN, never invent.
+- Run python -m pip check only if appropriate, git diff --check, git status --short, and staged-file check.
+- Before and after, independently compare read-only hashes of the 3 official CSVs, artifact_registry.json and all 12 registered models. Do not run a validator that overwrites private reports.
+- Verify reports/private ignored, no private artifacts tracked, no unapproved changes to model, outputs, final notebook or production code.
+- Source p22 booklet rule and masters are absolute; project engineering additions are not organizer-imposed requirements.
+
+STOP/FAIL IF
+- Phase34 formal closure absent;
+- DT task titles/requirements inferred rather than read;
+- any task unproved;
+- known AI assistance omitted;
+- human-only assertions are invented or unsupported;
+- private data transmission is declared impossible based only on Git ignore;
+- any suspicious prohibited use unresolved;
+- private data exposed;
+- forbidden assets changed;
+- protected hashes differ;
+- evidence contains unverifiable approval or falsified tool-use descriptions.
+
+REQUIRED OUTPUT
+1. Exact master five-task inventory and task-by-task PASS/FAIL table with verifiable evidence.
+2. Official p22 compliance matrix: AI-assisted / NOT AI-assisted / HOW / model/API/tool/data restrictions.
+3. Claim-to-evidence audit; tool/workflow traceability; human confirmation outstanding.
+4. Disclosure artifact names; content/format; readability; internal consistency.
+5. Independent checks run (exact command, pass/fail/skip counts), and those not run.
+6. Frozen hashes, model registry counts, privacy and git status.
+7. Any finding about Phase32 administratively unchecked master plan as SEPARATE follow-up, not automatically a Phase35 blocker unless its dependency demands.
+8. Blockers, next actions, formal Phase35 closure authorization and Phase36 readiness gate. DO NOT actually close phase in this read-only review.
+
+FINAL VERDICT FORMAT
+PHASE35 FRESH INDEPENDENT REVIEW: PASS / FAIL
+PHASE34 PRECONDITION: PASS / FAIL
+MASTER DT-451–DT-455 TITLES VERIFIED: YES / NO
+DT-451: PASS / FAIL
+DT-452: PASS / FAIL
+DT-453: PASS / FAIL
+DT-454: PASS / FAIL
+DT-455: PASS / FAIL
+OFFICIAL AI DISCLOSURE: PASS / FAIL
+HUMAN ROLE + NON-AI WORK ACCURACY: PASS / FAIL
+MODEL/API/AUTOML RESTRICTIONS: PASS / FAIL / REQUIRES HUMAN OR ORGANIZER CLARIFICATION
+DATA PRIVACY + THIRD-PARTY SHARING: PASS / FAIL / REQUIRES HUMAN ATTESTATION
+HUMAN ATTESTATION: VERIFIED / PENDING
+DISCLOSURE DOC QUALITY: PASS / FAIL
+TESTS: exact counts / NOT RUN, with reason
+FROZEN CSV / REGISTRY / MODEL HASHES: PASS / FAIL / NOT CHECKED
+GIT + PRIVACY: PASS / FAIL
+FORMAL PHASE35 CLOSURE AUTHORIZED: YES / NO
+PHASE36 MAY BEGIN AFTER REQUIRED CLOSURE: YES / NO
+BLOCKERS: None / precise list
+FILES MODIFIED BY REVIEW: NONE

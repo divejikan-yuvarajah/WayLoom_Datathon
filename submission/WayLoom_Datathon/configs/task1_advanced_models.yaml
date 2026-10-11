@@ -1,0 +1,85 @@
+version: 1
+seed: 42
+validation:
+  use_phase07_plan: true
+  use_final_holdout_during_search: false
+features:
+  registry_driven: true
+  profile: safe_core_plus_history
+  allow_historical_target_features: true
+  require_fold_safe_history_transform: true
+catboost:
+  regression:
+    enabled: true
+    loss_function: MAE
+    eval_metric: MAE
+    depth: 7
+    learning_rate: 0.05
+    l2_leaf_reg: 5
+    random_seed: 42
+    verbose: false
+    allow_writing_files: false
+  classification:
+    enabled: true
+    loss_function: Logloss
+    eval_metric: Logloss
+    depth: 7
+    learning_rate: 0.05
+    l2_leaf_reg: 5
+    random_seed: 42
+    verbose: false
+    allow_writing_files: false
+    auto_class_weights: null
+lightgbm:
+  enabled: true
+  params:
+    n_estimators: 2000
+    learning_rate: 0.05
+    num_leaves: 31
+    max_depth: -1
+    min_child_samples: 20
+    subsample: 0.9
+    colsample_bytree: 0.9
+    reg_lambda: 1.0
+    random_state: 42
+    verbosity: -1
+xgboost:
+  enabled: false
+  optional: true
+  random_state: 42
+search:
+  strategy: bounded_predeclared_grid
+  prohibit_automl: true
+  max_regression_candidates: 16
+  max_classifier_candidates: 16
+  regression_candidates:
+    depth: [5, 7, 9]
+    learning_rate: [0.03, 0.05]
+    l2_leaf_reg: [3, 7]
+  classifier_candidates:
+    depth: [5, 7, 9]
+    learning_rate: [0.03, 0.05]
+    l2_leaf_reg: [3, 7]
+early_stopping:
+  enabled: true
+  max_iterations: 2000
+  patience_rounds: 100
+  min_iterations: 50
+error_analysis:
+  worst_regression_n: 100
+  confident_positive_threshold: 0.80
+  confident_negative_threshold: 0.20
+calibration:
+  enabled: true
+  methods: [sigmoid, isotonic]
+  oof_fit_fraction: 0.70
+  minimum_calibration_rows: 200
+  minimum_positive_rows: 20
+  minimum_negative_rows: 20
+selection:
+  regression_primary: mae
+  regression_secondary: rmse
+  lateness_primary: log_loss
+  lateness_secondary: brier_score
+  calibration_tie_order: [raw, sigmoid, isotonic]
+private_output_dir: reports/private/phase09_task1_models

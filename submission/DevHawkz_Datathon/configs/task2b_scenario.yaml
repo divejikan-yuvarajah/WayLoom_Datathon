@@ -1,0 +1,15 @@
+version: 1
+scenario:
+  expected_id: S1
+  expected_depot: Peliyagoda
+files:
+  orders: task2b_peak_day_scenarios.csv
+  fleet: task2b_peak_day_fleet.csv
+  vehicles: vehicles.csv
+  district_travel: district_travel.csv
+  service_allowance: service_allowance.csv
+fleet:
+  available_status: available
+  workshop_status: in_workshop
+summary:
+  private_output_dir: reports/private/phase18_task2b_scenario
