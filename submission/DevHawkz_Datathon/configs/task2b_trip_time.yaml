@@ -1,0 +1,11 @@
+version: 1
+same_brand: true
+same_district: true
+reject_empty_trip: true
+reject_duplicate_order_ref: true
+outbound_count: exactly_once
+inter_stop_rule: n_orders_minus_one
+service_allowance_keys: [brand, dock_type]
+include_return_leg: false
+rounding: none
+private_output_dir: reports/private/phase20_task2b_trip_time

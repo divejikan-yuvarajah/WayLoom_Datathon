@@ -1,0 +1,40 @@
+version: 1
+
+output:
+  filename: submission_task2b.csv
+  path: outputs/submission_task2b.csv
+  official_template_filename: submission_task2b.csv
+  exact_columns: [scenario, order_ref, outlet_id, decision, vehicle_id, trip_id]
+  preserve_template_row_order: true
+  write_index: false
+  refuse_overwrite_without_force: true
+
+phase22:
+  allocation_path: data/interim/task2b_final_allocation.csv
+  trip_summary_path: data/interim/task2b_final_trip_summary.csv
+  freeze_manifest_path: reports/private/phase22_task2b_optimizer/freeze_manifest.json
+
+phase23:
+  report_dir: reports/private/phase23_task2b_validator
+  evidence_filename: checker_evidence.json
+  require_own_validator_pass: true
+  require_official_checker_pass: true
+
+source_files:
+  orders: task2b_peak_day_scenarios.csv
+  fleet: task2b_peak_day_fleet.csv
+  vehicles: vehicles.csv
+
+scenario:
+  expected_id: S1
+  expected_depot: Peliyagoda
+
+policy:
+  output_path: docs/task2b_policy.md
+  private_report_dir: reports/private/phase24_task2b_output
+  target_max_words: 550
+  warn_above_words: 650
+  fresh_budget_limit: 270
+  style_tech_budget_limit: 480
+  include_return_leg: false
+  low_flexibility_threshold: 2

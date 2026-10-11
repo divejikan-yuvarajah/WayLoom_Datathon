@@ -1,0 +1,35 @@
+version: 1
+validation_date:
+  column: route_date
+  fallback_column: dispatch_date
+  require_consistency_when_both_present: true
+ordering:
+  stable_sort: true
+  tie_breakers: [route_id, seq_in_route, delivery_id]
+final_holdout:
+  strategy: last_calendar_days
+  calendar_days: 42
+  same_date_atomic: true
+expanding_cv:
+  n_folds: 4
+  validation_calendar_days: 42
+  gap_calendar_days: 0
+  same_date_atomic: true
+  require_expanding_train: true
+  minimum_training_calendar_days: 180
+fit_dependent_features:
+  validation_policy: fit_on_train_transform_validation
+  allow_validation_targets_during_transform: false
+metrics:
+  regression:
+    primary: mae
+    secondary: [rmse, median_absolute_error, p90_absolute_error]
+  lateness_probability:
+    primary: log_loss
+    secondary: [brier_score]
+    diagnostics: [roc_auc, average_precision, calibration_error]
+segments:
+  fields: [brand, depot, district, dock_type, temp_requirement, is_first_stop, monsoon, planned_slack_bin]
+  minimum_n: 30
+  minimum_positive_for_auc: 5
+  minimum_negative_for_auc: 5

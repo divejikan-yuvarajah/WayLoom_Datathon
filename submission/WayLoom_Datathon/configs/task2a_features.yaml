@@ -1,0 +1,51 @@
+version: 1
+
+input:
+  weekly_panel: data/interim/task2a_weekly_panel.csv
+  calendar: calendar.csv
+
+series_keys: [depot, brand]
+time_keys: [iso_year, iso_week]
+
+chronology:
+  week_start_column: week_start_date
+  require_continuous_weekly_panel: true
+
+multihorizon:
+  min_horizon: 1
+  max_horizon: 10
+  strategy: direct_global_table
+  require_target_week_calendar: true
+
+lags:
+  semantics: origin_relative
+  values: [1, 2, 4, 13, 52]
+
+rolling_means:
+  windows: [4, 8, 13]
+  include_origin_week: true
+  require_full_window: true
+
+trend:
+  compare_windows: [4, 13]
+  ratio_denominator_must_be_positive: true
+
+calendar_features:
+  operating_days: true
+  payday_days: true
+  holiday_features: true
+  festival_features: true
+  festival_ramp_features: true
+  monsoon_features: true
+
+missing_history:
+  policy: keep_missing
+  forbid_future_backfill: true
+  forbid_full_history_imputation: true
+
+target_eligibility:
+  allowed_panel_statuses: [OBSERVED_DEMAND, CONFIRMED_ZERO]
+
+privacy:
+  report_dir: reports/private/phase13_task2a_features
+  never_print_weekly_values_or_order_identifiers: true

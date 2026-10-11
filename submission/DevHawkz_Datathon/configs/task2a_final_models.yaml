@@ -1,0 +1,133 @@
+version: 1
+state: FROZEN
+source_contracts:
+  history: phase11
+  features: phase13
+  validation: phase14
+  baselines: phase15
+  selection: phase16
+feature_profile:
+  registry_path: configs/task2a_features.yaml
+  profile_id: task2a_advanced_safe_v1
+  registry_hash: 80cc6bd00be176b5943b95518474a7981eae85cde7b2156df52bddc6c2086f02
+validation:
+  config_path: configs/task2a_validation.yaml
+  backtest_signature: b2951033dab2a65ccd2caa03ce59ffe88346c227913c705bc9c0b296a90d0452
+selection_policy:
+  primary_metric: mae
+  relative_tie_tolerance_pct: 0.5
+  prefer_simpler_within_tolerance: true
+total:
+  approach_type: ensemble
+  candidate_id: ensemble_cb_lgb_total_equal_v1
+  family: catboost_lightgbm_ensemble
+  parameters:
+    weight_left: 0.5
+    weight_right: 0.5
+  component_candidates:
+  - approach_type: model
+    candidate_id: catboost_total_v1
+    family: catboost
+    parameters:
+      candidate_id: catboost_total_v1
+      loss_function: MAE
+      eval_metric: MAE
+      iterations: 2000
+      learning_rate: 0.03
+      depth: 6
+      l2_leaf_reg: 5.0
+      random_seed: 42
+      early_stopping_rounds: 100
+      allow_writing_files: false
+      verbose: false
+    feature_profile_id: task2a_advanced_safe_v1
+    preprocessing: native_categorical
+    final_iteration_policy:
+      method: median_best_iteration
+      value: 303
+  - approach_type: model
+    candidate_id: lightgbm_total_v1
+    family: lightgbm
+    parameters:
+      candidate_id: lightgbm_total_v1
+      objective: regression_l1
+      metric: l1
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 20
+      reg_lambda: 1.0
+      random_state: 42
+      n_jobs: 1
+      early_stopping_rounds: 100
+    feature_profile_id: task2a_advanced_safe_v1
+    preprocessing: fold_train_median_onehot
+    final_iteration_policy:
+      method: median_best_iteration
+      value: 365
+  component_weights:
+  - 0.5
+  - 0.5
+  final_iteration_policy: COMPONENT_POLICIES
+chilled_fresh:
+  approach_type: ensemble
+  candidate_id: ensemble_cb_lgb_chilled_equal_v1
+  family: catboost_lightgbm_ensemble
+  parameters:
+    weight_left: 0.5
+    weight_right: 0.5
+  component_candidates:
+  - approach_type: model
+    candidate_id: catboost_chilled_v1
+    family: catboost
+    parameters:
+      candidate_id: catboost_chilled_v1
+      loss_function: MAE
+      eval_metric: MAE
+      iterations: 2000
+      learning_rate: 0.03
+      depth: 6
+      l2_leaf_reg: 5.0
+      random_seed: 42
+      early_stopping_rounds: 100
+      allow_writing_files: false
+      verbose: false
+    feature_profile_id: task2a_advanced_safe_v1
+    preprocessing: native_categorical
+    final_iteration_policy:
+      method: median_best_iteration
+      value: 112
+  - approach_type: model
+    candidate_id: lightgbm_chilled_v1
+    family: lightgbm
+    parameters:
+      candidate_id: lightgbm_chilled_v1
+      objective: regression_l1
+      metric: l1
+      n_estimators: 2000
+      learning_rate: 0.03
+      num_leaves: 31
+      min_child_samples: 20
+      reg_lambda: 1.0
+      random_state: 42
+      n_jobs: 1
+      early_stopping_rounds: 100
+    feature_profile_id: task2a_advanced_safe_v1
+    preprocessing: fold_train_median_onehot
+    final_iteration_policy:
+      method: median_best_iteration
+      value: 127
+  component_weights:
+  - 0.5
+  - 0.5
+  final_iteration_policy: COMPONENT_POLICIES
+structural_output_rules:
+  style_chilled_zero: true
+  tech_chilled_zero: true
+phase17_postprocessing:
+  clip_negative: true
+  enforce_chilled_le_total: true
+  rounding: none
+seeds:
+  default: 42
+selection_complete: true

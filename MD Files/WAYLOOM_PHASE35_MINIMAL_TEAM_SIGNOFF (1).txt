@@ -1,0 +1,10 @@
+WAYLOOM — PHASE 35 HUMAN CONFIRMATION (reply to Cursor, roles only)
+
+1. I am an authorized WayLoom Datathon disclosure approver: YES
+2. ChatGPT and Cursor/Codex are the complete Datathon AI assistant inventory: YES 
+3. No unrecorded pretrained predictive model / proprietary remote modelling or preprocessing API / AutoML or low-code modelling was used:  NO 
+4. Decision roles: models ____; constraints ____; training/evaluation oversight ____; Task2B allocation approval ____; final submission ____
+5. The disclosure lists all external transfers I know about and accurately distinguishes the organizer's reported comments from formal clearance: YES 
+6. I have read the EXACT CURRENT docs/AI_USE_DISCLOSURE.md and approve its factual accuracy, including clearly stated unknowns: YES
+
+Do not choose YES unless you can personally attest. Unknown is preferable to an inaccurate approval. Do not paste restricted competition data.

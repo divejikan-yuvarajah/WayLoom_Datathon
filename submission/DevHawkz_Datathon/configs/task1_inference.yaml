@@ -1,0 +1,40 @@
+version: 1
+task: task1
+mode: saved_model_inference
+retrain_if_missing: false
+official:
+  test_inputs_filename: task1_test_inputs.csv
+  route_legs_test_filename: route_legs_test.csv
+  submission_template_filename: submission_task1.csv
+  join:
+    left: [route_id, seq_in_route]
+    right: [route_id, seq]
+    how: left
+    validate: one_to_one
+    indicator: true
+row_order:
+  marker: __official_row_order
+  restore_before_template_fill: true
+features:
+  reuse_phase06_pipeline: true
+  allow_ad_hoc_test_features: false
+  historical_state:
+    fit_scope: historical_training_population_only
+    transform_test_without_labels: true
+    update_from_test_rows: false
+service:
+  source: saved_bundle
+  negative_policy: fail
+  rounding: none
+lateness:
+  source: saved_bundle
+  output: positive_class_probability
+  allow_hard_predict: false
+  apply_calibration_only_if_frozen: true
+submission:
+  fill_only: [pred_service_min, pred_late_prob]
+  forbid_debug_columns: true
+  export:
+    path: outputs/submission_task1.csv
+    index: false
+    atomic: true

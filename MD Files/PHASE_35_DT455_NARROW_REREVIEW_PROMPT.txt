@@ -1,0 +1,72 @@
+# WAYLOOM DATATHON — PHASE 35 NARROW FRESH DT-455 RE-REVIEW
+
+## Role
+
+Act as a fresh independent competition-disclosure and repository-integrity reviewer.
+
+STRICTLY READ-ONLY. Do not edit, regenerate, stage, commit, close Phase 35, update master-plan flags, or start another phase.
+
+## Scope
+
+Review only the repaired DT-455 blocker and verify that the prior independent findings are resolved. DT-451 through DT-454 already passed; do not reopen them unless the current evidence directly contradicts those verdicts.
+
+## Required sources
+
+Read:
+
+- `docs/AI_USE_DISCLOSURE.md`
+- `docs/PHASE35_FINAL_HUMAN_APPROVAL_CHECKLIST.md`
+- `docs/PHASE35_FINAL_HUMAN_APPROVAL_RECORD.md`
+- `docs/PHASE35_ORGANIZER_COMMUNICATION_RECORD.md`
+- `tests/test_ai_use_disclosure.py`
+- the DT-455 and formal-closure requirements in `MD Files/PHASE_35_COMPETITION_CONTRACT.md`
+- Phase 35 in `MD Files/WAYLOOM_DATATHON_MASTER_PLAN.md`
+
+## Mandatory verification
+
+1. Independently compute SHA-256 for the disclosure and checklist.
+2. Require exact matches:
+   - disclosure: `715c2dca328a6792adffad5073633fcd7e362272578dbed788a8179418b6d4d3`
+   - checklist: `ef448b08c5666ef691039e077e96dbae4c9f9c1b7435e4979978a2c0dc0e3c79`
+3. Verify the separate approval record identifies those exact hashes, records the direct authorized-human source and timestamp, and limits approval to factual accuracy without claiming a blanket exemption.
+4. Confirm the approved files remain byte-identical despite their pre-approval `PENDING` workflow markers; the separate hash-bound approval record must explicitly satisfy that gate.
+5. Confirm all three disclosure records agree on:
+   - known CSV/dataset and notebook sharing;
+   - real inference inputs, identifiers, and predictions shared with ChatGPT;
+   - human-confirmed organizer awareness;
+   - email/Gmail channel;
+   - screenshot-supported written response;
+   - unavailable authenticated original headers and complete conversation export;
+   - incident-specific permission to proceed; and
+   - no blanket exemption.
+6. Inspect the semantic consistency validator and both negative mutation tests. Ensure reintroducing either former stale statement fails.
+7. Run Phase 35 disclosure tests, combined Phase 35/36 documentation tests, dependency check, `git diff --check`, Git/privacy checks, and read-only protected-hash checks.
+8. Verify no approved document, official CSV, model, registry, final notebook, or private evidence was modified by the review.
+
+## Decision rule
+
+DT-455 passes only if the exact hashes match, the human approval record is valid for those versions, cross-document contradictions are absent, mutation tests are meaningful, and all safe checks pass.
+
+If DT-455 passes, explicitly authorize a later separate Phase 35 administrative closure. Do not perform that closure in this review.
+
+## Required verdict
+
+DT-451: PASS — PRIOR INDEPENDENT VERDICT PRESERVED / CONTRADICTION FOUND
+DT-452: PASS — PRIOR INDEPENDENT VERDICT PRESERVED / CONTRADICTION FOUND
+DT-453: PASS — PRIOR INDEPENDENT VERDICT PRESERVED / CONTRADICTION FOUND
+DT-454: PASS — PRIOR INDEPENDENT VERDICT PRESERVED / CONTRADICTION FOUND
+DT-455 NARROW RE-REVIEW: PASS / FAIL
+
+APPROVED DISCLOSURE HASH: PASS / FAIL
+APPROVED CHECKLIST HASH: PASS / FAIL
+HASH-BOUND HUMAN APPROVAL: VERIFIED / NOT VERIFIED
+CROSS-DOCUMENT CONSISTENCY: PASS / FAIL
+NEGATIVE REGRESSION TESTS: PASS / FAIL
+PHASE 35 TESTS: exact result
+COMBINED DOCUMENTATION TESTS: exact result
+FROZEN ARTIFACTS: UNCHANGED / FAIL
+GIT AND PRIVACY: PASS / FAIL
+
+FORMAL PHASE 35 CLOSURE AUTHORIZED: YES / NO
+BLOCKERS: None / exact findings
+FILES MODIFIED BY REVIEW: NONE

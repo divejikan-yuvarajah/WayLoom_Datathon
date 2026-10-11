@@ -1,0 +1,302 @@
+{
+  "$defs": {
+    "DeferralEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "changed_order_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Changed Order Count"
+        },
+        "counterfactual_complete": {
+          "title": "Counterfactual Complete",
+          "type": "boolean"
+        },
+        "first_degraded_policy_tier": {
+          "anyOf": [
+            {
+              "pattern": "^LEVEL_[1-9][A-C]?$|^HARD_FEASIBILITY$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "First Degraded Policy Tier"
+        }
+      },
+      "required": [
+        "counterfactual_complete"
+      ],
+      "title": "DeferralEvidence",
+      "type": "object"
+    }
+  },
+  "$id": "https://wayloom.local/integration/1.0/deferral_explanation.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "availability": {
+            "const": "not_available"
+          }
+        },
+        "required": [
+          "availability"
+        ]
+      },
+      "then": {
+        "properties": {
+          "evidence": {
+            "type": "null"
+          },
+          "primary_reason_code": {
+            "type": "null"
+          },
+          "reason_class": {
+            "type": "null"
+          },
+          "secondary_reason_codes": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "maxItems": 0,
+                "type": "array"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "availability": {
+            "const": "available"
+          }
+        },
+        "required": [
+          "availability"
+        ]
+      },
+      "then": {
+        "properties": {
+          "evidence": {
+            "not": {
+              "type": "null"
+            }
+          },
+          "primary_reason_code": {
+            "enum": [
+              "HARD_NO_COMPATIBLE_VEHICLE",
+              "CAPACITY_COMPETITION",
+              "SCARCE_REEFER_CAPACITY",
+              "SCARCE_REEFER_VAN_CAPACITY",
+              "TRIP_SLOT_LIMIT",
+              "FRESH_TIME_BUDGET",
+              "STYLE_TECH_TIME_BUDGET",
+              "LOWER_POLICY_PRIORITY",
+              "ALTERNATIVE_FEASIBLE_ALLOCATION_CHOSEN"
+            ]
+          },
+          "reason_class": {
+            "enum": [
+              "UNAVOIDABLE_HARD",
+              "POLICY_TRADEOFF",
+              "ALTERNATIVE_OPTIMUM"
+            ]
+          },
+          "summary": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason_class",
+          "primary_reason_code",
+          "summary",
+          "evidence"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "availability": {
+            "const": "synthetic_demo"
+          }
+        },
+        "required": [
+          "availability"
+        ]
+      },
+      "then": {
+        "properties": {
+          "evidence": {
+            "not": {
+              "type": "null"
+            }
+          },
+          "primary_reason_code": {
+            "enum": [
+              "HARD_NO_COMPATIBLE_VEHICLE",
+              "CAPACITY_COMPETITION",
+              "SCARCE_REEFER_CAPACITY",
+              "SCARCE_REEFER_VAN_CAPACITY",
+              "TRIP_SLOT_LIMIT",
+              "FRESH_TIME_BUDGET",
+              "STYLE_TECH_TIME_BUDGET",
+              "LOWER_POLICY_PRIORITY",
+              "ALTERNATIVE_FEASIBLE_ALLOCATION_CHOSEN"
+            ]
+          },
+          "reason_class": {
+            "enum": [
+              "UNAVOIDABLE_HARD",
+              "POLICY_TRADEOFF",
+              "ALTERNATIVE_OPTIMUM"
+            ]
+          },
+          "source_mode": {
+            "const": "synthetic_demo"
+          },
+          "summary": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason_class",
+          "primary_reason_code",
+          "summary",
+          "evidence"
+        ]
+      }
+    }
+  ],
+  "properties": {
+    "availability": {
+      "enum": [
+        "available",
+        "not_available",
+        "synthetic_demo"
+      ],
+      "title": "Availability",
+      "type": "string"
+    },
+    "evidence": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DeferralEvidence"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "example_ref": {
+      "pattern": "^DEFERRAL_EXAMPLE_[A-Z]$",
+      "title": "Example Ref",
+      "type": "string"
+    },
+    "limitations": {
+      "maxLength": 500,
+      "minLength": 20,
+      "title": "Limitations",
+      "type": "string"
+    },
+    "primary_reason_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Primary Reason Code"
+    },
+    "reason_class": {
+      "anyOf": [
+        {
+          "enum": [
+            "UNAVOIDABLE_HARD",
+            "POLICY_TRADEOFF",
+            "ALTERNATIVE_OPTIMUM"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reason Class"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "secondary_reason_codes": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Secondary Reason Codes"
+    },
+    "source_mode": {
+      "enum": [
+        "synthetic_demo",
+        "private_local"
+      ],
+      "title": "Source Mode",
+      "type": "string"
+    },
+    "summary": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Summary"
+    }
+  },
+  "required": [
+    "source_mode",
+    "example_ref",
+    "availability",
+    "limitations"
+  ],
+  "title": "DeferralExplanationResponse",
+  "type": "object"
+}
